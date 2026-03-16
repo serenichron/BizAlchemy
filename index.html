@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BizAlchemy</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:16px 8px}
+#wrap{max-width:390px;width:100%}
+#game{height:720px;border-radius:20px;border:1px solid #ddd;background:#fff;display:flex;flex-direction:column;position:relative;overflow:hidden;box-shadow:0 4px 32px rgba(0,0,0,0.10)}
+#hdr{padding:11px 14px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eee;background:#fafaf8;flex-shrink:0;gap:8px}
+#ttl{font-size:16px;font-weight:600;color:#1a1a1a;flex:1}
+#cnt{font-size:11px;color:#666;background:#f0efe9;padding:3px 9px;border-radius:20px;border:1px solid #e5e4df;white-space:nowrap}
+.hdr-btn{padding:4px 10px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:11px;font-weight:500;color:#333;cursor:pointer;white-space:nowrap;transition:background 0.1s,opacity 0.1s}
+.hdr-btn:disabled{opacity:0.45;cursor:default}
+.hdr-btn:not(:disabled):hover{background:#f5f4f0}
+#grid{overflow-y:auto;flex:1;padding:8px 10px 120px;position:relative}
+.tier-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 2px 5px;font-size:10.5px;font-weight:600;color:#888;letter-spacing:0.3px;border-top:1px solid #eee;margin-top:4px}
+.tier-hdr:first-child{border-top:none;margin-top:0;padding-top:4px}
+.tier-name{display:flex;align-items:center;gap:5px}
+.tier-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.tier-prog{font-size:10px;color:#aaa}
+.cards-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:2px}
+.ec{border-radius:13px;padding:12px 5px 9px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;user-select:none;border:2px solid transparent;transition:transform 0.12s,border-color 0.12s,opacity 0.12s;position:relative}
+.ec:active{transform:scale(0.92)}
+.ec.selected{border-color:var(--sel-color);transform:scale(1.06)}
+.ec.no-react{opacity:0.2;cursor:default;pointer-events:none}
+.ec.dimmed{opacity:0.32}
+.ec.tried-no-result::after{content:'≠';position:absolute;top:3px;right:5px;font-size:11px;font-weight:400;color:#999;opacity:0.55;line-height:1}
+.ec.tried-pending::after{content:'★';position:absolute;top:4px;right:5px;font-size:10px;color:#EF9F27;line-height:1}
+.ec.tried-done::after{content:'✓';position:absolute;top:4px;right:5px;font-size:10px;font-weight:700;color:#1D9E75;line-height:1}
+.ec-e{font-size:24px;line-height:1;pointer-events:none}
+.ec-n{font-size:9.5px;font-weight:500;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
+.ec-lock{border-radius:13px;padding:12px 5px 9px;display:flex;flex-direction:column;align-items:center;gap:4px;border:1.5px dashed #ddd;background:#fafaf8;opacity:0.5}
+.ec-lock-e{font-size:20px;color:#bbb}
+.ec-lock-n{font-size:9px;color:#bbb;text-align:center}
+.pop{animation:pop 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes pop{from{transform:scale(0) rotate(-6deg);opacity:0}to{transform:scale(1);opacity:1}}
+#tray{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:10px 12px 14px;display:flex;align-items:center;gap:7px;z-index:30}
+.slot{flex:1;height:68px;border-radius:14px;border:1.5px dashed #ccc;background:#fafaf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;position:relative;transition:border-color 0.15s}
+.slot.filled{border-style:solid;border-color:var(--slot-color);background:var(--slot-bg)}
+.slot-e{font-size:22px;line-height:1}
+.slot-n{font-size:9px;font-weight:500;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+.slot-hint{font-size:10px;color:#aaa}
+.slot-clear{position:absolute;top:4px;right:6px;font-size:11px;color:#aaa;cursor:pointer;padding:2px}
+#plus{font-size:16px;color:#aaa;flex-shrink:0}
+#eq{font-size:14px;color:#aaa;flex-shrink:0}
+#result-slot{flex:1;height:68px;border-radius:14px;border:1.5px solid #e5e5e5;background:#fafaf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all 0.18s;position:relative;overflow:hidden}
+#result-slot .res-e{font-size:22px;line-height:1}
+#result-slot .res-n{font-size:9px;font-weight:500;text-align:center;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#result-slot .res-sub{font-size:9px;font-weight:500}
+#result-slot .res-hint{font-size:10px;color:#aaa}
+#result-slot.state-new{border-color:#1D9E75;background:#E1F5EE;cursor:pointer}
+#result-slot.state-new .res-n{color:#085041}
+#result-slot.state-new .res-sub{color:#1D9E75}
+#result-slot.state-new::before{content:'NEW';position:absolute;top:5px;left:6px;font-size:7.5px;font-weight:700;letter-spacing:0.5px;color:#1D9E75;background:#c8edd9;padding:1px 5px;border-radius:8px}
+#result-slot.state-found{border-color:#378ADD;background:#deeefb;cursor:pointer}
+#result-slot.state-found .res-n{color:#0C447C}
+#result-slot.state-found .res-sub{color:#378ADD}
+#result-slot.state-found::before{content:'FOUND';position:absolute;top:5px;left:6px;font-size:7.5px;font-weight:700;letter-spacing:0.5px;color:#378ADD;background:#c0d9f0;padding:1px 5px;border-radius:8px}
+#result-slot.state-none{border-color:#D85A30;background:#fdeae3;cursor:pointer}
+#result-slot.state-none .res-sub{color:#D85A30;font-size:9px}
+#result-slot.state-none::before{content:'NO MATCH';position:absolute;top:5px;left:6px;font-size:7.5px;font-weight:700;letter-spacing:0.5px;color:#D85A30;background:#faddd2;padding:1px 5px;border-radius:8px}
+#tooltip{position:absolute;background:#fff;border:1px solid #ddd;border-radius:12px;padding:10px 12px 9px;font-size:11px;z-index:200;pointer-events:auto;visibility:hidden;opacity:0;max-width:190px;width:max-content;transition:opacity 0.12s;cursor:default;box-shadow:0 2px 16px rgba(0,0,0,0.09)}
+#tooltip.visible{visibility:visible;opacity:1}
+#tooltip .tt-title{font-weight:600;color:#1a1a1a;margin-bottom:4px;font-size:11.5px}
+#tooltip .tt-recipe{color:#aaa;font-size:10px;line-height:1.5;margin-bottom:5px;padding-bottom:5px;border-bottom:1px solid #eee}
+#tooltip .tt-desc{color:#333;font-size:10px;line-height:1.55;margin-bottom:7px}
+#tooltip .tt-desc div+div{margin-top:2px}
+#tooltip .tt-cta{display:inline-block;font-size:10px;font-weight:600;color:#378ADD;text-decoration:none}
+#tooltip .tt-cta:hover{text-decoration:underline}
+#hint-popup{position:absolute;top:50px;left:12px;right:12px;background:#fff;border:1px solid #ddd;border-radius:12px;padding:10px 14px;z-index:80;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+#hint-popup .hp-label{font-size:10px;font-weight:600;color:#aaa;margin-bottom:5px;letter-spacing:0.3px}
+#hint-popup .hp-combo{font-size:13px;color:#1a1a1a;font-weight:500}
+#hint-popup .hp-close{position:absolute;top:8px;right:10px;font-size:13px;color:#aaa;cursor:pointer;padding:2px 4px}
+#toast{position:absolute;top:8px;left:12px;right:12px;padding:9px 16px;font-size:12px;font-weight:500;text-align:center;z-index:90;display:none;border-radius:10px;border:1px solid #eee}
+.tok{display:block!important;background:#e8f5e9;color:#2e7d32}
+/* Intro */
+#intro{position:absolute;inset:0;background:#fff;z-index:100;display:flex;flex-direction:column;border-radius:20px;overflow:hidden}
+#intro-body{flex:1;overflow-y:auto;padding:28px 24px 16px;display:flex;flex-direction:column;gap:20px}
+#intro-logo{font-size:36px;text-align:center;line-height:1;margin-bottom:4px}
+#intro-title{font-size:20px;font-weight:600;color:#1a1a1a;text-align:center;letter-spacing:-0.3px}
+#intro-sub{font-size:12.5px;color:#888;text-align:center;line-height:1.6}
+.intro-steps{display:flex;flex-direction:column;gap:10px}
+.intro-step{display:flex;align-items:flex-start;gap:12px;padding:11px 13px;border-radius:12px;border:1px solid #eee;background:#fafaf8}
+.step-num{width:22px;height:22px;border-radius:50%;background:#f0efe9;border:1px solid #e5e4df;font-size:11px;font-weight:500;color:#888;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-text{font-size:12px;color:#1a1a1a;line-height:1.55}
+.step-text strong{font-weight:600}
+.intro-legend{display:flex;flex-direction:column;gap:7px}
+.legend-title{font-size:10.5px;font-weight:600;color:#aaa;letter-spacing:0.3px;text-transform:uppercase;margin-bottom:2px}
+.legend-row{display:flex;align-items:center;gap:9px;font-size:11.5px;color:#1a1a1a}
+.legend-icon{font-size:13px;width:20px;text-align:center;flex-shrink:0}
+#intro-footer{padding:14px 24px 20px;flex-shrink:0;border-top:1px solid #eee}
+#start-btn{width:100%;padding:13px;border-radius:12px;border:none;background:#1a1a1a;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.1s}
+#start-btn:hover{opacity:0.85}
+/* Congrats */
+#congrats{position:absolute;inset:0;background:#fff;z-index:100;display:none;flex-direction:column;border-radius:20px;overflow:hidden}
+#congrats-body{flex:1;overflow-y:auto;padding:32px 24px 16px;display:flex;flex-direction:column;align-items:center}
+#congrats-burst{font-size:54px;line-height:1;text-align:center;animation:burst 0.6s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes burst{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+#congrats-title{font-size:22px;font-weight:600;color:#1a1a1a;text-align:center;margin-top:16px;letter-spacing:-0.4px;line-height:1.2}
+#congrats-sub{font-size:13px;color:#666;text-align:center;margin-top:8px;line-height:1.65;max-width:290px}
+#congrats-divider{width:40px;height:1.5px;background:#eee;border-radius:2px;margin:22px auto}
+#congrats-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.stat-card{background:#fafaf8;border-radius:12px;border:1px solid #eee;padding:14px 16px;text-align:center}
+.stat-num{font-size:28px;font-weight:600;color:#1a1a1a;line-height:1}
+.stat-label{font-size:11px;color:#999;margin-top:4px;line-height:1.3}
+#congrats-message{margin-top:20px;padding:14px 16px;border-radius:12px;background:#fafaf8;border:1px solid #eee;width:100%}
+#congrats-message p{font-size:12px;color:#333;line-height:1.65;text-align:center}
+#congrats-message a{color:#378ADD;text-decoration:none;font-weight:600}
+#congrats-message a:hover{text-decoration:underline}
+#confetti-row{font-size:20px;text-align:center;letter-spacing:6px;margin-top:20px;animation:fadein 1s ease 0.4s both}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+#congrats-footer{padding:14px 24px 20px;flex-shrink:0;border-top:1px solid #eee;display:flex;gap:10px}
+#play-again-btn{flex:1;padding:12px;border-radius:12px;border:1px solid #ddd;background:#fff;font-size:13px;font-weight:500;color:#1a1a1a;cursor:pointer;transition:background 0.1s}
+#play-again-btn:hover{background:#f5f4f0}
+#glossary-btn{flex:1;padding:12px;border-radius:12px;border:none;background:#1a1a1a;font-size:13px;font-weight:500;color:#fff;cursor:pointer;transition:opacity 0.1s;text-decoration:none;display:flex;align-items:center;justify-content:center}
+#glossary-btn:hover{opacity:0.85}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="game">
+  <!-- Intro screen -->
+  <div id="intro">
+    <div id="intro-body">
+      <div>
+        <div id="intro-logo">⚗️</div>
+        <div id="intro-title">BizAlchemy</div>
+        <div id="intro-sub" style="margin-top:6px">Combine business concepts to discover<br>the full digital marketing toolkit.</div>
+      </div>
+      <div class="intro-steps">
+        <div class="intro-step">
+          <div class="step-num">1</div>
+          <div class="step-text"><strong>Tap a card</strong> to select it. Only cards that can react with it stay active — the rest fade out.</div>
+        </div>
+        <div class="intro-step">
+          <div class="step-num">2</div>
+          <div class="step-text"><strong>Tap a second card</strong> to combine. The result appears in the tray on the right.</div>
+        </div>
+        <div class="intro-step">
+          <div class="step-num">3</div>
+          <div class="step-text"><strong>Tap the result</strong> to add it to your collection, then use it in new combinations.</div>
+        </div>
+        <div class="intro-step">
+          <div class="step-num">4</div>
+          <div class="step-text"><strong>Hover or long-press</strong> any card to read its description and learn how it was made. Each card links to our glossary for a deeper dive.</div>
+        </div>
+      </div>
+      <div class="intro-legend">
+        <div class="legend-title">Card indicators</div>
+        <div class="legend-row"><span class="legend-icon">★</span><span>Result waiting — you found a match but haven't collected it yet.</span></div>
+        <div class="legend-row"><span class="legend-icon">✓</span><span>Already collected — this combo is done.</span></div>
+        <div class="legend-row"><span class="legend-icon">≠</span><span>No reaction — these two don't combine.</span></div>
+      </div>
+    </div>
+    <div id="intro-footer">
+      <button id="start-btn" onclick="startGame()">Start discovering →</button>
+    </div>
+  </div>
+  <!-- Congrats screen -->
+  <div id="congrats">
+    <div id="congrats-body">
+      <div id="congrats-burst">🏆</div>
+      <div id="congrats-title">Digital Empire achieved.</div>
+      <div id="congrats-sub">You've discovered every element in the BizAlchemy tree — from a raw Idea all the way to a Digital Empire.</div>
+      <div id="congrats-divider"></div>
+      <div id="congrats-stats">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-elements">—</div>
+          <div class="stat-label">elements<br>discovered</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-combos">—</div>
+          <div class="stat-label">combinations<br>tried</div>
+        </div>
+      </div>
+      <div id="congrats-message">
+        <p>Every element you discovered maps to a real digital marketing concept. Visit our <a href="https://serenichron.com/glossary" target="_blank" rel="noopener">glossary</a> to learn what each one means and how Serenichron can help you build it.</p>
+      </div>
+      <div id="confetti-row">🌎 ⚡ 🦋 ♾️ 🏖️</div>
+    </div>
+    <div id="congrats-footer">
+      <button id="play-again-btn" onclick="resetGame()">↺ Play again</button>
+      <a id="glossary-btn" href="https://serenichron.com/glossary" target="_blank" rel="noopener">Visit glossary →</a>
+    </div>
+  </div>
+  <!-- Game -->
+  <div id="hdr">
+    <div id="ttl">BizAlchemy</div>
+    <div id="cnt">4 found</div>
+    <button id="hint-btn" class="hdr-btn" onclick="showHint()">💡 Hint</button>
+    <button id="reset-btn" class="hdr-btn" onclick="resetGame()">↺ Reset</button>
+  </div>
+  <div id="grid"></div>
+  <div id="tray">
+    <div class="slot" id="slot-a"><span class="slot-hint">tap a card</span></div>
+    <div id="plus">+</div>
+    <div class="slot" id="slot-b"><span class="slot-hint">tap a card</span></div>
+    <div id="eq">=</div>
+    <div id="result-slot"><span class="res-hint">result</span></div>
+  </div>
+  <div id="tooltip"></div>
+  <div id="hint-popup">
+    <div class="hp-label">HINT — TRY THIS</div>
+    <div class="hp-combo" id="hp-combo"></div>
+    <div class="hp-close" onclick="closeHint()">✕</div>
+  </div>
+  <div id="toast"></div>
+</div></div>
+<script>
+const PAL=[
+  {bg:'#FAEEDA',b:'#EF9F27',t:'#633806',dot:'#EF9F27'},
+  {bg:'#E6F1FB',b:'#378ADD',t:'#0C447C',dot:'#378ADD'},
+  {bg:'#E1F5EE',b:'#1D9E75',t:'#085041',dot:'#1D9E75'},
+  {bg:'#FAECE7',b:'#D85A30',t:'#711B13',dot:'#D85A30'},
+  {bg:'#EEEDFE',b:'#7F77DD',t:'#3C3489',dot:'#7F77DD'},
+  {bg:'#FBEAF0',b:'#D4537E',t:'#72243E',dot:'#D4537E'},
+  {bg:'#EAF3DE',b:'#639922',t:'#27500A',dot:'#639922'},
+];
+const TIER_NAMES=['Raw Ingredients','Core Assets','Digital Foundations','Marketing Channels','Growth Strategy','Advanced Systems','Endgame'];
+const INFO={
+  'Idea':{d:"The spark that starts every business. Raw potential with no shape yet.\nWithout an idea, there is nothing to build, sell, or share."},
+  'Audience':{d:"The people you exist to serve — without them, you're just talking to yourself.\nUnderstanding your audience is the foundation of every smart decision."},
+  'Content':{d:"The value you create and put into the world. Words, visuals, and stories.\nContent is what attracts strangers and turns them into loyal customers."},
+  'Tool':{d:"The software and systems that turn ideas into reality at scale.\nThe right tool removes bottlenecks and buys back your most valuable resource: time."},
+  'Niche':{d:"Your specific corner of the market — where your idea meets a real audience.\nThe narrower your niche, the easier it is to stand out and be remembered."},
+  'Article':{d:"Long-form content where your idea takes shape in writing.\nArticles build authority, teach your audience, and attract search traffic over time."},
+  'Website':{d:"Your digital home base — where your idea lives on the internet.\nA website is the only online asset you fully own and control."},
+  'Newsletter':{d:"A direct line to your audience that no algorithm can interrupt.\nRegular, valuable emails keep you top of mind and build a loyal following."},
+  'CRM':{d:"The system that remembers everything about your audience and clients.\nA CRM turns scattered contacts into a managed, growing relationship engine."},
+  'Template':{d:"A reusable structure that keeps your output consistent and fast.\nTemplates remove decisions from your day and make scaling painless."},
+  'Keyword Research':{d:"Discovering the exact words your niche types into search engines.\nThe bridge between what you know and what your audience is actively looking for."},
+  'Landing Page':{d:"A focused page with a single goal — get the visitor to take action.\nYour niche and website combine into one purpose-built conversion machine."},
+  'Lead Magnet':{d:"A free, high-value resource so good people trade their email for it.\nBorn from your niche and newsletter, it's the entry point to your funnel."},
+  'Persona':{d:"A detailed portrait of your ideal client — their goals, fears, and language.\nYour niche audience mapped in your CRM becomes someone you truly know."},
+  'Offer':{d:"The thing you sell, packaged so clearly the right person says yes immediately.\nYour niche expertise meets a template — value made tangible and priced."},
+  'Blog':{d:"A collection of articles living on your website, findable by search engines.\nYour content and articles combine into an asset that works for you 24/7."},
+  'Content Strategy':{d:"A deliberate plan for what you create, for whom, and why.\nArticles meet your newsletter audience — intentional output, not random posting."},
+  'Content Calendar':{d:"A schedule that keeps your content consistent and your team sane.\nArticles mapped to templates — nothing missed, nothing late."},
+  'Copywriting':{d:"Words written with the specific intent to move people to act.\nArticles plus CRM audience insight — writing that resonates because it speaks to real people."},
+  'Email Capture':{d:"The mechanism that converts a website visitor into an email subscriber.\nYour website meets your newsletter with a simple, irresistible ask."},
+  'Analytics':{d:"The data layer that tells you what's actually happening in your business.\nYour website behavior tracked through your CRM — numbers that tell a story."},
+  'Wireframe':{d:"The structural blueprint of a page or product before any design is added.\nWebsite logic meets template thinking — clarity before creativity."},
+  'Email List':{d:"Your single most valuable owned asset in digital marketing.\nNewsletter meets CRM — a list of real people who chose to hear from you."},
+  'Drip Campaign':{d:"A timed sequence of emails that nurtures subscribers automatically.\nNewsletter logic meets template structure — relationship-building on autopilot."},
+  'Automation':{d:"Actions that happen in your business without your direct involvement.\nCRM rules meet template logic — the system that never forgets and never sleeps."},
+  'Web Design':{d:"The look, feel, and flow of your digital presence — designed with intent.\nYour idea brought to life visually, where first impressions become lasting ones."},
+  'Headline':{d:"The single line that decides whether anyone reads the rest.\nYour idea focused on a niche — specific, punchy, and impossible to ignore."},
+  'Brand Guide':{d:"The rulebook for how your brand looks and speaks across every channel.\nYour niche identity expressed through visual design — consistency you can hand to anyone."},
+  'Subscriber':{d:"A real person who actively opted in to hear from you — earned attention.\nYour audience, connected through your newsletter, one by one."},
+  'Script':{d:"Content structured for speaking, presenting, or recording.\nAn idea given a template — shaped, sequenced, and ready to deliver."},
+  'Hosting':{d:"The infrastructure that keeps your website live and accessible at all times.\nTool meets website — the invisible foundation your entire presence depends on."},
+  'Workflow':{d:"A repeatable, documented process for getting things done the right way.\nTool meets template — decisions removed from your day, replaced by a system."},
+  'SEO':{d:"The ongoing practice of appearing in search results for your target keywords.\nKeyword research applied to your blog — traffic that compounds over years."},
+  'Rank Tracker':{d:"A live view of exactly where you stand in search results over time.\nKeyword research meets analytics — know precisely what's working and what isn't."},
+  'Squeeze Page':{d:"A stripped-down page with zero distractions and one job — capture the email.\nYour landing page meets your lead magnet at maximum conversion focus."},
+  'Sales Page':{d:"The long-form page that does all the selling so you don't have to.\nLanding page meets offer — copy, proof, and a clear call to action."},
+  'Lead Generation':{d:"The engine that consistently fills your pipeline with interested prospects.\nLead magnet meets email list — strangers become warm leads on autopilot."},
+  'Brand Voice':{d:"The consistent personality that comes through in every word you write.\nPersona meets copywriting — distinctive, recognisable, and unmistakably yours."},
+  'Design System':{d:"A library of reusable visual components that keeps your brand consistent.\nBrand guide meets web design — design that scales without losing cohesion."},
+  'Prototype':{d:"A testable, clickable version of your page or product before launch.\nWireframe meets web design — ideas made tangible before a single line of code is final."},
+  'Editorial Plan':{d:"A structured content roadmap that covers weeks and months ahead.\nContent strategy meets content calendar — no more last-minute scrambles."},
+  'Email Funnel':{d:"A series of emails that guides someone from stranger to ready-to-buy.\nEmail list meets drip campaign — the quiet engine of email marketing."},
+  'Marketing Stack':{d:"The integrated set of tools that runs your entire marketing operation.\nAutomation meets workflow — one connected system, not a pile of disconnected apps."},
+  'Webinar':{d:"A live or scheduled presentation that educates your audience and converts.\nScript meets your subscriber list — high-value content with a built-in offer."},
+  'Video':{d:"The most engaging content format on the internet — face, voice, and story.\nScript meets hosting infrastructure — recorded once, watched forever."},
+  'Ad Copy':{d:"The words in your ads that interrupt the scroll and earn the click.\nHeadline meets copywriting — short, specific, and designed to convert."},
+  'Dashboard':{d:"A single screen that shows you everything that matters in your business.\nAnalytics meets workflow — clarity without drowning in spreadsheets."},
+  'Brand Identity':{d:"The complete visual and verbal expression of who your brand is.\nDesign system meets brand voice — everything looks and sounds unmistakably like you."},
+  'Opt-in Page':{d:"A dedicated page built entirely around growing your email list.\nEmail capture meets your lead magnet — one page, one irresistible offer, maximum focus."},
+  'Social Media':{d:"The channels where you show up consistently for your audience every day.\nContent calendar meets your subscribers — published where people already scroll."},
+  'Sales Copy':{d:"Persuasive writing where every word is designed to earn its place.\nCopywriting applied to your offer — structured to overcome objections and close."},
+  'Nurture Sequence':{d:"A series of emails that builds genuine trust before asking for the sale.\nSubscriber meets email funnel — the relationship that makes the sale feel natural."},
+  'Organic Traffic':{d:"Visitors who find you through search without a single paid ad.\nSEO meets content strategy — the compound interest of digital marketing."},
+  'Optin Funnel':{d:"The complete system from first visit to confirmed email subscriber.\nOpt-in page feeds your email list — strangers become contacts automatically."},
+  'AI Writing':{d:"Copywriting powered by automation — words generated at scale without losing intent.\nThe first step toward a content operation that never slows down or sleeps."},
+  'Sales Funnel':{d:"The complete, engineered journey from cold lead to paying customer.\nSqueeze page meets email funnel — every step designed with conversion in mind."},
+  'Launch Sequence':{d:"A series of emails that builds anticipation and drives sales before opening.\nSales page meets email funnel — momentum created before the cart even opens."},
+  'Inbound Sales':{d:"Buyers who arrive already warm, already educated, already ready to talk.\nOrganic traffic meets your sales page — no cold outreach ever needed."},
+  'Webinar Funnel':{d:"A registration-to-sale system built entirely around your webinar.\nWebinar meets email funnel — education followed by a natural, non-pushy offer."},
+  'High-Ticket Offer':{d:"A premium offer priced for serious, committed buyers — not everyone.\nYour core offer elevated by authority — big value, bold price, deep trust required."},
+  'Authority Site':{d:"A content hub so comprehensive it becomes the trusted resource in your niche.\nRank tracker meets organic traffic — where expertise becomes undeniable."},
+  'Product Design':{d:"The craft of turning a validated idea into something people love to use.\nPrototype meets brand identity — function and form aligned from the start."},
+  'Marketing OS':{d:"The complete operating system for your marketing — all connected, all running.\nOptin funnel meets your marketing stack — nothing manual, nothing missed."},
+  'Conversion':{d:"The moment a prospect decides to become a customer — everything leads here.\nNurture sequence meets your offer — trust built to the tipping point."},
+  'Social Brand':{d:"A brand presence so strong on social that people follow it like a person.\nSocial media meets brand identity — not a logo, a living personality."},
+  'Content Machine':{d:"A system that produces consistent, quality content without burning you out.\nEditorial plan meets social media — content that never stops flowing."},
+  'Performance Report':{d:"A regular, honest review of what is working and what is wasting money.\nDashboard meets your marketing stack — data turned into clear decisions."},
+  'Ad Campaign':{d:"A coordinated paid effort to reach new audiences at the right moment.\nAd copy meets your defined audience — paid attention, precisely targeted."},
+  'Video Channel':{d:"A dedicated platform presence where your video content builds an audience.\nVideo meets your subscriber base — the channel that compounds over time."},
+  'Checkout Page':{d:"The automated payment step that completes the sale — frictionless and trusted.\nYour sales page connected to automation — the moment intent becomes revenue."},
+  'Retargeting':{d:"Ads that follow people who visited but didn't convert — a second chance.\nAd campaign meets analytics — bring back the warm leads who almost said yes."},
+  'AI Automation':{d:"Your marketing stack enhanced with AI writing — workflows that adapt and trigger without human input.\nThe backbone of a modern autonomous business operation."},
+  'Automated Sales':{d:"A sales system that runs without your daily involvement or presence.\nSales funnel meets your marketing OS — revenue generated while you do other things."},
+  'Thought Leadership':{d:"The earned status of being the voice people trust and reference in your niche.\nAuthority site meets your content machine — built through consistency, not shortcuts."},
+  'Product Launch':{d:"A coordinated campaign that brings your product to market with maximum impact.\nProduct design meets launch sequence — everything aligned for the best possible start."},
+  'Automated Webinar':{d:"A webinar that runs on a schedule without you ever presenting it live again.\nWebinar funnel meets your marketing OS — teach and sell around the clock."},
+  'Revenue Engine':{d:"A system where revenue flows consistently without heroic individual effort.\nInbound sales meets conversion — predictable, measurable, scalable income."},
+  'Premium Brand':{d:"A brand people pay significantly more for — and never question the price.\nHigh-ticket offer meets your authority site — positioned unmistakably at the top."},
+  'Influence':{d:"The ability to shape what your audience thinks, feels, and ultimately buys.\nVideo channel meets your social brand — reach that translates to genuine trust."},
+  'Growth System':{d:"A repeatable, documented engine for acquiring and retaining customers.\nPerformance report meets your revenue engine — growth that compounds deliberately."},
+  'Sales Machine':{d:"A fully automated, always-on system that sells without your intervention.\nLaunch sequence meets your marketing OS — consistent sales at any hour."},
+  'SaaS Product':{d:"Software that solves a recurring problem for a recurring monthly fee.\nProduct design automated into a delivery system — build once, sell to thousands."},
+  'Performance Marketing':{d:"Marketing where every euro spent is tracked, tested, and optimised.\nRetargeting meets conversion — data-driven growth with nothing left to chance."},
+  'AI Content System':{d:"AI writing fed into your content machine — a self-sustaining engine that produces and distributes automatically.\nContent becomes infrastructure, not a daily task."},
+  'Passive Income':{d:"Money that arrives in your account whether or not you worked that day.\nSales machine meets revenue engine — the goal made real, not just imagined."},
+  'Recurring Revenue':{d:"Revenue that renews automatically every month — the most stable business model.\nSaaS product meets automated sales — build once, earn every month."},
+  'Viral Growth':{d:"Growth that multiplies because your customers bring in more customers naturally.\nGrowth system meets influence — word-of-mouth engineered, not left to chance."},
+  'Personal Brand':{d:"A reputation so strong your name alone opens doors and commands attention.\nThought leadership meets influence — you become the product people seek out."},
+  'Market Leader':{d:"The brand in your niche that everyone else measures themselves against.\nPremium brand meets performance marketing — winning the category, not just competing."},
+  'Financial Freedom':{d:"The point where your income consistently exceeds your needs, without trading time.\nPassive income meets recurring revenue — the whole reason you started."},
+  'Digital Empire':{d:"A network of digital assets generating influence and income across multiple channels.\nMarket leader meets viral growth — beyond a business, a lasting legacy."},
+  'AI Marketing OS':{d:"The full AI layer over your marketing operation — funnels, emails, ads, and content orchestrated by intelligence.\nThe future of the digital business, built today."},
+};
+function slug(n){return n.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');}
+const ALL={
+  'Idea':{e:'💡',tier:0},'Audience':{e:'👥',tier:0},'Content':{e:'📝',tier:0},'Tool':{e:'🔧',tier:0},
+  'Niche':{e:'🎯',tier:1},'Article':{e:'✍️',tier:1},'Website':{e:'🌐',tier:1},'Newsletter':{e:'📧',tier:1},'CRM':{e:'🗃️',tier:1},'Template':{e:'📋',tier:1},
+  'Keyword Research':{e:'🔑',tier:2},'Landing Page':{e:'🛬',tier:2},'Lead Magnet':{e:'🧲',tier:2},'Persona':{e:'🪞',tier:2},'Offer':{e:'💎',tier:2},'Blog':{e:'📰',tier:2},
+  'Content Strategy':{e:'🗺️',tier:2},'Content Calendar':{e:'🗓️',tier:2},'Copywriting':{e:'✏️',tier:2},'Email Capture':{e:'🎣',tier:2},'Analytics':{e:'📊',tier:2},'Wireframe':{e:'📐',tier:2},
+  'Email List':{e:'📬',tier:2},'Drip Campaign':{e:'💧',tier:2},'Automation':{e:'🤖',tier:2},'Web Design':{e:'🌈',tier:2},'Headline':{e:'🏷️',tier:2},'Brand Guide':{e:'🎨',tier:2},
+  'Subscriber':{e:'🔔',tier:2},'Script':{e:'🎬',tier:2},'Hosting':{e:'☁️',tier:2},'Workflow':{e:'⚙️',tier:2},
+  'SEO':{e:'🔍',tier:3},'Rank Tracker':{e:'📈',tier:3},'Squeeze Page':{e:'🤏',tier:3},'Sales Page':{e:'💰',tier:3},'Lead Generation':{e:'🔮',tier:3},'Brand Voice':{e:'🗣️',tier:3},
+  'Design System':{e:'🏗️',tier:3},'Prototype':{e:'🔬',tier:3},'Editorial Plan':{e:'📅',tier:3},'Email Funnel':{e:'📨',tier:3},'Marketing Stack':{e:'🛠️',tier:3},'Webinar':{e:'🎥',tier:3},
+  'Video':{e:'📹',tier:3},'Ad Copy':{e:'📣',tier:3},'Dashboard':{e:'📉',tier:3},'Brand Identity':{e:'⭐',tier:3},'Opt-in Page':{e:'📮',tier:3},'Social Media':{e:'📱',tier:3},
+  'Sales Copy':{e:'💬',tier:3},'Nurture Sequence':{e:'💌',tier:3},'Organic Traffic':{e:'🌱',tier:3},'Optin Funnel':{e:'🔽',tier:3},'AI Writing':{e:'✨',tier:3},
+  'Sales Funnel':{e:'💸',tier:4},'Launch Sequence':{e:'🏁',tier:4},'Inbound Sales':{e:'🤝',tier:4},'Webinar Funnel':{e:'🎞️',tier:4},'High-Ticket Offer':{e:'👑',tier:4},
+  'Authority Site':{e:'🏆',tier:4},'Product Design':{e:'🎁',tier:4},'Marketing OS':{e:'💻',tier:4},'Conversion':{e:'✅',tier:4},'Social Brand':{e:'🌟',tier:4},
+  'Content Machine':{e:'🏭',tier:4},'Performance Report':{e:'📑',tier:4},'Ad Campaign':{e:'📢',tier:4},'Video Channel':{e:'📺',tier:4},'Checkout Page':{e:'💳',tier:4},
+  'Retargeting':{e:'🔁',tier:4},'AI Automation':{e:'🦿',tier:4},
+  'Automated Sales':{e:'🦾',tier:5},'Thought Leadership':{e:'🧠',tier:5},'Product Launch':{e:'🚀',tier:5},'Automated Webinar':{e:'🖥️',tier:5},'Revenue Engine':{e:'💹',tier:5},
+  'Premium Brand':{e:'🏅',tier:5},'Influence':{e:'🌠',tier:5},'Growth System':{e:'🌊',tier:5},'Sales Machine':{e:'⚡',tier:5},'SaaS Product':{e:'💾',tier:5},
+  'Performance Marketing':{e:'🏹',tier:5},'AI Content System':{e:'🧬',tier:5},
+  'Passive Income':{e:'💤',tier:6},'Recurring Revenue':{e:'♾️',tier:6},'Viral Growth':{e:'🦠',tier:6},'Personal Brand':{e:'🦋',tier:6},'Market Leader':{e:'🥇',tier:6},
+  'Financial Freedom':{e:'🏖️',tier:6},'Digital Empire':{e:'🌎',tier:6},'AI Marketing OS':{e:'🌌',tier:6},
+};
+const R={};const REV={};
+function add(a,b,n){const k=[a,b].sort().join('||');R[k]=n;if(!REV[n])REV[n]=[];REV[n].push([a,b]);}
+// T1
+add('Idea','Audience','Niche');add('Idea','Content','Article');add('Idea','Tool','Website');
+add('Audience','Content','Newsletter');add('Audience','Tool','CRM');add('Content','Tool','Template');
+// T2 — T1×T1
+add('Niche','Article','Keyword Research');add('Niche','Website','Landing Page');add('Niche','Newsletter','Lead Magnet');
+add('Niche','CRM','Persona');add('Niche','Template','Offer');add('Article','Website','Blog');
+add('Article','Newsletter','Content Strategy');add('Article','Template','Content Calendar');add('Article','CRM','Copywriting');
+add('Website','Newsletter','Email Capture');add('Website','CRM','Analytics');add('Website','Template','Wireframe');
+add('Newsletter','CRM','Email List');add('Newsletter','Template','Drip Campaign');add('CRM','Template','Automation');
+// T2 — T0×T1
+add('Idea','Template','Script');add('Idea','Website','Web Design');add('Idea','Niche','Headline');
+add('Niche','Web Design','Brand Guide');add('Audience','Niche','Persona');
+add('Audience','Newsletter','Subscriber');add('Tool','Website','Hosting');add('Tool','Template','Workflow');
+// T3
+add('Keyword Research','Blog','SEO');add('Keyword Research','Analytics','Rank Tracker');
+add('Landing Page','Lead Magnet','Squeeze Page');add('Landing Page','Offer','Sales Page');
+add('Lead Magnet','Email List','Lead Generation');add('Persona','Copywriting','Brand Voice');
+add('Brand Guide','Web Design','Design System');add('Wireframe','Web Design','Prototype');
+add('Content Strategy','Content Calendar','Editorial Plan');add('Email List','Drip Campaign','Email Funnel');
+add('Automation','Workflow','Marketing Stack');add('Script','Subscriber','Webinar');add('Script','Hosting','Video');
+add('Headline','Copywriting','Ad Copy');add('Analytics','Workflow','Dashboard');
+add('Design System','Brand Voice','Brand Identity');add('Email Capture','Lead Magnet','Opt-in Page');
+add('Content Calendar','Subscriber','Social Media');add('Copywriting','Offer','Sales Copy');
+add('Subscriber','Email Funnel','Nurture Sequence');add('SEO','Content Strategy','Organic Traffic');
+add('Opt-in Page','Email List','Optin Funnel');add('Automation','Copywriting','AI Writing');
+// T4
+add('Squeeze Page','Email Funnel','Sales Funnel');add('Sales Page','Email Funnel','Launch Sequence');
+add('Organic Traffic','Sales Page','Inbound Sales');add('Lead Generation','Sales Page','Inbound Sales');
+add('Webinar','Email Funnel','Webinar Funnel');add('Offer','Authority Site','High-Ticket Offer');
+add('Rank Tracker','Organic Traffic','Authority Site');add('Prototype','Brand Identity','Product Design');
+add('Optin Funnel','Marketing Stack','Marketing OS');add('Nurture Sequence','Offer','Conversion');
+add('Social Media','Brand Identity','Social Brand');add('Editorial Plan','Social Media','Content Machine');
+add('Dashboard','Marketing Stack','Performance Report');add('Ad Copy','Audience','Ad Campaign');
+add('Video','Subscriber','Video Channel');add('Sales Page','Automation','Checkout Page');
+add('Ad Campaign','Analytics','Retargeting');add('Marketing Stack','AI Writing','AI Automation');
+// T5
+add('Sales Funnel','Marketing OS','Automated Sales');add('Authority Site','Content Machine','Thought Leadership');
+add('Product Design','Launch Sequence','Product Launch');add('Webinar Funnel','Marketing OS','Automated Webinar');
+add('Inbound Sales','Conversion','Revenue Engine');add('High-Ticket Offer','Authority Site','Premium Brand');
+add('Video Channel','Social Brand','Influence');add('Performance Report','Revenue Engine','Growth System');
+add('Launch Sequence','Marketing OS','Sales Machine');add('Product Design','Automation','SaaS Product');
+add('Retargeting','Conversion','Performance Marketing');add('AI Writing','Content Machine','AI Content System');
+// T6
+add('Sales Machine','Revenue Engine','Passive Income');add('SaaS Product','Automated Sales','Recurring Revenue');
+add('Growth System','Influence','Viral Growth');add('Thought Leadership','Influence','Personal Brand');
+add('Premium Brand','Performance Marketing','Market Leader');add('Passive Income','Recurring Revenue','Financial Freedom');
+add('Market Leader','Viral Growth','Digital Empire');add('AI Content System','Marketing OS','AI Marketing OS');
+const STARTS=['Idea','Audience','Content','Tool'];
+const TOTAL=Object.keys(ALL).length;
+let discovered=new Set(STARTS);
+let tried=new Set();
+let domCards=new Map();
+let slotA=null,slotB=null,resultName=null,resultState=null;
+let toastTimer=null,hideTimer=null,hintPopupTimer=null,hintCooldownTimer=null,longPressTimer=null;
+const grid=document.getElementById('grid');
+const cntEl=document.getElementById('cnt');
+const slotAEl=document.getElementById('slot-a');
+const slotBEl=document.getElementById('slot-b');
+const resultEl=document.getElementById('result-slot');
+const tooltip=document.getElementById('tooltip');
+const hintBtn=document.getElementById('hint-btn');
+const hintPopup=document.getElementById('hint-popup');
+const gameEl=document.getElementById('game');
+const introEl=document.getElementById('intro');
+const congratsEl=document.getElementById('congrats');
+function startGame(){introEl.style.display='none';}
+// Preview congrats screen: paste  showCongrats()  in browser console
+window.showCongrats=function(){
+  document.getElementById('stat-elements').textContent=discovered.size;
+  document.getElementById('stat-combos').textContent=tried.size;
+  congratsEl.style.display='flex';
+};
+function checkWin(){if(discovered.size===TOTAL)setTimeout(showCongrats,600);}
+function ck(a,b){return[a,b].sort().join('||');}
+function hasReaction(a,b){return!!R[ck(a,b)];}
+function getIndicator(a,b){
+  const k=ck(a,b);if(!tried.has(k))return null;
+  const res=R[k];if(!res)return'no-result';
+  if(!discovered.has(res))return'pending';return'done';
+}
+function applyIndicator(d,ind){
+  d.classList.remove('tried-no-result','tried-pending','tried-done');
+  if(ind==='no-result')d.classList.add('tried-no-result');
+  else if(ind==='pending')d.classList.add('tried-pending');
+  else if(ind==='done')d.classList.add('tried-done');
+}
+function scrollToCard(name){
+  const d=domCards.get(name);if(!d)return;
+  const gr=grid.getBoundingClientRect(),cr=d.getBoundingClientRect();
+  const relTop=cr.top-gr.top+grid.scrollTop;
+  grid.scrollTo({top:Math.max(0,relTop-(grid.clientHeight/2)+(cr.height/2)),behavior:'smooth'});
+}
+function renderSlot(el,name){
+  if(!name){el.innerHTML='<span class="slot-hint">tap a card</span>';el.classList.remove('filled');el.style.removeProperty('--slot-color');el.style.removeProperty('--slot-bg');return;}
+  const c=PAL[ALL[name].tier%PAL.length];
+  el.style.setProperty('--slot-color',c.b);el.style.setProperty('--slot-bg',c.bg);el.classList.add('filled');
+  const sid=el.id==='slot-a'?'a':'b';
+  el.innerHTML=`<span class="slot-clear" onclick="event.stopPropagation();clearSlot('${sid}')">✕</span><span class="slot-e">${ALL[name].e}</span><span class="slot-n" style="color:${PAL[ALL[name].tier%PAL.length].t}">${name}</span>`;
+}
+function renderResult(){
+  if(!slotA||!slotB){resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';resultEl.onclick=null;resultName=null;resultState=null;return;}
+  tried.add(ck(slotA,slotB));updateCardStates();
+  const res=R[ck(slotA,slotB)];
+  if(!res){
+    resultEl.className='state-none';resultEl.innerHTML='<span class="res-e">✗</span><span class="res-sub">tap to cancel</span>';
+    resultEl.onclick=cancelCombo;resultName=null;resultState='none';
+  } else if(discovered.has(res)){
+    resultEl.className='state-found';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to cancel</span>`;
+    resultEl.onclick=cancelCombo;resultName=res;resultState='found';
+  } else {
+    resultEl.className='state-new';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to add ✦</span>`;
+    resultEl.onclick=addResult;resultName=res;resultState='new';
+  }
+}
+function cancelCombo(){clearSlot('a');clearSlot('b');}
+function clearSlot(which){
+  if(which==='a')slotA=null;else slotB=null;
+  updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();
+}
+function updateCardStates(){
+  const both=slotA&&slotB;
+  domCards.forEach((d,name)=>{
+    const isSel=name===slotA||name===slotB;
+    const isBlocked=slotA&&!slotB&&!isSel&&!hasReaction(slotA,name);
+    d.classList.toggle('selected',isSel);d.classList.toggle('no-react',!!isBlocked);
+    d.classList.toggle('dimmed',!!(both&&!isSel));
+    d.classList.remove('tried-no-result','tried-pending','tried-done');
+    if(slotA&&!slotB&&!isSel&&!isBlocked){const ind=getIndicator(slotA,name);if(ind)applyIndicator(d,ind);}
+  });
+}
+function tapCard(name){
+  if(name===slotA){clearSlot('a');return;}
+  if(name===slotB){clearSlot('b');return;}
+  if(!slotA)slotA=name;else if(!slotB)slotB=name;
+  else{slotA=slotB;slotB=name;renderSlot(slotAEl,slotA);}
+  updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();
+}
+function addResult(){
+  if(!resultName||resultState!=='new')return;
+  discovered.add(resultName);const added=resultName;
+  slotA=null;slotB=null;resultName=null;resultState=null;
+  renderSlot(slotAEl,null);renderSlot(slotBEl,null);renderResult();
+  buildGrid();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const d=domCards.get(added);
+    if(d){d.classList.add('pop');scrollToCard(added);setTimeout(()=>d.classList.remove('pop'),600);}
+  }));
+  showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');
+  checkWin();
+}
+function resetGame(){
+  discovered=new Set(STARTS);tried=new Set();
+  slotA=null;slotB=null;resultName=null;resultState=null;
+  clearTimeout(hintPopupTimer);clearInterval(hintCooldownTimer);
+  hintBtn.disabled=false;hintBtn.textContent='💡 Hint';
+  closeHint();renderSlot(slotAEl,null);renderSlot(slotBEl,null);
+  resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';
+  congratsEl.style.display='none';
+  buildGrid();
+  introEl.style.display='flex';
+}
+function showToast(cls,msg){
+  if(toastTimer)clearTimeout(toastTimer);
+  const t=document.getElementById('toast');t.className=cls;t.textContent=msg;
+  toastTimer=setTimeout(()=>{t.className='';t.style.display='none';},2400);
+}
+function closeHint(){clearTimeout(hintPopupTimer);hintPopup.style.display='none';}
+function showHint(){
+  if(hintBtn.disabled)return;
+  const disc=[...discovered];let best=null,bestTier=99;
+  for(let i=0;i<disc.length;i++)for(let j=i;j<disc.length;j++){
+    const res=R[ck(disc[i],disc[j])];
+    if(res&&ALL[res]&&!discovered.has(res)&&ALL[res].tier<bestTier){bestTier=ALL[res].tier;best={a:disc[i],b:disc[j]};}
+  }
+  document.getElementById('hp-combo').innerHTML=best?`${ALL[best.a].e} ${best.a} + ${ALL[best.b].e} ${best.b} = ???`:'You found everything! 🎉';
+  hintPopup.style.display='block';clearTimeout(hintPopupTimer);hintPopupTimer=setTimeout(closeHint,4000);
+  hintBtn.disabled=true;let cd=15;hintBtn.textContent=`💡 Hint (${cd}s)`;
+  hintCooldownTimer=setInterval(()=>{cd--;if(cd<=0){clearInterval(hintCooldownTimer);hintBtn.disabled=false;hintBtn.textContent='💡 Hint';}else hintBtn.textContent=`💡 Hint (${cd}s)`;},1000);
+}
+function scheduleHide(){clearTimeout(hideTimer);hideTimer=setTimeout(()=>tooltip.classList.remove('visible'),120);}
+function cancelHide(){clearTimeout(hideTimer);}
+tooltip.addEventListener('mouseenter',cancelHide);
+tooltip.addEventListener('mouseleave',scheduleHide);
+function showTooltip(name,el){
+  const info=INFO[name];if(!info)return;
+  const recipes=REV[name]||[];
+  const recipeHTML=recipes.length?`<div class="tt-recipe">${recipes.map(([a,b])=>`${ALL[a]?ALL[a].e:'?'} ${a} + ${ALL[b]?ALL[b].e:'?'} ${b}`).join('<br>')}</div>`:'';
+  const descLines=info.d.split('\n').map(l=>`<div>${l}</div>`).join('');
+  const ctaUrl=`https://serenichron.com/glossary/${slug(name)}`;
+  tooltip.innerHTML=`<div class="tt-title">${ALL[name].e} ${name}</div>${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="${ctaUrl}" target="_blank" rel="noopener">Read more →</a>`;
+  tooltip.style.left='-9999px';tooltip.style.top='-9999px';tooltip.classList.add('visible');
+  const TW=tooltip.offsetWidth,TH=tooltip.offsetHeight,GW=gameEl.offsetWidth,MARGIN=8,TRAY_H=100;
+  const gameRect=gameEl.getBoundingClientRect(),cardRect=el.getBoundingClientRect();
+  const cardTop=cardRect.top-gameRect.top,cardLeft=cardRect.left-gameRect.left;
+  const cardMidX=cardLeft+(cardRect.width/2);
+  let top=cardTop-TH-MARGIN;
+  if(top<44)top=cardTop+cardRect.height+MARGIN;
+  const maxTop=gameEl.offsetHeight-TRAY_H-TH-MARGIN;
+  if(top>maxTop)top=maxTop;
+  let left=cardMidX-(TW/2);
+  left=Math.max(MARGIN,Math.min(left,GW-TW-MARGIN));
+  tooltip.style.left=left+'px';tooltip.style.top=top+'px';
+}
+function hideTooltip(){scheduleHide();}
+function buildGrid(){
+  grid.innerHTML='';domCards.clear();
+  const dpTier={};discovered.forEach(n=>{if(ALL[n]){const t=ALL[n].tier;dpTier[t]=(dpTier[t]||0)+1;}});
+  const maxTier=Math.max(...Object.values(ALL).map(v=>v.tier));
+  for(let tier=0;tier<=maxTier;tier++){
+    const items=Object.entries(ALL).filter(([,v])=>v.tier===tier);if(!items.length)continue;
+    const p=PAL[tier%PAL.length];
+    const hdr=document.createElement('div');hdr.className='tier-hdr';
+    hdr.innerHTML=`<div class="tier-name"><span class="tier-dot" style="background:${p.dot}"></span><span>Tier ${tier} — ${TIER_NAMES[tier]||'Expert'}</span></div><div class="tier-prog">${dpTier[tier]||0} / ${items.length}</div>`;
+    grid.appendChild(hdr);
+    const row=document.createElement('div');row.className='cards-row';
+    items.forEach(([name,info])=>{
+      if(discovered.has(name)){
+        const c=PAL[tier%PAL.length];
+        const d=document.createElement('div');d.className='ec';
+        d.style.cssText=`background:${c.bg};--sel-color:${c.b}`;
+        d.innerHTML=`<span class="ec-e">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
+        if(name===slotA||name===slotB)d.classList.add('selected');
+        const isBlocked=slotA&&!slotB&&name!==slotA&&!hasReaction(slotA,name);
+        if(isBlocked){d.classList.add('no-react');}
+        else{
+          if(slotA&&slotB&&name!==slotA&&name!==slotB)d.classList.add('dimmed');
+          if(slotA&&!slotB&&name!==slotA){const ind=getIndicator(slotA,name);if(ind)applyIndicator(d,ind);}
+        }
+        d.addEventListener('click',()=>tapCard(name));
+        d.addEventListener('mouseenter',()=>{if(!d.classList.contains('no-react')){cancelHide();showTooltip(name,d);}});
+        d.addEventListener('mouseleave',()=>{if(!d.classList.contains('no-react'))scheduleHide();});
+        d.addEventListener('touchstart',()=>{if(!d.classList.contains('no-react'))longPressTimer=setTimeout(()=>showTooltip(name,d),600);},{passive:true});
+        d.addEventListener('touchend',()=>{clearTimeout(longPressTimer);setTimeout(hideTooltip,2500);},{passive:true});
+        row.appendChild(d);domCards.set(name,d);
+      } else {
+        const lock=document.createElement('div');lock.className='ec-lock';
+        lock.innerHTML='<div class="ec-lock-e">?</div><div class="ec-lock-n">???</div>';
+        row.appendChild(lock);
+      }
+    });
+    grid.appendChild(row);
+  }
+  cntEl.textContent=discovered.size+' / '+TOTAL+' found';
+}
+grid.addEventListener('click',e=>{if(!e.target.closest('.ec'))closeHint();});
+buildGrid();
+</script>
+</body>
+</html>
