@@ -1645,19 +1645,45 @@ function unwrapWords(){
   }
 }
 
-function highlightWord(charIndex){
-  let active=null;
-  for(const sp of narrWordSpans){
-    const ci=parseInt(sp.dataset.ci,10);
-    if(ci<=charIndex)active=sp;
-    sp.classList.remove('narr-active');
+let narrFallbackTimer=null;
+let narrBoundaryFired=false;
+
+function highlightWordIndex(idx){
+  for(let i=0;i<narrWordSpans.length;i++){
+    narrWordSpans[i].classList.toggle('narr-active',i===idx);
   }
-  if(active)active.classList.add('narr-active');
+}
+
+function highlightWord(charIndex){
+  narrBoundaryFired=true;
+  let bestIdx=-1;
+  for(let i=0;i<narrWordSpans.length;i++){
+    const ci=parseInt(narrWordSpans[i].dataset.ci,10);
+    if(ci<=charIndex)bestIdx=i;
+  }
+  if(bestIdx>=0)highlightWordIndex(bestIdx);
+}
+
+function startFallbackHighlight(text){
+  // Estimate ~150 words/min at 0.95 rate → ~145wpm → ~415ms/word
+  const msPerWord=415;
+  let idx=0;
+  narrFallbackTimer=setInterval(()=>{
+    if(!narrBoundaryFired){
+      if(idx<narrWordSpans.length){highlightWordIndex(idx);idx++;}
+      else clearInterval(narrFallbackTimer);
+    } else {
+      // Boundary events kicked in, stop fallback
+      clearInterval(narrFallbackTimer);narrFallbackTimer=null;
+    }
+  },msPerWord);
 }
 
 function stopNarration(){
+  if(narrFallbackTimer){clearInterval(narrFallbackTimer);narrFallbackTimer=null;}
   if(narrationUtterance){speechSynthesis.cancel();narrationUtterance=null;}
   unwrapWords();
+  narrBoundaryFired=false;
   narrateBtn.classList.remove('playing');
   narrateBtn.setAttribute('aria-label','Narrate description');
 }
@@ -1668,16 +1694,19 @@ function startNarration(){
   const text=descEl.textContent;
   if(!text.trim())return;
   wrapWordsForNarration(descEl);
+  narrBoundaryFired=false;
   narrationUtterance=new SpeechSynthesisUtterance(text);
   if(preferredVoice)narrationUtterance.voice=preferredVoice;
   narrationUtterance.rate=0.95;
   narrationUtterance.pitch=1.05;
-  narrationUtterance.onboundary=(e)=>{if(e.name==='word')highlightWord(e.charIndex);};
-  narrationUtterance.onend=()=>{stopNarration();};
-  narrationUtterance.onerror=()=>{stopNarration();};
+  narrationUtterance.addEventListener('boundary',function(e){if(e.name==='word')highlightWord(e.charIndex);});
+  narrationUtterance.addEventListener('end',function(){stopNarration();});
+  narrationUtterance.addEventListener('error',function(){stopNarration();});
   speechSynthesis.speak(narrationUtterance);
   narrateBtn.classList.add('playing');
   narrateBtn.setAttribute('aria-label','Stop narration');
+  // Start fallback timer in case boundary events don't fire
+  startFallbackHighlight(text);
 }
 narrateBtn.addEventListener('click',function(){
   if(narrateBtn.classList.contains('playing')){stopNarration();}else{startNarration();}
