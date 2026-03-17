@@ -135,8 +135,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stats-card{background:#fafaf8;border-radius:12px;border:1px solid #eee;padding:14px 12px;text-align:center}
 .stats-card-num{font-size:26px;font-weight:600;color:#1a1a1a;line-height:1}
 .stats-card-label{font-size:10.5px;color:#999;margin-top:4px;line-height:1.35}
-.stats-bar{height:6px;border-radius:3px;background:#f0efe9;margin:6px 0 8px;overflow:hidden}
+.stats-bar{height:6px;border-radius:3px;background:#f0efe9;margin:6px 0 8px;overflow:hidden;position:relative}
 .stats-bar-fill{height:100%;border-radius:3px;transition:width 0.4s ease}
+.stats-bar-own{position:absolute;top:0;left:0;height:100%;border-radius:3px;background:#5a9a3c;transition:width 0.4s ease}
+.stats-tier-counts{display:flex;gap:10px;margin-left:auto;font-size:10px;font-weight:400;color:#999;white-space:nowrap}
+.stats-legend{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.stats-legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:#888}
+.stats-legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 .stats-biz-tier{margin-bottom:18px}
 .stats-biz-tier-hdr{font-size:11px;font-weight:600;color:#666;margin-bottom:6px;display:flex;align-items:center;gap:5px}
 .stats-biz-tier-hdr .tier-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
@@ -1047,20 +1052,32 @@ function openStats(){
     tiers.push({tier:t,name:TIER_NAMES[t]||'Expert',items,disc,own,color:PAL[t%PAL.length]});
   }
   let html='';
-  // Summary cards
+  const covPct=totalItems?Math.round((ownedCount/totalItems)*100):0;
+  // Game progress
   html+='<div class="stats-section-title">Game progress</div>';
   html+='<div class="stats-cards">';
   html+=`<div class="stats-card"><div class="stats-card-num">${discoveredCount}<span style="font-size:13px;color:#999;font-weight:400">/${totalItems}</span></div><div class="stats-card-label">elements<br>discovered</div></div>`;
   html+=`<div class="stats-card"><div class="stats-card-num">${tried.size}<span style="font-size:13px;color:#999;font-weight:400">/${totalRecipes}</span></div><div class="stats-card-label">recipes<br>tried</div></div>`;
   html+='</div>';
-  html+='<div class="stats-section-title">Your business — '+ownedCount+' of '+totalItems+'</div>';
-  // Unified per-tier: progress bar + item pills
+  // Business coverage
+  html+='<div class="stats-section-title">Business coverage</div>';
+  html+='<div class="stats-cards">';
+  html+=`<div class="stats-card"><div class="stats-card-num">${ownedCount}<span style="font-size:13px;color:#999;font-weight:400">/${totalItems}</span></div><div class="stats-card-label">elements in<br>your business</div></div>`;
+  html+=`<div class="stats-card"><div class="stats-card-num">${covPct}%</div><div class="stats-card-label">overall<br>coverage</div></div>`;
+  html+='</div>';
+  // Legend
+  html+='<div class="stats-legend">';
+  html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#5a9a3c"></div>In your business</div>';
+  html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#e5e4df"></div>Discovered</div>';
+  html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#fff;border:1px dashed #ccc"></div>Not yet found</div>';
+  html+='</div>';
+  // Per-tier breakdown
   tiers.forEach(t=>{
     const discPct=t.items.length?Math.round((t.disc.length/t.items.length)*100):0;
     const ownPct=t.items.length?Math.round((t.own.length/t.items.length)*100):0;
     html+=`<div class="stats-biz-tier">`;
-    html+=`<div class="stats-biz-tier-hdr"><span class="tier-dot" style="background:${t.color.dot}"></span>Tier ${t.tier} — ${t.name}<span style="margin-left:auto;font-size:10px;color:#999;font-weight:400">${t.disc.length}/${t.items.length}</span></div>`;
-    html+=`<div class="stats-bar"><div class="stats-bar-fill" style="width:${discPct}%;background:${t.color.dot}"></div></div>`;
+    html+=`<div class="stats-biz-tier-hdr"><span class="tier-dot" style="background:${t.color.dot}"></span>Tier ${t.tier} — ${t.name}<div class="stats-tier-counts"><span>${t.disc.length}/${t.items.length} found</span><span style="color:#5a9a3c">${t.own.length} owned</span></div></div>`;
+    html+=`<div class="stats-bar"><div class="stats-bar-fill" style="width:${discPct}%;background:${t.color.dot}"></div><div class="stats-bar-own" style="width:${ownPct}%"></div></div>`;
     html+=`<div class="stats-biz-items">`;
     t.items.forEach(([n])=>{
       const isOwned=owned.has(n);
