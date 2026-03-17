@@ -32,8 +32,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ec.tried-done::after{content:'✓';position:absolute;top:4px;right:5px;font-size:10px;font-weight:700;color:#1D9E75;line-height:1}
 .ec-e{font-size:24px;line-height:1;pointer-events:none}
 .ec-n{font-size:9.5px;font-weight:500;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
-.ec-info{position:absolute;top:3px;left:4px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#888;background:transparent;border-radius:50%;cursor:pointer;pointer-events:auto;line-height:1;opacity:0.7;transition:opacity 0.12s;z-index:2;border:1px solid #aaa}
-.ec-info:hover{opacity:1;color:#555;border-color:#888}
+.ec-info{position:absolute;top:3px;left:4px;width:13px;height:13px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#666;background:transparent;border-radius:50%;cursor:pointer;pointer-events:auto;line-height:1;opacity:0.7;transition:opacity 0.12s;z-index:2;border:1px solid #666}
+.ec-info:hover{opacity:1}
 .ec-lock{border-radius:13px;padding:12px 5px 9px;display:flex;flex-direction:column;align-items:center;gap:4px;border:1.5px dashed #ddd;background:#fafaf8;opacity:0.5}
 .ec-lock-e{font-size:20px;color:#bbb}
 .ec-lock-n{font-size:9px;color:#bbb;text-align:center}
@@ -132,8 +132,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #slidein-close:hover{background:#e5e4df}
 #slidein-body{flex:1;overflow-y:auto;padding:18px 20px 24px;font-size:13px;color:#333;line-height:1.7}
 #slidein-body .si-desc{margin-bottom:20px}
-#slidein-body .si-cta{display:block;text-align:center;padding:13px 16px;border-radius:12px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:opacity 0.1s;margin-top:16px}
-#slidein-body .si-cta:hover{opacity:0.85}
+#slidein-body .si-cta{display:inline;font-size:13px;font-weight:600;color:#378ADD;text-decoration:none;transition:color 0.1s}
+#slidein-body .si-cta:hover{text-decoration:underline;color:#2a6db5}
 </style>
 </head>
 <body>
@@ -733,7 +733,8 @@ function buildGrid(){
         }
         d.addEventListener('click',(e)=>{if(e.target.classList.contains('ec-info'))return;tapCard(name);});
         const infoIcon=d.querySelector('.ec-info');
-        infoIcon.addEventListener('click',(e)=>{e.stopPropagation();cancelHide();showTooltip(name,infoIcon);});
+        const isTouch='ontouchstart' in window;
+        infoIcon.addEventListener('click',(e)=>{e.stopPropagation();if(isTouch){cancelHide();showTooltip(name,infoIcon);}else{tapCard(name);}});
         infoIcon.addEventListener('mouseenter',(e)=>{e.stopPropagation();cancelHide();showTooltip(name,infoIcon);});
         infoIcon.addEventListener('mouseleave',(e)=>{e.stopPropagation();scheduleHide();});
         row.appendChild(d);domCards.set(name,d);
@@ -752,108 +753,108 @@ const LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiu
 const LONG_DESC={};
 Object.keys(ALL).forEach(k=>{LONG_DESC[k]=LOREM;});
 const CTA_TEXT={
-  'Idea':'Let\u2019s shape your idea into a business',
-  'Audience':'Let\u2019s define your ideal audience',
-  'Content':'Let\u2019s plan your content strategy',
-  'Tool':'Let\u2019s pick the right tools for your stack',
-  'Niche':'Let\u2019s find your perfect niche',
-  'Article':'Let\u2019s plan your first articles',
-  'Website':'Let\u2019s build your website',
-  'Newsletter':'Let\u2019s launch your newsletter',
-  'CRM':'Let\u2019s set up your CRM',
-  'Template':'Let\u2019s create your templates',
-  'Value Proposition':'Let\u2019s craft your value proposition',
-  'Social Media':'Let\u2019s build your social presence',
-  'Keyword Research':'Let\u2019s find your best keywords',
-  'Landing Page':'Let\u2019s build a high-converting landing page',
-  'Lead Magnet':'Let\u2019s create your lead magnet',
-  'Persona':'Let\u2019s map your ideal client',
-  'Offer':'Let\u2019s design your offer',
-  'Blog':'Let\u2019s launch your blog',
-  'Content Strategy':'Let\u2019s plan your content strategy',
-  'Content Calendar':'Let\u2019s build your content calendar',
-  'Copywriting':'Let\u2019s sharpen your copy',
-  'Email Capture':'Let\u2019s set up your email capture',
-  'Analytics':'Let\u2019s set up your analytics',
-  'Wireframe':'Let\u2019s wireframe your pages',
-  'Email List':'Let\u2019s grow your email list',
-  'Nurture Sequence':'Let\u2019s write your nurture sequence',
-  'Automation':'Let\u2019s automate your workflows',
-  'Web Design':'Let\u2019s design your website',
-  'Headline':'Let\u2019s write headlines that convert',
-  'Brand Guide':'Let\u2019s create your brand guide',
-  'Subscriber':'Let\u2019s grow your subscriber base',
-  'Script':'Let\u2019s write your scripts',
-  'Hosting':'Let\u2019s get your hosting sorted',
-  'Workflow':'Let\u2019s streamline your workflows',
-  'SEO':'Let\u2019s boost your SEO',
-  'Rank Tracker':'Let\u2019s track your rankings',
-  'Sales Page':'Let\u2019s build your sales page',
-  'Lead Generation':'Let\u2019s build your lead generation engine',
-  'Brand Voice':'Let\u2019s define your brand voice',
-  'Design System':'Let\u2019s create your design system',
-  'Prototype':'Let\u2019s prototype your product',
-  'Editorial Plan':'Let\u2019s build your editorial plan',
-  'Email Funnel':'Let\u2019s set up your email funnel',
-  'Marketing Stack':'Let\u2019s build your marketing stack',
-  'Webinar':'Let\u2019s plan your webinar',
-  'Video':'Let\u2019s create your video content',
-  'Ad Copy':'Let\u2019s write ads that convert',
-  'Dashboard':'Let\u2019s build your dashboard',
-  'Brand Identity':'Let\u2019s define your brand identity',
-  'Opt-in Page':'Let\u2019s build your opt-in page',
-  'Sales Copy':'Let\u2019s write your sales copy',
-  'Organic Traffic':'Let\u2019s grow your organic traffic',
-  'Outreach':'Let\u2019s plan your outreach strategy',
-  'Podcast':'Let\u2019s launch your podcast',
-  'Social Proof':'Let\u2019s build your social proof',
-  'Tripwire':'Let\u2019s create your tripwire offer',
-  'A/B Test':'Let\u2019s set up your A/B tests',
-  'AI Writing':'Let\u2019s integrate AI into your writing',
-  'Sales Funnel':'Let\u2019s build your sales funnel',
-  'Launch Sequence':'Let\u2019s plan your launch sequence',
-  'Inbound Sales':'Let\u2019s set up inbound sales',
-  'Webinar Funnel':'Let\u2019s build your webinar funnel',
-  'High-Ticket Offer':'Let\u2019s design your high-ticket offer',
-  'Authority Site':'Let\u2019s build your authority site',
-  'Product Design':'Let\u2019s design your product',
-  'Marketing OS':'Let\u2019s build your marketing OS',
-  'Conversion':'Let\u2019s optimise your conversions',
-  'Social Brand':'Let\u2019s build your social brand',
-  'Content Machine':'Let\u2019s build your content machine',
-  'Performance Report':'Let\u2019s set up your performance reports',
-  'Ad Campaign':'Let\u2019s launch your ad campaign',
-  'Video Channel':'Let\u2019s launch your video channel',
-  'Checkout Page':'Let\u2019s optimise your checkout page',
-  'Retargeting':'Let\u2019s set up your retargeting',
-  'AI Automation':'Let\u2019s automate with AI',
-  'Discovery Call':'Let\u2019s structure your discovery calls',
-  'Online Course':'Let\u2019s create your online course',
-  'Referral Program':'Let\u2019s build your referral program',
-  'Digital Product':'Let\u2019s create your digital product',
-  'Partnership':'Let\u2019s find your ideal partners',
-  'Portfolio':'Let\u2019s build your portfolio',
-  'Automated Sales':'Let\u2019s automate your sales',
-  'Thought Leadership':'Let\u2019s build your thought leadership',
-  'Product Launch':'Let\u2019s plan your product launch',
-  'Automated Webinar':'Let\u2019s automate your webinar',
-  'Revenue Engine':'Let\u2019s build your revenue engine',
-  'Premium Brand':'Let\u2019s build your premium brand',
-  'Influence':'Let\u2019s grow your influence',
-  'Growth System':'Let\u2019s build your growth system',
-  'Sales Machine':'Let\u2019s build your sales machine',
-  'SaaS Product':'Let\u2019s plan your SaaS product',
-  'Performance Marketing':'Let\u2019s optimise your performance marketing',
-  'AI Content System':'Let\u2019s build your AI content system',
-  'Upsell':'Let\u2019s design your upsell strategy',
-  'Passive Income':'Let\u2019s build your passive income streams',
-  'Recurring Revenue':'Let\u2019s set up recurring revenue',
-  'Viral Growth':'Let\u2019s engineer viral growth',
-  'Personal Brand':'Let\u2019s build your personal brand',
-  'Market Leader':'Let\u2019s make you the market leader',
-  'Financial Freedom':'Let\u2019s map your path to financial freedom',
-  'Digital Empire':'Let\u2019s build your digital empire',
-  'AI Marketing OS':'Let\u2019s build your AI marketing OS',
+  'Idea':'Ready to turn this idea into something real? Book a free call',
+  'Audience':'Want help identifying your ideal audience? Grab a free session',
+  'Content':'Need a content plan that actually works? Talk to us',
+  'Tool':'Not sure which tools to pick? Get a free recommendation',
+  'Niche':'Struggling to narrow your niche? Book a clarity call',
+  'Article':'Want articles that drive traffic? Schedule a free strategy chat',
+  'Website':'Need a website that converts? Book a free consultation',
+  'Newsletter':'Ready to launch a newsletter people love? Talk to us',
+  'CRM':'Want help choosing the right CRM? Get a free walkthrough',
+  'Template':'Need templates that save you hours? Book a quick session',
+  'Value Proposition':'Struggling to stand out? Craft your value prop with us',
+  'Social Media':'Want a social strategy that grows? Grab a free call',
+  'Keyword Research':'Need keywords that rank? Get a free audit',
+  'Landing Page':'Want a landing page that converts? Book a free review',
+  'Lead Magnet':'Need a lead magnet that actually attracts? Talk strategy with us',
+  'Persona':'Want to truly understand your buyers? Schedule a free deep-dive',
+  'Offer':'Ready to build an offer people can\u2019t refuse? Book a call',
+  'Blog':'Want a blog that brings in leads? Get a free content plan',
+  'Content Strategy':'Need a strategy behind your content? Talk to an expert',
+  'Content Calendar':'Want a calendar you\u2019ll actually stick to? Book a planning session',
+  'Copywriting':'Need copy that sells? Schedule a free review',
+  'Email Capture':'Want more email signups? Get a free conversion audit',
+  'Analytics':'Not sure what to measure? Book a free analytics walkthrough',
+  'Wireframe':'Need to map out your pages? Schedule a free session',
+  'Email List':'Want to grow your list faster? Talk strategy with us',
+  'Nurture Sequence':'Need emails that build trust? Book a free sequence review',
+  'Automation':'Ready to put your business on autopilot? Schedule a call',
+  'Web Design':'Want a design that reflects your brand? Book a free consult',
+  'Headline':'Need headlines that stop the scroll? Get a free copy review',
+  'Brand Guide':'Want a cohesive brand? Build your guide with us',
+  'Subscriber':'Looking to grow your subscriber base? Talk to us',
+  'Script':'Need scripts that engage? Schedule a free creative session',
+  'Hosting':'Not sure where to host? Get a free recommendation',
+  'Workflow':'Want smoother operations? Book a workflow audit',
+  'SEO':'Ready to rank higher? Get a free SEO assessment',
+  'Rank Tracker':'Want to monitor your rankings? Book a setup session',
+  'Sales Page':'Need a sales page that closes? Schedule a free review',
+  'Lead Generation':'Want a steady flow of leads? Talk strategy with us',
+  'Brand Voice':'Struggling to find your voice? Define it in a free session',
+  'Design System':'Need consistency across your brand? Book a design consult',
+  'Prototype':'Ready to test your concept? Schedule a prototyping session',
+  'Editorial Plan':'Want content that hits every week? Plan it with us',
+  'Email Funnel':'Need an email funnel that converts? Get a free audit',
+  'Marketing Stack':'Overwhelmed by tool choices? Get a curated recommendation',
+  'Webinar':'Planning your first webinar? Book a strategy call',
+  'Video':'Want video that resonates? Schedule a creative session',
+  'Ad Copy':'Need ads that convert? Get a free copy critique',
+  'Dashboard':'Want clarity on your metrics? Build your dashboard with us',
+  'Brand Identity':'Ready to define who you are? Book a branding session',
+  'Opt-in Page':'Need an opt-in page that works? Get a free review',
+  'Sales Copy':'Want copy that drives revenue? Schedule a free critique',
+  'Organic Traffic':'Ready to grow without ads? Book an organic strategy call',
+  'Outreach':'Want to reach the right people? Plan your outreach with us',
+  'Podcast':'Thinking about starting a podcast? Talk to us first',
+  'Social Proof':'Need to build credibility fast? Book a strategy session',
+  'Tripwire':'Want a low-ticket offer that opens doors? Design it with us',
+  'A/B Test':'Not sure what to test first? Get expert guidance',
+  'AI Writing':'Curious about AI for content? Book a free exploration call',
+  'Sales Funnel':'Need a funnel that actually sells? Get a free blueprint session',
+  'Launch Sequence':'Planning a launch? Map out your sequence with us',
+  'Inbound Sales':'Want leads coming to you? Book an inbound strategy call',
+  'Webinar Funnel':'Ready to sell through webinars? Build your funnel with us',
+  'High-Ticket Offer':'Want to sell premium? Design your high-ticket offer with us',
+  'Authority Site':'Ready to become the go-to resource? Book a strategy call',
+  'Product Design':'Need a product people love? Schedule a design session',
+  'Marketing OS':'Want a system that runs your marketing? Build it with us',
+  'Conversion':'Losing visitors before they buy? Get a free conversion audit',
+  'Social Brand':'Want to own your space online? Book a branding call',
+  'Content Machine':'Ready to produce content at scale? Talk systems with us',
+  'Performance Report':'Need to prove what\u2019s working? Set up reporting with us',
+  'Ad Campaign':'Ready to run ads that pay off? Book a campaign strategy call',
+  'Video Channel':'Want to build a video audience? Schedule a channel strategy session',
+  'Checkout Page':'Losing sales at checkout? Get a free optimisation review',
+  'Retargeting':'Want to win back lost visitors? Set up retargeting with us',
+  'AI Automation':'Ready to automate with AI? Explore the possibilities with us',
+  'Discovery Call':'Want to close more calls? Refine your process with us',
+  'Online Course':'Ready to package your knowledge? Plan your course with us',
+  'Referral Program':'Want customers who bring more customers? Design your program with us',
+  'Digital Product':'Ready to create something scalable? Book a product strategy call',
+  'Partnership':'Looking for the right partners? Talk strategy with us',
+  'Portfolio':'Need a portfolio that wins clients? Get a free review',
+  'Automated Sales':'Want sales while you sleep? Build your automation with us',
+  'Thought Leadership':'Ready to lead the conversation? Book a positioning session',
+  'Product Launch':'Planning a launch? Map out your strategy with us',
+  'Automated Webinar':'Want an evergreen webinar machine? Set it up with us',
+  'Revenue Engine':'Ready to build predictable revenue? Book a strategy call',
+  'Premium Brand':'Want to charge what you\u2019re worth? Elevate your brand with us',
+  'Influence':'Ready to expand your reach? Book an influence strategy session',
+  'Growth System':'Want sustainable growth? Design your system with us',
+  'Sales Machine':'Ready to scale your sales? Build your machine with us',
+  'SaaS Product':'Thinking about SaaS? Validate your idea with us',
+  'Performance Marketing':'Want every dollar to count? Optimise with us',
+  'AI Content System':'Ready to scale content with AI? Build your system with us',
+  'Upsell':'Want to increase order value? Design your upsell strategy with us',
+  'Passive Income':'Ready to earn while you rest? Map your income streams with us',
+  'Recurring Revenue':'Want predictable monthly income? Set it up with us',
+  'Viral Growth':'Ready to go viral on purpose? Engineer your growth with us',
+  'Personal Brand':'Want to be known for what you do? Build your brand with us',
+  'Market Leader':'Ready to dominate your market? Book a leadership strategy call',
+  'Financial Freedom':'Want to build real wealth? Chart your path with us',
+  'Digital Empire':'Ready to scale everything? Architect your empire with us',
+  'AI Marketing OS':'Want AI running your marketing? Build the system with us',
 };
 const slideinOverlay=document.getElementById('slidein-overlay');
 const slideinPanel=document.getElementById('slidein');
@@ -863,8 +864,8 @@ function openSlideIn(name){
   const info=ALL[name];if(!info)return;
   slideinTitle.textContent=info.e+' '+name;
   const desc=LONG_DESC[name]||LOREM;
-  const cta=CTA_TEXT[name]||'Let\u2019s talk about your next step';
-  slideinBody.innerHTML=`<div class="si-desc">${desc}</div><a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">${cta} \u2192</a>`;
+  const cta=CTA_TEXT[name]||'Talk to us about your next step';
+  slideinBody.innerHTML=`<p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
   slideinOverlay.classList.add('active');
   slideinPanel.classList.add('active');
   tooltip.classList.remove('visible');
