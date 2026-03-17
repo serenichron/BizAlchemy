@@ -88,6 +88,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #result-slot.state-none .res-sub{color:#D85A30;font-size:9px}
 #result-slot.state-none::before{content:'NO MATCH';position:absolute;top:5px;left:6px;font-size:7.5px;font-weight:700;letter-spacing:0.5px;color:#D85A30;background:#faddd2;padding:1px 5px;border-radius:8px}
 #tooltip{position:absolute;background:#fff;border:1px solid #ddd;border-radius:12px;padding:10px 12px 9px;font-size:11px;z-index:200;pointer-events:auto;visibility:hidden;opacity:0;max-width:190px;width:max-content;transition:opacity 0.12s;cursor:default;box-shadow:0 2px 16px rgba(0,0,0,0.09)}
+#tooltip::before{content:'';position:absolute;left:0;right:0;bottom:-12px;height:12px}
+#tooltip.above::before{bottom:auto;top:-12px}
 #tooltip.visible{visibility:visible;opacity:1}
 #tooltip .tt-title{font-weight:600;color:#1a1a1a;margin-bottom:4px;font-size:11.5px}
 #tooltip .tt-recipe{color:#aaa;font-size:10px;line-height:1.5;margin-bottom:5px;padding-bottom:5px;border-bottom:1px solid #eee}
@@ -960,10 +962,11 @@ function showTooltip(name,el){
   const gameRect=gameEl.getBoundingClientRect(),cardRect=el.getBoundingClientRect();
   const cardTop=cardRect.top-gameRect.top,cardLeft=cardRect.left-gameRect.left;
   const cardMidX=cardLeft+(cardRect.width/2);
-  let top=cardTop-TH-MARGIN;
-  if(top<44)top=cardTop+cardRect.height+MARGIN;
+  let top=cardTop-TH-MARGIN,above=true;
+  if(top<44){top=cardTop+cardRect.height+MARGIN;above=false;}
   const maxTop=gameEl.offsetHeight-TRAY_H-TH-MARGIN;
   if(top>maxTop)top=maxTop;
+  tooltip.classList.toggle('above',above);
   let left=cardMidX-(TW/2);
   left=Math.max(MARGIN,Math.min(left,GW-TW-MARGIN));
   tooltip.style.left=left+'px';tooltip.style.top=top+'px';
