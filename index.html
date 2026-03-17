@@ -683,6 +683,7 @@ function showNextAch(){
   achPopup.innerHTML=`<div class="ach-popup-icon">${a.icon}</div><div class="ach-popup-label">Achievement unlocked</div><div class="ach-popup-name">${a.name}</div><div class="ach-popup-desc">${a.desc}</div><button class="ach-popup-close" onclick="closeAchPopup()">Nice!</button>`;
   achOverlay.classList.add('active');
   achPopup.classList.add('active');
+  sndAchieve();setTimeout(()=>spawnConfetti(achPopup),150);
 }
 function closeAchPopup(){
   achPopup.classList.remove('active');
@@ -690,6 +691,49 @@ function closeAchPopup(){
   setTimeout(showNextAch,300);
 }
 achOverlay.addEventListener('click',closeAchPopup);
+// Sound system (Web Audio API — calm, soft tones)
+let audioCtx=null;
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playTone(freq,duration,type,vol,delay){
+  try{
+    const ctx=getAudio();const t=ctx.currentTime+(delay||0);
+    const o=ctx.createOscillator();const g=ctx.createGain();
+    o.type=type||'sine';o.frequency.setValueAtTime(freq,t);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol||0.08,t+0.03);
+    g.gain.exponentialRampToValueAtTime(0.001,t+duration);
+    o.connect(g);g.connect(ctx.destination);
+    o.start(t);o.stop(t+duration);
+  }catch(e){}
+}
+function sndDiscover(){playTone(523,0.25,'sine',0.07);playTone(659,0.22,'sine',0.06,0.08);playTone(784,0.3,'sine',0.05,0.18);}
+function sndAchieve(){playTone(523,0.3,'sine',0.06);playTone(659,0.28,'sine',0.055,0.12);playTone(784,0.26,'sine',0.05,0.24);playTone(1047,0.5,'sine',0.045,0.38);}
+function sndCombo(){playTone(440,0.12,'sine',0.04);}
+function sndFail(){playTone(330,0.18,'sine',0.03);playTone(294,0.22,'sine',0.03,0.1);}
+// Confetti particles for achievements
+function spawnConfetti(container){
+  const colors=['#EF9F27','#378ADD','#1D9E75','#D85A30','#7F77DD','#D4537E','#639922'];
+  const shapes=['circle','square'];
+  for(let i=0;i<28;i++){
+    const p=document.createElement('div');
+    const c=colors[Math.floor(Math.random()*colors.length)];
+    const s=shapes[Math.floor(Math.random()*shapes.length)];
+    const sz=Math.random()*5+3;
+    const angle=(Math.random()-0.5)*120;
+    const dist=Math.random()*80+40;
+    const dur=Math.random()*0.4+0.6;
+    p.style.cssText=`position:absolute;top:50%;left:50%;width:${sz}px;height:${sz}px;background:${c};border-radius:${s==='circle'?'50%':'1px'};pointer-events:none;z-index:410;opacity:1;transform:translate(-50%,-50%);`;
+    container.appendChild(p);
+    const rad=angle*Math.PI/180;
+    const dx=Math.sin(rad)*dist;
+    const dy=-Math.cos(rad)*dist-Math.random()*30;
+    p.animate([
+      {transform:'translate(-50%,-50%) scale(1)',opacity:1},
+      {transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(0.3) rotate(${Math.random()*360}deg)`,opacity:0}
+    ],{duration:dur*1000,easing:'cubic-bezier(0.25,0.46,0.45,0.94)',fill:'forwards'});
+    setTimeout(()=>p.remove(),dur*1000+50);
+  }
+}
 let domCards=new Map();
 let slotA=null,slotB=null,resultName=null,resultState=null;
 let toastTimer=null,hideTimer=null,hintPopupTimer=null,hintCooldownTimer=null,longPressTimer=null;
@@ -747,13 +791,13 @@ function renderResult(){
   const res=R[ck(slotA,slotB)];
   if(!res){
     resultEl.className='state-none';resultEl.innerHTML='<span class="res-e">✗</span><span class="res-sub">tap to cancel</span>';
-    resultEl.onclick=cancelCombo;resultName=null;resultState='none';
+    resultEl.onclick=cancelCombo;resultName=null;resultState='none';sndFail();
   } else if(discovered.has(res)){
     resultEl.className='state-found';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to cancel</span>`;
-    resultEl.onclick=cancelCombo;resultName=res;resultState='found';
+    resultEl.onclick=cancelCombo;resultName=res;resultState='found';sndCombo();
   } else {
     resultEl.className='state-new';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to add ✦</span>`;
-    resultEl.onclick=addResult;resultName=res;resultState='new';
+    resultEl.onclick=addResult;resultName=res;resultState='new';sndCombo();
   }
 }
 function cancelCombo(){clearSlot('a');clearSlot('b');}
@@ -789,7 +833,7 @@ function addResult(){
     const d=domCards.get(added);
     if(d){d.classList.add('pop');scrollToCard(added);setTimeout(()=>d.classList.remove('pop'),600);}
   }));
-  showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');
+  showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');sndDiscover();
   checkWin();checkAchievements();
 }
 function resetGame(){
