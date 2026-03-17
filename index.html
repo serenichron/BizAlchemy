@@ -1602,11 +1602,11 @@ function trapFocus(container){
   const focusable=container.querySelectorAll('button,[tabindex]:not([tabindex="-1"]),a[href],input,select,textarea');
   if(!focusable.length)return;
   const first=focusable[0],last=focusable[focusable.length-1];
-  first.focus();
+  first.focus({preventScroll:true});
   function handler(e){
     if(e.key!=='Tab')return;
-    if(e.shiftKey){if(document.activeElement===first){e.preventDefault();last.focus();}}
-    else{if(document.activeElement===last){e.preventDefault();first.focus();}}
+    if(e.shiftKey){if(document.activeElement===first){e.preventDefault();last.focus({preventScroll:true});}}
+    else{if(document.activeElement===last){e.preventDefault();first.focus({preventScroll:true});}}
   }
   container.addEventListener('keydown',handler);
   container._trapHandler=handler;
