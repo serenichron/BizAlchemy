@@ -794,10 +794,10 @@ function renderResult(){
     resultEl.onclick=cancelCombo;resultName=null;resultState='none';sndFail();
   } else if(discovered.has(res)){
     resultEl.className='state-found';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to cancel</span>`;
-    resultEl.onclick=cancelCombo;resultName=res;resultState='found';sndCombo();
+    resultEl.onclick=cancelCombo;resultName=res;resultState='found';
   } else {
     resultEl.className='state-new';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to add ✦</span>`;
-    resultEl.onclick=addResult;resultName=res;resultState='new';sndCombo();
+    resultEl.onclick=addResult;resultName=res;resultState='new';
   }
 }
 function cancelCombo(){clearSlot('a');clearSlot('b');}
@@ -833,7 +833,7 @@ function addResult(){
     const d=domCards.get(added);
     if(d){d.classList.add('pop');scrollToCard(added);setTimeout(()=>d.classList.remove('pop'),600);}
   }));
-  showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');sndDiscover();
+  showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');sndCombo();
   checkWin();checkAchievements();
 }
 function resetGame(){
