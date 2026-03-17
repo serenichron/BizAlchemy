@@ -32,6 +32,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ec.tried-done::after{content:'✓';position:absolute;top:4px;right:5px;font-size:10px;font-weight:700;color:#1D9E75;line-height:1}
 .ec-e{font-size:24px;line-height:1;pointer-events:none}
 .ec-n{font-size:9.5px;font-weight:500;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
+.ec-info{position:absolute;top:3px;left:4px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#aaa;background:#f0efe9;border-radius:50%;cursor:pointer;pointer-events:auto;line-height:1;opacity:0.6;transition:opacity 0.12s;z-index:2;border:1px solid #e0dfda}
+.ec-info:hover{opacity:1}
 .ec-lock{border-radius:13px;padding:12px 5px 9px;display:flex;flex-direction:column;align-items:center;gap:4px;border:1.5px dashed #ddd;background:#fafaf8;opacity:0.5}
 .ec-lock-e{font-size:20px;color:#bbb}
 .ec-lock-n{font-size:9px;color:#bbb;text-align:center}
@@ -70,6 +72,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #tooltip .tt-desc div+div{margin-top:2px}
 #tooltip .tt-cta{display:inline-block;font-size:10px;font-weight:600;color:#378ADD;text-decoration:none}
 #tooltip .tt-cta:hover{text-decoration:underline}
+#tooltip .tt-close{position:absolute;top:6px;right:8px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#aaa;cursor:pointer;border-radius:50%;transition:background 0.1s}
+#tooltip .tt-close:hover{background:#f0efe9;color:#666}
 #hint-popup{position:absolute;top:50px;left:12px;right:12px;background:#fff;border:1px solid #ddd;border-radius:12px;padding:10px 14px;z-index:80;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
 #hint-popup .hp-label{font-size:10px;font-weight:600;color:#aaa;margin-bottom:5px;letter-spacing:0.3px}
 #hint-popup .hp-combo{font-size:13px;color:#1a1a1a;font-weight:500}
@@ -519,8 +523,23 @@ add('Product Launch','Revenue Engine','Digital Empire');
 add('AI Content System','Marketing OS','AI Marketing OS');
 const STARTS=['Idea','Audience','Content','Tool'];
 const TOTAL=Object.keys(ALL).length;
-let discovered=new Set(STARTS);
-let tried=new Set();
+function loadProgress(){
+  try{
+    const d=localStorage.getItem('ba_discovered');
+    const t=localStorage.getItem('ba_tried');
+    if(d){const arr=JSON.parse(d);if(arr.length>=STARTS.length)return{discovered:new Set(arr),tried:new Set(t?JSON.parse(t):[])};}
+  }catch(e){}
+  return null;
+}
+function saveProgress(){
+  try{
+    localStorage.setItem('ba_discovered',JSON.stringify([...discovered]));
+    localStorage.setItem('ba_tried',JSON.stringify([...tried]));
+  }catch(e){}
+}
+const saved=loadProgress();
+let discovered=saved?saved.discovered:new Set(STARTS);
+let tried=saved?saved.tried:new Set();
 let domCards=new Map();
 let slotA=null,slotB=null,resultName=null,resultState=null;
 let toastTimer=null,hideTimer=null,hintPopupTimer=null,hintCooldownTimer=null,longPressTimer=null;
@@ -535,7 +554,8 @@ const hintPopup=document.getElementById('hint-popup');
 const gameEl=document.getElementById('game');
 const introEl=document.getElementById('intro');
 const congratsEl=document.getElementById('congrats');
-function startGame(){introEl.style.display='none';}
+function startGame(){introEl.style.display='none';saveProgress();}
+if(saved){introEl.style.display='none';}
 // Preview congrats screen: paste  showCongrats()  in browser console
 window.showCongrats=function(){
   document.getElementById('stat-elements').textContent=discovered.size;
@@ -571,7 +591,7 @@ function renderSlot(el,name){
 }
 function renderResult(){
   if(!slotA||!slotB){resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';resultEl.onclick=null;resultName=null;resultState=null;return;}
-  tried.add(ck(slotA,slotB));updateCardStates();
+  tried.add(ck(slotA,slotB));saveProgress();updateCardStates();
   const res=R[ck(slotA,slotB)];
   if(!res){
     resultEl.className='state-none';resultEl.innerHTML='<span class="res-e">✗</span><span class="res-sub">tap to cancel</span>';
@@ -609,7 +629,7 @@ function tapCard(name){
 }
 function addResult(){
   if(!resultName||resultState!=='new')return;
-  discovered.add(resultName);const added=resultName;
+  discovered.add(resultName);saveProgress();const added=resultName;
   slotA=null;slotB=null;resultName=null;resultState=null;
   renderSlot(slotAEl,null);renderSlot(slotBEl,null);renderResult();
   buildGrid();
@@ -628,6 +648,7 @@ function resetGame(){
   closeHint();renderSlot(slotAEl,null);renderSlot(slotBEl,null);
   resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';
   congratsEl.style.display='none';
+  try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');}catch(e){}
   buildGrid();
   introEl.style.display='flex';
 }
@@ -659,7 +680,7 @@ function showTooltip(name,el){
   const recipeHTML=recipes.length?`<div class="tt-recipe">${recipes.map(([a,b])=>`${ALL[a]?ALL[a].e:'?'} ${a} + ${ALL[b]?ALL[b].e:'?'} ${b}`).join('<br>')}</div>`:'';
   const descLines=info.d.split('\n').map(l=>`<div>${l}</div>`).join('');
   const ctaUrl=`https://serenichron.com/glossary/${slug(name)}`;
-  tooltip.innerHTML=`<div class="tt-title">${ALL[name].e} ${name}</div>${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="#" onclick="event.preventDefault();event.stopPropagation();openSlideIn('${name.replace(/'/g,"\\'")}');return false;">Read more →</a>`;
+  tooltip.innerHTML=`<span class="tt-close" onclick="event.stopPropagation();forceHideTooltip();">✕</span><div class="tt-title">${ALL[name].e} ${name}</div>${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="#" onclick="event.preventDefault();event.stopPropagation();openSlideIn('${name.replace(/'/g,"\\'")}');return false;">Read more →</a>`;
   tooltip.style.left='-9999px';tooltip.style.top='-9999px';tooltip.classList.add('visible');
   const TW=tooltip.offsetWidth,TH=tooltip.offsetHeight,GW=gameEl.offsetWidth,MARGIN=8,TRAY_H=100;
   const gameRect=gameEl.getBoundingClientRect(),cardRect=el.getBoundingClientRect();
@@ -674,6 +695,13 @@ function showTooltip(name,el){
   tooltip.style.left=left+'px';tooltip.style.top=top+'px';
 }
 function hideTooltip(){scheduleHide();}
+function forceHideTooltip(){clearTimeout(hideTimer);tooltip.classList.remove('visible');}
+// Mobile: dismiss tooltip when tapping outside of it or the info icon
+document.addEventListener('touchstart',function(e){
+  if(!tooltip.classList.contains('visible'))return;
+  if(tooltip.contains(e.target)||e.target.classList.contains('ec-info'))return;
+  forceHideTooltip();
+},{passive:true});
 function buildGrid(){
   grid.innerHTML='';domCards.clear();
   const dpTier={};discovered.forEach(n=>{if(ALL[n]){const t=ALL[n].tier;dpTier[t]=(dpTier[t]||0)+1;}});
@@ -690,7 +718,7 @@ function buildGrid(){
         const c=PAL[tier%PAL.length];
         const d=document.createElement('div');d.className='ec';
         d.style.cssText=`background:${c.bg};--sel-color:${c.b}`;
-        d.innerHTML=`<span class="ec-e">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
+        d.innerHTML=`<span class="ec-info" data-name="${name.replace(/"/g,'&quot;')}">i</span><span class="ec-e">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
         if(name===slotA||name===slotB)d.classList.add('selected');
         const isBlocked=slotA&&!slotB&&name!==slotA&&!hasReaction(slotA,name);
         if(isBlocked){d.classList.add('no-react');}
@@ -698,11 +726,11 @@ function buildGrid(){
           if(slotA&&slotB&&name!==slotA&&name!==slotB)d.classList.add('dimmed');
           if(slotA&&!slotB&&name!==slotA){const ind=getIndicator(slotA,name);if(ind)applyIndicator(d,ind);}
         }
-        d.addEventListener('click',()=>tapCard(name));
-        d.addEventListener('mouseenter',()=>{if(!d.classList.contains('no-react')){cancelHide();showTooltip(name,d);}});
-        d.addEventListener('mouseleave',()=>{if(!d.classList.contains('no-react'))scheduleHide();});
-        d.addEventListener('touchstart',()=>{if(!d.classList.contains('no-react'))longPressTimer=setTimeout(()=>showTooltip(name,d),600);},{passive:true});
-        d.addEventListener('touchend',()=>{clearTimeout(longPressTimer);setTimeout(hideTooltip,2500);},{passive:true});
+        d.addEventListener('click',(e)=>{if(e.target.classList.contains('ec-info'))return;tapCard(name);});
+        const infoIcon=d.querySelector('.ec-info');
+        infoIcon.addEventListener('click',(e)=>{e.stopPropagation();cancelHide();showTooltip(name,infoIcon);});
+        infoIcon.addEventListener('mouseenter',(e)=>{e.stopPropagation();cancelHide();showTooltip(name,infoIcon);});
+        infoIcon.addEventListener('mouseleave',(e)=>{e.stopPropagation();scheduleHide();});
         row.appendChild(d);domCards.set(name,d);
       } else {
         const lock=document.createElement('div');lock.className='ec-lock';
