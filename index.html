@@ -25,7 +25,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tier-prog{font-size:10px;color:#aaa}
 .cards-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:2px}
 .ec{border-radius:13px;padding:12px 5px 9px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;user-select:none;border:2px solid transparent;transition:transform 0.12s,border-color 0.12s,opacity 0.12s,box-shadow 0.15s;position:relative;background:var(--card-bg)}
-.ec:hover{box-shadow:0 2px 12px var(--card-shadow,rgba(0,0,0,0.08))}
+.ec:hover{box-shadow:0 1px 4px var(--card-shadow,rgba(0,0,0,0.06))}
 .ec:active{transform:scale(0.92)}
 .ec.selected{border-color:var(--sel-color);transform:scale(1.06);box-shadow:0 3px 16px var(--card-shadow,rgba(0,0,0,0.12))}
 .ec.no-react{opacity:0.2;cursor:default;pointer-events:none}
@@ -51,7 +51,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes resultShimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 /* Tier rarity border shimmer for T4+ */
 .ec.rarity-high{overflow:hidden}
-.rarity-ring{position:absolute;inset:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent 50%,var(--sel-color) 65%,transparent 80%);animation:borderShimmer 3.5s linear infinite;pointer-events:none;z-index:0}
+.rarity-ring{position:absolute;inset:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent 55%,color-mix(in srgb,var(--sel-color) 45%,transparent) 65%,transparent 75%);animation:borderShimmer 4s linear infinite;pointer-events:none;z-index:0}
 .rarity-fill{position:absolute;inset:2px;border-radius:11px;background:var(--card-bg);z-index:0;pointer-events:none}
 .ec.rarity-high .ec-e,.ec.rarity-high .ec-n,.ec.rarity-high .ec-info{position:relative;z-index:1}
 @keyframes borderShimmer{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
