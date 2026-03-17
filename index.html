@@ -837,6 +837,7 @@ function addResult(){
   checkWin();checkAchievements();
 }
 function resetGame(){
+  if(!confirm('Reset all progress? This will erase your discoveries, owned items, and achievements.'))return;
   discovered=new Set(STARTS);tried=new Set();owned=new Set();unlockedAch=new Set();
   slotA=null;slotB=null;resultName=null;resultState=null;
   clearTimeout(hintPopupTimer);clearInterval(hintCooldownTimer);
