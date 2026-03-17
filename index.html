@@ -178,8 +178,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #slidein.active{transform:translateY(0)}
 #slidein-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid #eee;flex-shrink:0}
 #slidein-title{font-size:15px;font-weight:600;color:#1a1a1a}
-#slidein-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f0efe9;font-size:13px;color:#666;cursor:pointer;flex-shrink:0;transition:background 0.1s;border:none;padding:0}
-#slidein-close:hover{background:#e5e4df}
+#slidein-close,#slidein-narrate{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f0efe9;font-size:13px;color:#666;cursor:pointer;flex-shrink:0;transition:background 0.1s;border:none;padding:0}
+#slidein-close:hover,#slidein-narrate:hover{background:#e5e4df}
+#slidein-narrate.playing{background:#378ADD;color:#fff}
+#slidein-narrate.playing:hover{background:#2a6db5}
 #slidein-body{flex:1;overflow-y:auto;padding:18px 20px 24px;font-size:13px;color:#333;line-height:1.7}
 #slidein-body .si-desc{margin-bottom:20px;line-height:17px}
 #slidein-body .si-cta{display:inline;font-size:13px;font-weight:600;color:#378ADD;text-decoration:none;transition:color 0.1s}
@@ -352,7 +354,10 @@ h1,h2{margin:0;padding:0}
   <div id="slidein" role="dialog" aria-modal="true" aria-labelledby="slidein-title">
     <div id="slidein-header">
       <h2 id="slidein-title"></h2>
-      <button id="slidein-close" onclick="closeSlideIn()" aria-label="Close panel">&#x2715;</button>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button id="slidein-narrate" aria-label="Narrate description">&#9654;</button>
+        <button id="slidein-close" onclick="closeSlideIn()" aria-label="Close panel">&#x2715;</button>
+      </div>
     </div>
     <div id="slidein-body"></div>
   </div>
@@ -1453,10 +1458,39 @@ function openSlideIn(name){
   tooltip.classList.remove('visible');
 }
 function closeSlideIn(){
+  stopNarration();
   slideinOverlay.classList.remove('active');
   slideinPanel.classList.remove('active');
 }
 slideinOverlay.addEventListener('click',closeSlideIn);
+
+// Narration via SpeechSynthesis
+const narrateBtn=document.getElementById('slidein-narrate');
+let narrationUtterance=null;
+function stopNarration(){
+  if(narrationUtterance){speechSynthesis.cancel();narrationUtterance=null;}
+  narrateBtn.classList.remove('playing');
+  narrateBtn.innerHTML='&#9654;';
+  narrateBtn.setAttribute('aria-label','Narrate description');
+}
+function startNarration(){
+  const descEl=slideinBody.querySelector('.si-desc');
+  if(!descEl)return;
+  stopNarration();
+  const text=descEl.textContent;
+  if(!text.trim())return;
+  narrationUtterance=new SpeechSynthesisUtterance(text);
+  narrationUtterance.rate=1;
+  narrationUtterance.onend=()=>{stopNarration();};
+  narrationUtterance.onerror=()=>{stopNarration();};
+  speechSynthesis.speak(narrationUtterance);
+  narrateBtn.classList.add('playing');
+  narrateBtn.innerHTML='&#9632;';
+  narrateBtn.setAttribute('aria-label','Stop narration');
+}
+narrateBtn.addEventListener('click',function(){
+  if(narrateBtn.classList.contains('playing')){stopNarration();}else{startNarration();}
+});
 const statsEl=document.getElementById('stats');
 const statsBody=document.getElementById('stats-body');
 function openStats(){
