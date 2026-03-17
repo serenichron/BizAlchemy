@@ -129,13 +129,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .intro-grid-item{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:10px;border:1px solid #eee;background:#fafaf8}
 .gi-icon{font-size:15px;flex-shrink:0;line-height:1}
 .gi-text{font-size:10.5px;color:#555;font-weight:500;line-height:1.3}
-/* Welcome back */
-#intro-wb{text-align:center;animation:introFadeUp 0.5s ease 0.15s both}
-#intro-wb-text{font-size:12.5px;color:#444;line-height:1.6;margin-bottom:8px}
-#intro-wb-text strong{font-weight:700;color:#1a1a1a}
-#intro-wb-bar{height:6px;border-radius:3px;background:#f0efe9;overflow:hidden;max-width:220px;margin:0 auto}
-#intro-wb-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#378ADD,#5aa8f5);transition:width 0.8s ease}
-#intro-wb-pct{font-size:10px;color:#999;margin-top:4px}
+/* Welcome back dashboard */
+#intro-wb{display:flex;flex-direction:column;gap:12px;animation:introFadeUp 0.5s ease 0.15s both}
+#wb-hook{font-size:13px;font-weight:600;color:#1a1a1a;text-align:center}
+#wb-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.wb-stat{text-align:center;padding:10px 6px;border-radius:10px;border:1px solid #eee;background:#fafaf8}
+.wb-stat-num{font-size:22px;font-weight:700;color:#1a1a1a;line-height:1}
+.wb-stat-label{font-size:9px;color:#999;margin-top:3px;text-transform:uppercase;letter-spacing:0.3px}
+#wb-progress{text-align:center}
+#wb-bar{height:6px;border-radius:3px;background:#f0efe9;overflow:hidden}
+#wb-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#378ADD,#5aa8f5);transition:width 0.8s ease}
+#wb-pct{font-size:10px;color:#999;margin-top:4px}
+#wb-tiers{display:flex;flex-direction:column;gap:5px}
+.wb-tier{display:flex;align-items:center;gap:8px;font-size:10.5px}
+.wb-tier-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.wb-tier-name{color:#666;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wb-tier-bar{flex:1.2;height:4px;border-radius:2px;background:#f0efe9;overflow:hidden}
+.wb-tier-bar-fill{height:100%;border-radius:2px;transition:width 0.6s ease}
+.wb-tier-count{color:#999;font-size:9.5px;min-width:28px;text-align:right}
+#wb-achievements{display:flex;flex-direction:column;gap:5px}
+.wb-ach-title{font-size:9.5px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:1px}
+.wb-ach-list{display:flex;flex-wrap:wrap;gap:5px}
+.wb-ach{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:8px;border:1px solid #eee;background:#fafaf8;font-size:10px;color:#1a1a1a}
+.wb-ach span:first-child{font-size:12px}
+.wb-ach.locked{opacity:0.35;color:#999}
+#wb-next{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;border:1px dashed #ddd;background:#fafaf8}
+#wb-next .wbn-icon{font-size:16px;opacity:0.5}
+#wb-next .wbn-body{font-size:10.5px;color:#666;line-height:1.4}
+#wb-next .wbn-name{font-weight:600;color:#1a1a1a}
 /* Footer */
 #intro-footer{padding:12px 22px 18px;flex-shrink:0;border-top:1px solid #eee}
 #start-btn{width:100%;padding:13px;border-radius:12px;border:none;background:#1a1a1a;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.1s}
@@ -282,9 +303,24 @@ h1,h2{margin:0;padding:0}
       </div>
       <!-- Returning player content (hidden for new players) -->
       <div id="intro-wb" style="display:none">
-        <div id="intro-wb-text">Welcome back! You've discovered <strong id="wb-count">0</strong> of <strong>102</strong> concepts.</div>
-        <div id="intro-wb-bar"><div id="intro-wb-fill" style="width:0%"></div></div>
-        <div id="intro-wb-pct" aria-live="polite"></div>
+        <div id="wb-hook">Welcome back!</div>
+        <!-- Progress stats -->
+        <div id="wb-stats">
+          <div class="wb-stat"><div class="wb-stat-num" id="wb-disc">0</div><div class="wb-stat-label">discovered</div></div>
+          <div class="wb-stat"><div class="wb-stat-num" id="wb-owned">0</div><div class="wb-stat-label">owned</div></div>
+          <div class="wb-stat"><div class="wb-stat-num" id="wb-ach">0</div><div class="wb-stat-label">achievements</div></div>
+        </div>
+        <!-- Overall progress bar -->
+        <div id="wb-progress">
+          <div id="wb-bar"><div id="wb-bar-fill"></div></div>
+          <div id="wb-pct"></div>
+        </div>
+        <!-- Tier breakdown -->
+        <div id="wb-tiers"></div>
+        <!-- Recent achievements -->
+        <div id="wb-achievements"></div>
+        <!-- Next achievement teaser -->
+        <div id="wb-next"></div>
       </div>
       <div class="intro-steps">
         <div class="intro-step">
@@ -305,14 +341,14 @@ h1,h2{margin:0;padding:0}
           <div class="step-icon">📖</div>
           <div class="step-body">
             <div class="step-label">Learn</div>
-            <div class="step-desc">Every card is a real marketing concept. Tap ℹ on any card to learn what it means and how it connects.</div>
+            <div class="step-desc">Every card is a real marketing concept. Tap ℹ to read about it or listen to audio descriptions.</div>
           </div>
         </div>
       </div>
       <div class="intro-grid">
         <div class="intro-grid-item"><span class="gi-icon">🏆</span><span class="gi-text">12 achievements</span></div>
         <div class="intro-grid-item"><span class="gi-icon">💡</span><span class="gi-text">Hints when stuck</span></div>
-        <div class="intro-grid-item"><span class="gi-icon">📖</span><span class="gi-text">Full glossary</span></div>
+        <div class="intro-grid-item"><span class="gi-icon">🔊</span><span class="gi-text">Audio narration</span></div>
         <div class="intro-grid-item"><span class="gi-icon">✓</span><span class="gi-text">Track your stack</span></div>
       </div>
     </div>
@@ -837,16 +873,47 @@ const gameEl=document.getElementById('game');
 const introEl=document.getElementById('intro');
 const congratsEl=document.getElementById('congrats');
 function startGame(){introEl.style.display='none';saveProgress();}
-// Returning player: show welcome-back variant instead of hiding intro
+// Returning player: show welcome-back dashboard
 if(saved&&discovered.size>STARTS.length){
   document.getElementById('intro-new').style.display='none';
-  const wbEl=document.getElementById('intro-wb');
-  wbEl.style.display='';
-  const cnt=discovered.size;
-  document.getElementById('wb-count').textContent=cnt;
-  const pct=Math.round(cnt/TOTAL*100);
-  document.getElementById('intro-wb-fill').style.width=pct+'%';
-  document.getElementById('intro-wb-pct').textContent=pct+'% complete';
+  document.getElementById('intro-wb').style.display='';
+  // Hide steps & feature grid for returning players
+  document.querySelector('.intro-steps').style.display='none';
+  document.querySelector('.intro-grid').style.display='none';
+  // Stats
+  document.getElementById('wb-disc').textContent=discovered.size;
+  document.getElementById('wb-owned').textContent=owned.size;
+  document.getElementById('wb-ach').textContent=unlockedAch.size;
+  // Overall progress bar
+  const pct=Math.round(discovered.size/TOTAL*100);
+  document.getElementById('wb-bar-fill').style.width=pct+'%';
+  document.getElementById('wb-pct').textContent=discovered.size+' / '+TOTAL+' — '+pct+'% complete';
+  // Tier breakdown
+  const tiersEl=document.getElementById('wb-tiers');
+  const tierItems={};
+  Object.entries(ALL).forEach(([n,v])=>{if(!tierItems[v.tier])tierItems[v.tier]=[];tierItems[v.tier].push(n);});
+  for(let t=0;t<TIER_NAMES.length;t++){
+    const items=tierItems[t]||[];
+    const disc=items.filter(n=>discovered.has(n)).length;
+    const row=document.createElement('div');row.className='wb-tier';
+    row.innerHTML=`<span class="wb-tier-dot" style="background:${PAL[t%PAL.length].dot}"></span><span class="wb-tier-name">${TIER_NAMES[t]}</span><span class="wb-tier-bar"><span class="wb-tier-bar-fill" style="width:${items.length?Math.round(disc/items.length*100):0}%;background:${PAL[t%PAL.length].dot}"></span></span><span class="wb-tier-count">${disc}/${items.length}</span>`;
+    tiersEl.appendChild(row);
+  }
+  // Achievements: show unlocked ones, find next locked
+  const achEl=document.getElementById('wb-achievements');
+  const unlocked=ACHIEVEMENTS.filter(a=>unlockedAch.has(a.id));
+  const locked=ACHIEVEMENTS.filter(a=>!unlockedAch.has(a.id));
+  if(unlocked.length){
+    achEl.innerHTML='<div class="wb-ach-title">Unlocked</div><div class="wb-ach-list">'+unlocked.map(a=>`<div class="wb-ach"><span>${a.icon}</span> ${a.name}</div>`).join('')+'</div>';
+  }
+  // Next achievement teaser
+  const nextEl=document.getElementById('wb-next');
+  if(locked.length){
+    const nx=locked[0];
+    nextEl.innerHTML=`<span class="wbn-icon">${nx.icon}</span><div class="wbn-body"><div class="wbn-name">${nx.name}</div>${nx.desc}</div>`;
+  } else {
+    nextEl.style.display='none';
+  }
   document.getElementById('start-btn').textContent='Continue playing →';
 }
 // Console helper: unlock all items for testing
@@ -969,6 +1036,10 @@ function doReset(){
   introEl.style.display='flex';
   document.getElementById('intro-new').style.display='';
   document.getElementById('intro-wb').style.display='none';
+  document.querySelector('.intro-steps').style.display='';
+  document.querySelector('.intro-grid').style.display='';
+  document.getElementById('wb-tiers').innerHTML='';
+  document.getElementById('wb-achievements').innerHTML='';
   document.getElementById('start-btn').textContent='Start discovering →';
 }
 function showToast(cls,msg){
