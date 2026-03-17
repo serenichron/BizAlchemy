@@ -109,21 +109,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tok{display:block!important;background:#e8f5e9;color:#2e7d32}
 /* Intro */
 #intro{position:absolute;inset:0;background:#fff;z-index:100;display:flex;flex-direction:column;border-radius:20px;overflow:hidden}
-#intro-body{flex:1;overflow-y:auto;padding:28px 24px 16px;display:flex;flex-direction:column;gap:18px}
-#intro-logo{font-size:36px;text-align:center;line-height:1;margin-bottom:4px}
-#intro-title{font-size:20px;font-weight:600;color:#1a1a1a;text-align:center;letter-spacing:-0.3px}
-#intro-hook{font-size:13px;color:#444;text-align:center;line-height:1.65;max-width:300px;margin:0 auto}
+#intro-body{flex:1;overflow-y:auto;padding:24px 22px 14px;display:flex;flex-direction:column;gap:14px}
+#intro-hero{text-align:center;animation:introFadeUp 0.5s ease both}
+#intro-logo{font-size:34px;line-height:1;margin-bottom:4px;animation:introScale 0.6s cubic-bezier(0.34,1.56,0.64,1) both}
+#intro-title{font-size:20px;font-weight:600;color:#1a1a1a;letter-spacing:-0.3px;animation:introFadeUp 0.5s ease 0.1s both}
+@keyframes introScale{from{transform:scale(0.4);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes introFadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+#intro-hook{font-size:12.5px;color:#444;text-align:center;line-height:1.6;max-width:300px;margin:4px auto 0}
 #intro-hook strong{font-weight:700;color:#1a1a1a}
-.intro-steps{display:flex;flex-direction:column;gap:9px}
-.intro-step{display:flex;align-items:flex-start;gap:11px;padding:10px 13px;border-radius:12px;border:1px solid #eee;background:#fafaf8}
-.step-icon{font-size:18px;flex-shrink:0;line-height:1;margin-top:1px}
-.step-body{display:flex;flex-direction:column;gap:2px}
-.step-label{font-size:12.5px;font-weight:600;color:#1a1a1a;line-height:1.3}
-.step-desc{font-size:11.5px;color:#666;line-height:1.5}
-.intro-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding-top:2px}
-.intro-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;background:#fafaf8;border:1px solid #eee;font-size:10.5px;color:#888;white-space:nowrap}
-.intro-chip span:first-child{font-size:12px}
-#intro-footer{padding:14px 24px 20px;flex-shrink:0;border-top:1px solid #eee}
+/* Combo demo */
+#intro-demo{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 0;animation:introFadeUp 0.5s ease 0.2s both}
+.demo-card{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:10px;border:1px solid #eee;background:#fafaf8;font-size:11px;font-weight:500;color:#1a1a1a}
+.demo-card span:first-child{font-size:15px}
+.demo-plus{font-size:13px;color:#bbb;font-weight:500}
+.demo-arrow{font-size:13px;color:#bbb}
+.demo-result{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:10px;border:1px solid #dbeeff;background:#f0f7ff;font-size:11px;font-weight:600;color:#378ADD}
+.demo-result span:first-child{font-size:15px}
+.demo-result .demo-q{animation:demoPulse 2s ease-in-out infinite}
+@keyframes demoPulse{0%,100%{opacity:1}50%{opacity:0.4}}
+/* Starters */
+#intro-starters{display:flex;justify-content:center;gap:8px;animation:introFadeUp 0.5s ease 0.25s both}
+.starter-card{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px 7px;border-radius:11px;border:1px solid #eee;background:#fafaf8;min-width:56px}
+.starter-card .sc-emoji{font-size:20px;line-height:1}
+.starter-card .sc-name{font-size:9px;font-weight:600;color:#888;letter-spacing:0.2px}
+/* Steps */
+.intro-steps{display:flex;flex-direction:column;gap:8px;animation:introFadeUp 0.5s ease 0.3s both}
+.intro-step{display:flex;align-items:flex-start;gap:11px;padding:9px 12px;border-radius:12px;border:1px solid #eee;background:#fafaf8}
+.step-icon{font-size:17px;flex-shrink:0;line-height:1;margin-top:1px}
+.step-body{display:flex;flex-direction:column;gap:1px}
+.step-label{font-size:12px;font-weight:600;color:#1a1a1a;line-height:1.3}
+.step-desc{font-size:11px;color:#666;line-height:1.5}
+/* Chips */
+.intro-chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;animation:introFadeUp 0.5s ease 0.35s both}
+.intro-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;background:#fafaf8;border:1px solid #eee;font-size:10px;color:#888;white-space:nowrap}
+.intro-chip span:first-child{font-size:11px}
+/* Welcome back */
+#intro-wb{text-align:center;animation:introFadeUp 0.5s ease 0.15s both}
+#intro-wb-text{font-size:12.5px;color:#444;line-height:1.6;margin-bottom:8px}
+#intro-wb-text strong{font-weight:700;color:#1a1a1a}
+#intro-wb-bar{height:6px;border-radius:3px;background:#f0efe9;overflow:hidden;max-width:220px;margin:0 auto}
+#intro-wb-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#378ADD,#5aa8f5);transition:width 0.8s ease}
+#intro-wb-pct{font-size:10px;color:#999;margin-top:4px}
+/* Footer */
+#intro-footer{padding:12px 22px 18px;flex-shrink:0;border-top:1px solid #eee}
 #start-btn{width:100%;padding:13px;border-radius:12px;border:none;background:#1a1a1a;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.1s}
 #start-btn:hover{opacity:0.85}
 /* Congrats */
@@ -258,10 +286,32 @@ h1,h2{margin:0;padding:0}
   <!-- Intro screen -->
   <div id="intro">
     <div id="intro-body">
-      <div>
+      <div id="intro-hero">
         <div id="intro-logo">⚗️</div>
         <div id="intro-title">BizAlchemy</div>
+      </div>
+      <!-- New player content (hidden for returning players) -->
+      <div id="intro-new">
         <div id="intro-hook"><strong>102 digital marketing concepts</strong> are hidden inside. Start with 4 raw ideas and combine your way to a <strong>Digital Empire</strong>.</div>
+        <div id="intro-demo">
+          <div class="demo-card"><span>💡</span> Idea</div>
+          <div class="demo-plus">+</div>
+          <div class="demo-card"><span>👥</span> Audience</div>
+          <div class="demo-arrow">→</div>
+          <div class="demo-result"><span>🎯</span> <span class="demo-q">???</span></div>
+        </div>
+        <div id="intro-starters">
+          <div class="starter-card"><span class="sc-emoji">💡</span><span class="sc-name">Idea</span></div>
+          <div class="starter-card"><span class="sc-emoji">👥</span><span class="sc-name">Audience</span></div>
+          <div class="starter-card"><span class="sc-emoji">📝</span><span class="sc-name">Content</span></div>
+          <div class="starter-card"><span class="sc-emoji">🔧</span><span class="sc-name">Tool</span></div>
+        </div>
+      </div>
+      <!-- Returning player content (hidden for new players) -->
+      <div id="intro-wb" style="display:none">
+        <div id="intro-wb-text">Welcome back! You've discovered <strong id="wb-count">0</strong> of <strong>102</strong> concepts.</div>
+        <div id="intro-wb-bar"><div id="intro-wb-fill" style="width:0%"></div></div>
+        <div id="intro-wb-pct" aria-live="polite"></div>
       </div>
       <div class="intro-steps">
         <div class="intro-step">
@@ -814,7 +864,18 @@ const gameEl=document.getElementById('game');
 const introEl=document.getElementById('intro');
 const congratsEl=document.getElementById('congrats');
 function startGame(){introEl.style.display='none';saveProgress();}
-if(saved&&discovered.size>STARTS.length){introEl.style.display='none';}
+// Returning player: show welcome-back variant instead of hiding intro
+if(saved&&discovered.size>STARTS.length){
+  document.getElementById('intro-new').style.display='none';
+  const wbEl=document.getElementById('intro-wb');
+  wbEl.style.display='';
+  const cnt=discovered.size;
+  document.getElementById('wb-count').textContent=cnt;
+  const pct=Math.round(cnt/TOTAL*100);
+  document.getElementById('intro-wb-fill').style.width=pct+'%';
+  document.getElementById('intro-wb-pct').textContent=pct+'% complete';
+  document.getElementById('start-btn').textContent='Continue playing →';
+}
 // Console helper: unlock all items for testing
 window.unlockAll=function(){Object.keys(ALL).forEach(n=>discovered.add(n));saveProgress();buildGrid();console.log('All '+discovered.size+' items unlocked.');};
 // Preview congrats screen: paste  showCongrats()  in browser console
@@ -933,6 +994,9 @@ function doReset(){
   try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');localStorage.removeItem('ba_owned');localStorage.removeItem('ba_achievements');}catch(e){}
   buildGrid();
   introEl.style.display='flex';
+  document.getElementById('intro-new').style.display='';
+  document.getElementById('intro-wb').style.display='none';
+  document.getElementById('start-btn').textContent='Start discovering →';
 }
 function showToast(cls,msg){
   if(toastTimer)clearTimeout(toastTimer);
