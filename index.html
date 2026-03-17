@@ -32,8 +32,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ec.tried-done::after{content:'✓';position:absolute;top:4px;right:5px;font-size:10px;font-weight:700;color:#1D9E75;line-height:1}
 .ec-e{font-size:24px;line-height:1;pointer-events:none}
 .ec-n{font-size:9.5px;font-weight:500;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
-.ec-info{position:absolute;top:3px;left:4px;width:10px;height:10px;display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;color:#666;background:transparent;border-radius:50%;cursor:pointer;pointer-events:auto;line-height:1;opacity:0.7;transition:opacity 0.12s;z-index:2;border:1px solid #666}
-.ec-info:hover{opacity:1}
+.ec-info{position:absolute;top:3px;left:4px;width:10px;height:10px;display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;color:#666;background:transparent;border-radius:50%;cursor:pointer;pointer-events:auto;line-height:1;opacity:0;transition:opacity 0.15s;z-index:2;border:1px solid #666}
+.ec:hover .ec-info{opacity:0.7}
+.ec-info:hover{opacity:1!important}
 .ec-lock{border-radius:13px;padding:12px 5px 9px;display:flex;flex-direction:column;align-items:center;gap:4px;border:1.5px dashed #ddd;background:#fafaf8;opacity:0.5}
 .ec-lock-e{font-size:20px;color:#bbb}
 .ec-lock-n{font-size:9px;color:#bbb;text-align:center}
@@ -175,6 +176,28 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
 #intro-logo img.emoji{height:36px;width:36px;margin:0}
 #congrats-burst img.emoji{height:54px;width:54px;margin:0}
 #confetti-row img.emoji{height:20px;width:20px}
+/* Achievement popup */
+#ach-popup{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:#fff;border-radius:16px;padding:20px 24px;z-index:400;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.18);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),opacity 0.35s;opacity:0;pointer-events:none;min-width:220px;max-width:280px}
+#ach-popup.active{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
+#ach-popup-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.2);z-index:390;opacity:0;pointer-events:none;transition:opacity 0.3s;border-radius:20px}
+#ach-popup-overlay.active{opacity:1;pointer-events:auto}
+.ach-popup-icon{font-size:40px;line-height:1;margin-bottom:8px}
+.ach-popup-icon img.emoji{height:40px;width:40px;margin:0}
+.ach-popup-label{font-size:10px;font-weight:600;color:#aaa;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px}
+.ach-popup-name{font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
+.ach-popup-desc{font-size:11.5px;color:#666;line-height:1.5}
+.ach-popup-close{margin-top:14px;padding:8px 20px;border-radius:8px;border:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:500;cursor:pointer;transition:opacity 0.1s}
+.ach-popup-close:hover{opacity:0.85}
+/* Stats achievements */
+.stats-ach-section{margin-bottom:18px}
+.stats-ach-title{font-size:10.5px;font-weight:600;color:#aaa;letter-spacing:0.3px;text-transform:uppercase;margin-bottom:10px}
+.stats-ach-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.stats-ach{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1px solid #eee;background:#fafaf8;text-align:center}
+.stats-ach.locked{opacity:0.3;filter:grayscale(1)}
+.stats-ach-icon{font-size:20px;line-height:1}
+.stats-ach-icon img.emoji{height:20px;width:20px;margin:0}
+.stats-ach-name{font-size:7.5px;font-weight:600;color:#333;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.stats-ach.locked .stats-ach-name{color:#999}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js" crossorigin="anonymous"></script>
 </head>
@@ -274,6 +297,9 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
     <div class="hp-close" onclick="closeHint()">✕</div>
   </div>
   <div id="toast"></div>
+  <!-- Achievement popup -->
+  <div id="ach-popup-overlay"></div>
+  <div id="ach-popup"></div>
   <!-- Slide-in detail panel -->
   <div id="slidein-overlay"></div>
   <div id="slidein">
@@ -582,7 +608,8 @@ function loadProgress(){
     const d=localStorage.getItem('ba_discovered');
     const t=localStorage.getItem('ba_tried');
     const o=localStorage.getItem('ba_owned');
-    if(d){const arr=JSON.parse(d);if(arr.length>=STARTS.length)return{discovered:new Set(arr),tried:new Set(t?JSON.parse(t):[]),owned:new Set(o?JSON.parse(o):[])};}
+    const a=localStorage.getItem('ba_achievements');
+    if(d){const arr=JSON.parse(d);if(arr.length>=STARTS.length)return{discovered:new Set(arr),tried:new Set(t?JSON.parse(t):[]),owned:new Set(o?JSON.parse(o):[]),achievements:new Set(a?JSON.parse(a):[])};}
   }catch(e){}
   return null;
 }
@@ -591,12 +618,78 @@ function saveProgress(){
     localStorage.setItem('ba_discovered',JSON.stringify([...discovered]));
     localStorage.setItem('ba_tried',JSON.stringify([...tried]));
     localStorage.setItem('ba_owned',JSON.stringify([...owned]));
+    localStorage.setItem('ba_achievements',JSON.stringify([...unlockedAch]));
   }catch(e){}
 }
 const saved=loadProgress();
 let discovered=saved?saved.discovered:new Set(STARTS);
 let tried=saved?saved.tried:new Set();
 let owned=saved?saved.owned:new Set();
+let unlockedAch=saved?saved.achievements:new Set();
+// Achievements
+const ACHIEVEMENTS=[
+  // Game progression
+  {id:'first_discovery',name:'First Discovery',desc:'Discover your first element beyond the starters',icon:'🌱',cat:'game',check:()=>discovered.size>STARTS.length},
+  {id:'explorer',name:'Explorer',desc:'Discover 25 elements',icon:'🧭',cat:'game',check:()=>discovered.size>=25},
+  {id:'alchemist',name:'Alchemist',desc:'Discover 50 elements',icon:'⚗️',cat:'game',check:()=>discovered.size>=50},
+  {id:'master_alchemist',name:'Master Alchemist',desc:'Discover 75 elements',icon:'🔮',cat:'game',check:()=>discovered.size>=75},
+  {id:'grand_master',name:'Grand Master',desc:'Discover all 102 elements',icon:'👑',cat:'game',check:()=>discovered.size>=TOTAL},
+  {id:'experimenter',name:'Experimenter',desc:'Try 30 recipes',icon:'🧪',cat:'game',check:()=>tried.size>=30},
+  {id:'mad_scientist',name:'Mad Scientist',desc:'Try 75 recipes',icon:'⚡',cat:'game',check:()=>tried.size>=75},
+  {id:'completionist',name:'Completionist',desc:'Try all 115 recipes',icon:'🏆',cat:'game',check:()=>tried.size>=Object.keys(R).length},
+  // Business coverage
+  {id:'getting_started',name:'Getting Started',desc:'Mark 5 items as owned',icon:'🚶',cat:'biz',check:()=>owned.size>=5},
+  {id:'foundation',name:'Foundation',desc:'Mark 15 items as owned',icon:'🧱',cat:'biz',check:()=>owned.size>=15},
+  {id:'halfway',name:'Halfway There',desc:'Mark 50 items as owned',icon:'⛰️',cat:'biz',check:()=>owned.size>=50},
+  {id:'full_stack',name:'Full Stack Business',desc:'Mark all 102 items as owned',icon:'🦄',cat:'biz',check:()=>owned.size>=TOTAL},
+  // Department: Content
+  {id:'content_creator',name:'Content Creator',desc:'Own Article, Blog, and Content Strategy',icon:'✍️',cat:'dept',check:()=>['Article','Blog','Content Strategy'].every(n=>owned.has(n))},
+  {id:'publishing_machine',name:'Publishing Machine',desc:'Own Editorial Plan, Content Calendar, Content Machine, and AI Content System',icon:'🏭',cat:'dept',check:()=>['Editorial Plan','Content Calendar','Content Machine','AI Content System'].every(n=>owned.has(n))},
+  // Department: Email
+  {id:'email_marketer',name:'Email Marketer',desc:'Own Newsletter, Email List, and Email Funnel',icon:'📧',cat:'dept',check:()=>['Newsletter','Email List','Email Funnel'].every(n=>owned.has(n))},
+  {id:'nurture_expert',name:'Nurture Expert',desc:'Own all 8 email items',icon:'💌',cat:'dept',check:()=>['Newsletter','Email Capture','Email List','Subscriber','Nurture Sequence','Email Funnel','Lead Magnet','Lead Generation'].every(n=>owned.has(n))},
+  // Department: Marketing
+  {id:'marketer',name:'Marketer',desc:'Own Social Media, SEO, and Ad Copy',icon:'📣',cat:'dept',check:()=>['Social Media','SEO','Ad Copy'].every(n=>owned.has(n))},
+  {id:'marketing_pro',name:'Marketing Pro',desc:'Own Marketing Stack, Marketing OS, Performance Marketing, and AI Marketing OS',icon:'🚀',cat:'dept',check:()=>['Marketing Stack','Marketing OS','Performance Marketing','AI Marketing OS'].every(n=>owned.has(n))},
+  // Department: Sales
+  {id:'closer',name:'Closer',desc:'Own Offer, Sales Page, and Sales Funnel',icon:'💰',cat:'dept',check:()=>['Offer','Sales Page','Sales Funnel'].every(n=>owned.has(n))},
+  {id:'sales_machine',name:'Sales Machine',desc:'Own all 12 sales items',icon:'⚡',cat:'dept',check:()=>['Offer','Sales Page','Sales Copy','Sales Funnel','Checkout Page','Upsell','Tripwire','Discovery Call','Inbound Sales','High-Ticket Offer','Automated Sales','Sales Machine'].every(n=>owned.has(n))},
+  // Department: Brand
+  {id:'brand_builder',name:'Brand Builder',desc:'Own Value Proposition, Brand Voice, and Brand Identity',icon:'🎨',cat:'dept',check:()=>['Value Proposition','Brand Voice','Brand Identity'].every(n=>owned.has(n))},
+  {id:'brand_empire',name:'Brand Empire',desc:'Own all 10 brand items',icon:'👑',cat:'dept',check:()=>['Value Proposition','Niche','Persona','Brand Guide','Brand Voice','Brand Identity','Design System','Headline','Premium Brand','Personal Brand'].every(n=>owned.has(n))},
+  // Department: Tech/Infra
+  {id:'tech_ready',name:'Tech Ready',desc:'Own Website, CRM, Analytics, and Automation',icon:'🔧',cat:'dept',check:()=>['Website','CRM','Analytics','Automation'].every(n=>owned.has(n))},
+  {id:'automation_expert',name:'Automation Expert',desc:'Own Automation, AI Automation, Marketing OS, and Workflow',icon:'🤖',cat:'dept',check:()=>['Automation','AI Automation','Marketing OS','Workflow'].every(n=>owned.has(n))},
+  // Department: Products
+  {id:'product_creator',name:'Product Creator',desc:'Own any 2 product items',icon:'🎁',cat:'dept',check:()=>['Digital Product','Online Course','SaaS Product','Product Design','Product Launch'].filter(n=>owned.has(n)).length>=2},
+  {id:'product_empire',name:'Product Empire',desc:'Own all 5 product items',icon:'📦',cat:'dept',check:()=>['Digital Product','Online Course','SaaS Product','Product Design','Product Launch'].every(n=>owned.has(n))},
+  // Department: Revenue
+  {id:'revenue_stream',name:'Revenue Stream',desc:'Own Revenue Engine and Recurring Revenue',icon:'💹',cat:'dept',check:()=>['Revenue Engine','Recurring Revenue'].every(n=>owned.has(n))},
+  {id:'financially_free',name:'Financially Free',desc:'Own Passive Income, Recurring Revenue, and Financial Freedom',icon:'🏖️',cat:'dept',check:()=>['Passive Income','Recurring Revenue','Financial Freedom'].every(n=>owned.has(n))},
+];
+const achPopup=document.getElementById('ach-popup');
+const achOverlay=document.getElementById('ach-popup-overlay');
+let achQueue=[];
+let achShowing=false;
+function checkAchievements(){
+  const newlyUnlocked=[];
+  ACHIEVEMENTS.forEach(a=>{if(!unlockedAch.has(a.id)&&a.check()){unlockedAch.add(a.id);newlyUnlocked.push(a);}});
+  if(newlyUnlocked.length){saveProgress();newlyUnlocked.forEach(a=>achQueue.push(a));if(!achShowing)showNextAch();}
+}
+function showNextAch(){
+  if(!achQueue.length){achShowing=false;return;}
+  achShowing=true;
+  const a=achQueue.shift();
+  achPopup.innerHTML=`<div class="ach-popup-icon">${a.icon}</div><div class="ach-popup-label">Achievement unlocked</div><div class="ach-popup-name">${a.name}</div><div class="ach-popup-desc">${a.desc}</div><button class="ach-popup-close" onclick="closeAchPopup()">Nice!</button>`;
+  achOverlay.classList.add('active');
+  achPopup.classList.add('active');
+}
+function closeAchPopup(){
+  achPopup.classList.remove('active');
+  achOverlay.classList.remove('active');
+  setTimeout(showNextAch,300);
+}
+achOverlay.addEventListener('click',closeAchPopup);
 let domCards=new Map();
 let slotA=null,slotB=null,resultName=null,resultState=null;
 let toastTimer=null,hideTimer=null,hintPopupTimer=null,hintCooldownTimer=null,longPressTimer=null;
@@ -650,7 +743,7 @@ function renderSlot(el,name){
 }
 function renderResult(){
   if(!slotA||!slotB){resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';resultEl.onclick=null;resultName=null;resultState=null;return;}
-  tried.add(ck(slotA,slotB));saveProgress();updateCardStates();
+  tried.add(ck(slotA,slotB));saveProgress();checkAchievements();updateCardStates();
   const res=R[ck(slotA,slotB)];
   if(!res){
     resultEl.className='state-none';resultEl.innerHTML='<span class="res-e">✗</span><span class="res-sub">tap to cancel</span>';
@@ -697,17 +790,17 @@ function addResult(){
     if(d){d.classList.add('pop');scrollToCard(added);setTimeout(()=>d.classList.remove('pop'),600);}
   }));
   showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');
-  checkWin();
+  checkWin();checkAchievements();
 }
 function resetGame(){
-  discovered=new Set(STARTS);tried=new Set();owned=new Set();
+  discovered=new Set(STARTS);tried=new Set();owned=new Set();unlockedAch=new Set();
   slotA=null;slotB=null;resultName=null;resultState=null;
   clearTimeout(hintPopupTimer);clearInterval(hintCooldownTimer);
   hintBtn.disabled=false;hintBtn.textContent='💡 Hint';
   closeHint();renderSlot(slotAEl,null);renderSlot(slotBEl,null);
   resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';
   congratsEl.style.display='none';
-  try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');localStorage.removeItem('ba_owned');}catch(e){}
+  try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');localStorage.removeItem('ba_owned');localStorage.removeItem('ba_achievements');}catch(e){}
   buildGrid();
   introEl.style.display='flex';
 }
@@ -1031,7 +1124,7 @@ function openSlideIn(name){
     if(owned.has(name)){owned.delete(name);}else{owned.add(name);}
     this.classList.toggle('checked');
     this.querySelector('.si-owned-box').textContent=owned.has(name)?'✓':'';
-    saveProgress();
+    saveProgress();checkAchievements();
   });
   slideinOverlay.classList.add('active');
   slideinPanel.classList.add('active');
@@ -1059,6 +1152,15 @@ function openStats(){
     tiers.push({tier:t,name:TIER_NAMES[t]||'Expert',items,disc,own,color:PAL[t%PAL.length]});
   }
   let html='';
+  // Achievements
+  html+='<div class="stats-ach-section"><div class="stats-ach-title">Achievements — '+unlockedAch.size+' / '+ACHIEVEMENTS.length+'</div>';
+  html+='<div class="stats-ach-grid">';
+  ACHIEVEMENTS.forEach(a=>{
+    const unlocked=unlockedAch.has(a.id);
+    html+=`<div class="stats-ach${unlocked?'':' locked'}" title="${a.desc}"><div class="stats-ach-icon">${a.icon}</div><div class="stats-ach-name">${a.name}</div></div>`;
+  });
+  html+='</div></div>';
+  // Summary cards
   const covPct=totalItems?Math.round((ownedCount/totalItems)*100):0;
   html+='<div class="stats-cards">';
   html+=`<div class="stats-card"><div class="stats-card-num">${discoveredCount}<span style="font-size:11px;color:#999;font-weight:400">/${totalItems}</span></div><div class="stats-card-label">elements<br>discovered</div></div>`;
