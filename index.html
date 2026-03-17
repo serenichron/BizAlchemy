@@ -32,8 +32,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ec.tried-done::after{content:'✓';position:absolute;top:4px;right:5px;font-size:10px;font-weight:700;color:#1D9E75;line-height:1}
 .ec-e{font-size:24px;line-height:1;pointer-events:none}
 .ec-n{font-size:9.5px;font-weight:500;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
-.ec-info{position:absolute;top:3px;left:4px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#aaa;background:#f0efe9;border-radius:50%;cursor:pointer;pointer-events:auto;line-height:1;opacity:0.6;transition:opacity 0.12s;z-index:2;border:1px solid #e0dfda}
-.ec-info:hover{opacity:1}
+.ec-info{position:absolute;top:3px;left:4px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#888;background:transparent;border-radius:50%;cursor:pointer;pointer-events:auto;line-height:1;opacity:0.7;transition:opacity 0.12s;z-index:2;border:1px solid #aaa}
+.ec-info:hover{opacity:1;color:#555;border-color:#888}
 .ec-lock{border-radius:13px;padding:12px 5px 9px;display:flex;flex-direction:column;align-items:center;gap:4px;border:1.5px dashed #ddd;background:#fafaf8;opacity:0.5}
 .ec-lock-e{font-size:20px;color:#bbb}
 .ec-lock-n{font-size:9px;color:#bbb;text-align:center}
@@ -131,6 +131,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #slidein-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f0efe9;font-size:13px;color:#666;cursor:pointer;flex-shrink:0;transition:background 0.1s}
 #slidein-close:hover{background:#e5e4df}
 #slidein-body{flex:1;overflow-y:auto;padding:18px 20px 24px;font-size:13px;color:#333;line-height:1.7}
+#slidein-body .si-desc{margin-bottom:20px}
+#slidein-body .si-cta{display:block;text-align:center;padding:13px 16px;border-radius:12px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:opacity 0.1s;margin-top:16px}
+#slidein-body .si-cta:hover{opacity:0.85}
 </style>
 </head>
 <body>
@@ -555,7 +558,9 @@ const gameEl=document.getElementById('game');
 const introEl=document.getElementById('intro');
 const congratsEl=document.getElementById('congrats');
 function startGame(){introEl.style.display='none';saveProgress();}
-if(saved){introEl.style.display='none';}
+if(saved&&discovered.size>STARTS.length){introEl.style.display='none';}
+// Console helper: unlock all items for testing
+window.unlockAll=function(){Object.keys(ALL).forEach(n=>discovered.add(n));saveProgress();buildGrid();console.log('All '+discovered.size+' items unlocked.');};
 // Preview congrats screen: paste  showCongrats()  in browser console
 window.showCongrats=function(){
   document.getElementById('stat-elements').textContent=discovered.size;
@@ -746,6 +751,110 @@ grid.addEventListener('click',e=>{if(!e.target.closest('.ec'))closeHint();});
 const LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula ut dictum pharetra, nisi nunc fringilla magna, in commodo elit erat nec turpis. Ut pharetra augue nec augue.';
 const LONG_DESC={};
 Object.keys(ALL).forEach(k=>{LONG_DESC[k]=LOREM;});
+const CTA_TEXT={
+  'Idea':'Let\u2019s shape your idea into a business',
+  'Audience':'Let\u2019s define your ideal audience',
+  'Content':'Let\u2019s plan your content strategy',
+  'Tool':'Let\u2019s pick the right tools for your stack',
+  'Niche':'Let\u2019s find your perfect niche',
+  'Article':'Let\u2019s plan your first articles',
+  'Website':'Let\u2019s build your website',
+  'Newsletter':'Let\u2019s launch your newsletter',
+  'CRM':'Let\u2019s set up your CRM',
+  'Template':'Let\u2019s create your templates',
+  'Value Proposition':'Let\u2019s craft your value proposition',
+  'Social Media':'Let\u2019s build your social presence',
+  'Keyword Research':'Let\u2019s find your best keywords',
+  'Landing Page':'Let\u2019s build a high-converting landing page',
+  'Lead Magnet':'Let\u2019s create your lead magnet',
+  'Persona':'Let\u2019s map your ideal client',
+  'Offer':'Let\u2019s design your offer',
+  'Blog':'Let\u2019s launch your blog',
+  'Content Strategy':'Let\u2019s plan your content strategy',
+  'Content Calendar':'Let\u2019s build your content calendar',
+  'Copywriting':'Let\u2019s sharpen your copy',
+  'Email Capture':'Let\u2019s set up your email capture',
+  'Analytics':'Let\u2019s set up your analytics',
+  'Wireframe':'Let\u2019s wireframe your pages',
+  'Email List':'Let\u2019s grow your email list',
+  'Nurture Sequence':'Let\u2019s write your nurture sequence',
+  'Automation':'Let\u2019s automate your workflows',
+  'Web Design':'Let\u2019s design your website',
+  'Headline':'Let\u2019s write headlines that convert',
+  'Brand Guide':'Let\u2019s create your brand guide',
+  'Subscriber':'Let\u2019s grow your subscriber base',
+  'Script':'Let\u2019s write your scripts',
+  'Hosting':'Let\u2019s get your hosting sorted',
+  'Workflow':'Let\u2019s streamline your workflows',
+  'SEO':'Let\u2019s boost your SEO',
+  'Rank Tracker':'Let\u2019s track your rankings',
+  'Sales Page':'Let\u2019s build your sales page',
+  'Lead Generation':'Let\u2019s build your lead generation engine',
+  'Brand Voice':'Let\u2019s define your brand voice',
+  'Design System':'Let\u2019s create your design system',
+  'Prototype':'Let\u2019s prototype your product',
+  'Editorial Plan':'Let\u2019s build your editorial plan',
+  'Email Funnel':'Let\u2019s set up your email funnel',
+  'Marketing Stack':'Let\u2019s build your marketing stack',
+  'Webinar':'Let\u2019s plan your webinar',
+  'Video':'Let\u2019s create your video content',
+  'Ad Copy':'Let\u2019s write ads that convert',
+  'Dashboard':'Let\u2019s build your dashboard',
+  'Brand Identity':'Let\u2019s define your brand identity',
+  'Opt-in Page':'Let\u2019s build your opt-in page',
+  'Sales Copy':'Let\u2019s write your sales copy',
+  'Organic Traffic':'Let\u2019s grow your organic traffic',
+  'Outreach':'Let\u2019s plan your outreach strategy',
+  'Podcast':'Let\u2019s launch your podcast',
+  'Social Proof':'Let\u2019s build your social proof',
+  'Tripwire':'Let\u2019s create your tripwire offer',
+  'A/B Test':'Let\u2019s set up your A/B tests',
+  'AI Writing':'Let\u2019s integrate AI into your writing',
+  'Sales Funnel':'Let\u2019s build your sales funnel',
+  'Launch Sequence':'Let\u2019s plan your launch sequence',
+  'Inbound Sales':'Let\u2019s set up inbound sales',
+  'Webinar Funnel':'Let\u2019s build your webinar funnel',
+  'High-Ticket Offer':'Let\u2019s design your high-ticket offer',
+  'Authority Site':'Let\u2019s build your authority site',
+  'Product Design':'Let\u2019s design your product',
+  'Marketing OS':'Let\u2019s build your marketing OS',
+  'Conversion':'Let\u2019s optimise your conversions',
+  'Social Brand':'Let\u2019s build your social brand',
+  'Content Machine':'Let\u2019s build your content machine',
+  'Performance Report':'Let\u2019s set up your performance reports',
+  'Ad Campaign':'Let\u2019s launch your ad campaign',
+  'Video Channel':'Let\u2019s launch your video channel',
+  'Checkout Page':'Let\u2019s optimise your checkout page',
+  'Retargeting':'Let\u2019s set up your retargeting',
+  'AI Automation':'Let\u2019s automate with AI',
+  'Discovery Call':'Let\u2019s structure your discovery calls',
+  'Online Course':'Let\u2019s create your online course',
+  'Referral Program':'Let\u2019s build your referral program',
+  'Digital Product':'Let\u2019s create your digital product',
+  'Partnership':'Let\u2019s find your ideal partners',
+  'Portfolio':'Let\u2019s build your portfolio',
+  'Automated Sales':'Let\u2019s automate your sales',
+  'Thought Leadership':'Let\u2019s build your thought leadership',
+  'Product Launch':'Let\u2019s plan your product launch',
+  'Automated Webinar':'Let\u2019s automate your webinar',
+  'Revenue Engine':'Let\u2019s build your revenue engine',
+  'Premium Brand':'Let\u2019s build your premium brand',
+  'Influence':'Let\u2019s grow your influence',
+  'Growth System':'Let\u2019s build your growth system',
+  'Sales Machine':'Let\u2019s build your sales machine',
+  'SaaS Product':'Let\u2019s plan your SaaS product',
+  'Performance Marketing':'Let\u2019s optimise your performance marketing',
+  'AI Content System':'Let\u2019s build your AI content system',
+  'Upsell':'Let\u2019s design your upsell strategy',
+  'Passive Income':'Let\u2019s build your passive income streams',
+  'Recurring Revenue':'Let\u2019s set up recurring revenue',
+  'Viral Growth':'Let\u2019s engineer viral growth',
+  'Personal Brand':'Let\u2019s build your personal brand',
+  'Market Leader':'Let\u2019s make you the market leader',
+  'Financial Freedom':'Let\u2019s map your path to financial freedom',
+  'Digital Empire':'Let\u2019s build your digital empire',
+  'AI Marketing OS':'Let\u2019s build your AI marketing OS',
+};
 const slideinOverlay=document.getElementById('slidein-overlay');
 const slideinPanel=document.getElementById('slidein');
 const slideinTitle=document.getElementById('slidein-title');
@@ -753,7 +862,9 @@ const slideinBody=document.getElementById('slidein-body');
 function openSlideIn(name){
   const info=ALL[name];if(!info)return;
   slideinTitle.textContent=info.e+' '+name;
-  slideinBody.textContent=LONG_DESC[name]||LOREM;
+  const desc=LONG_DESC[name]||LOREM;
+  const cta=CTA_TEXT[name]||'Let\u2019s talk about your next step';
+  slideinBody.innerHTML=`<div class="si-desc">${desc}</div><a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">${cta} \u2192</a>`;
   slideinOverlay.classList.add('active');
   slideinPanel.classList.add('active');
   tooltip.classList.remove('visible');
