@@ -225,8 +225,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #slidein-narrate.playing .narr-icon{width:8px;height:8px;border:none;border-radius:1px;background:#fff;margin-left:0}
 #slidein-body{flex:1;overflow-y:auto;padding:18px 20px 24px;font-size:13px;color:#333;line-height:1.7}
 #slidein-body .si-desc{margin-bottom:20px;line-height:17px}
-#slidein-body .si-desc .narr-sent{border-radius:4px;padding:1px 2px;margin:-1px -2px;transition:background .15s,box-shadow .15s}
-#slidein-body .si-desc .narr-sent.narr-active{background:rgba(55,138,221,0.18);box-shadow:0 0 8px 3px rgba(55,138,221,0.10)}
+#slidein-body .si-desc.narrating{color:rgba(var(--fg-rgb,51,51,51),0.35);transition:color .15s}
+#slidein-body .si-desc .narr-hl{color:rgba(var(--fg-rgb,51,51,51),1);background:rgba(55,138,221,0.18);border-radius:4px;padding:1px 2px;margin:-1px -2px;box-shadow:0 0 8px 3px rgba(55,138,221,0.10);transition:background .15s,box-shadow .15s}
 #slidein-body .si-cta{display:inline;font-size:13px;font-weight:600;color:#378ADD;text-decoration:none;transition:color 0.1s}
 #slidein-body .si-cta:hover{text-decoration:underline;color:#2a6db5}
 .si-owned{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;border:1px solid #e5e4df;background:#fafaf8;margin-bottom:18px;cursor:pointer;-webkit-user-select:none;user-select:none;transition:border-color 0.15s,background 0.15s}
@@ -1604,45 +1604,83 @@ speechSynthesis.addEventListener('voiceschanged',()=>{preferredVoice=pickVoice()
 preferredVoice=pickVoice();
 
 let narrOriginalHTML=null;
-let narrSentSpans=[];
 let narrSentences=[];
 let narrSentIdx=0;
+let narrDescEl=null;
+// Character offset where each sentence starts in the plain text
+let narrSentOffsets=[];
 
-function wrapSentencesForNarration(descEl){
+function prepareSentencesForNarration(descEl){
   narrOriginalHTML=descEl.innerHTML;
-  narrSentSpans=[];
-  // Split text into sentences (split on .!? followed by space or end)
-  const text=descEl.textContent;
-  narrSentences=text.match(/[^.!?]*[.!?]+[\s]?|[^.!?]+$/g)||[text];
-  // Trim trailing empty entries
+  narrDescEl=descEl;
+  const fullText=descEl.textContent;
+  narrSentences=fullText.match(/[^.!?]*[.!?]+[\s]?|[^.!?]+$/g)||[fullText];
   while(narrSentences.length&&!narrSentences[narrSentences.length-1].trim())narrSentences.pop();
-  // Rebuild descEl with sentence spans
-  descEl.innerHTML='';
-  for(let i=0;i<narrSentences.length;i++){
-    const sp=document.createElement('span');
-    sp.className='narr-sent';
-    sp.textContent=narrSentences[i];
-    descEl.appendChild(sp);
-    narrSentSpans.push(sp);
-  }
+  // Record the character offset for each sentence
+  narrSentOffsets=[];
+  let off=0;
+  for(const s of narrSentences){narrSentOffsets.push(off);off+=s.length;}
+  descEl.classList.add('narrating');
 }
 
-function unwrapSentences(){
-  if(narrOriginalHTML!==null){
-    const descEl=slideinBody.querySelector('.si-desc');
-    if(descEl)descEl.innerHTML=narrOriginalHTML;
+function restoreNarration(){
+  if(narrOriginalHTML!==null&&narrDescEl){
+    narrDescEl.innerHTML=narrOriginalHTML;
+    narrDescEl.classList.remove('narrating');
     narrOriginalHTML=null;
-    narrSentSpans=[];
+    narrDescEl=null;
     narrSentences=[];
+    narrSentOffsets=[];
   }
 }
 
 function highlightSentence(idx){
-  for(let i=0;i<narrSentSpans.length;i++){
-    narrSentSpans[i].classList.toggle('narr-active',i===idx);
+  if(!narrDescEl||idx<0||idx>=narrSentences.length)return;
+  // Restore pristine HTML first, then wrap just the active sentence
+  narrDescEl.innerHTML=narrOriginalHTML;
+  narrDescEl.classList.add('narrating');
+  const sentStart=narrSentOffsets[idx];
+  const sentEnd=sentStart+narrSentences[idx].length;
+  // Walk text nodes to find the range for this sentence
+  const walker=document.createTreeWalker(narrDescEl,NodeFilter.SHOW_TEXT,null);
+  let charPos=0;
+  let node;
+  let startNode=null,startOff=0,endNode=null,endOff=0;
+  while(node=walker.nextNode()){
+    const len=node.textContent.length;
+    const nodeEnd=charPos+len;
+    if(!startNode&&nodeEnd>sentStart){startNode=node;startOff=sentStart-charPos;}
+    if(nodeEnd>=sentEnd){endNode=node;endOff=sentEnd-charPos;break;}
+    charPos+=len;
   }
-  // Scroll the active sentence into view within the panel
-  if(narrSentSpans[idx])narrSentSpans[idx].scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(startNode&&endNode){
+    // Collect text-node segments that fall within the sentence
+    const segs=[];
+    const w2=document.createTreeWalker(narrDescEl,NodeFilter.SHOW_TEXT,null);
+    let n2,cp=0,inRange=false;
+    while(n2=w2.nextNode()){
+      const l=n2.textContent.length;
+      const ne=cp+l;
+      if(n2===startNode){inRange=true;segs.push({node:n2,from:startOff,to:n2===endNode?endOff:l});}
+      else if(inRange){segs.push({node:n2,from:0,to:n2===endNode?endOff:l});}
+      if(n2===endNode)break;
+      cp+=l;
+    }
+    // Wrap each segment individually (safe across element boundaries)
+    let firstWrap=null;
+    for(const seg of segs){
+      const txt=seg.node;
+      // Split off the "after" part first, then the "before" part
+      if(seg.to<txt.textContent.length)txt.splitText(seg.to);
+      const target=seg.from>0?txt.splitText(seg.from):txt;
+      const wrap=document.createElement('span');
+      wrap.className='narr-hl';
+      target.parentNode.insertBefore(wrap,target);
+      wrap.appendChild(target);
+      if(!firstWrap)firstWrap=wrap;
+    }
+    if(firstWrap)firstWrap.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
 }
 
 function speakNextSentence(){
@@ -1664,7 +1702,7 @@ function speakNextSentence(){
 function stopNarration(){
   speechSynthesis.cancel();
   narrationUtterance=null;
-  unwrapSentences();
+  restoreNarration();
   narrSentIdx=0;
   narrateBtn.classList.remove('playing');
   narrateBtn.setAttribute('aria-label','Narrate description');
@@ -1675,7 +1713,7 @@ function startNarration(){
   stopNarration();
   const text=descEl.textContent;
   if(!text.trim())return;
-  wrapSentencesForNarration(descEl);
+  prepareSentencesForNarration(descEl);
   narrSentIdx=0;
   narrateBtn.classList.add('playing');
   narrateBtn.setAttribute('aria-label','Stop narration');
