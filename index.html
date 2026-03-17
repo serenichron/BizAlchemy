@@ -117,6 +117,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #play-again-btn:hover{background:#f5f4f0}
 #glossary-btn{flex:1;padding:12px;border-radius:12px;border:none;background:#1a1a1a;font-size:13px;font-weight:500;color:#fff;cursor:pointer;transition:opacity 0.1s;text-decoration:none;display:flex;align-items:center;justify-content:center}
 #glossary-btn:hover{opacity:0.85}
+/* Slide-in panel */
+#slidein-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s ease;border-radius:20px}
+#slidein-overlay.active{opacity:1;pointer-events:auto}
+#slidein{position:absolute;bottom:0;left:0;right:0;height:80%;background:#fff;z-index:310;border-radius:20px 20px 0 0;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;box-shadow:0 -4px 32px rgba(0,0,0,0.12);overflow:hidden}
+#slidein.active{transform:translateY(0)}
+#slidein-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid #eee;flex-shrink:0}
+#slidein-title{font-size:15px;font-weight:600;color:#1a1a1a}
+#slidein-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f0efe9;font-size:13px;color:#666;cursor:pointer;flex-shrink:0;transition:background 0.1s}
+#slidein-close:hover{background:#e5e4df}
+#slidein-body{flex:1;overflow-y:auto;padding:18px 20px 24px;font-size:13px;color:#333;line-height:1.7}
 </style>
 </head>
 <body>
@@ -151,7 +161,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="legend-title">Card indicators</div>
         <div class="legend-row"><span class="legend-icon">★</span><span>Result waiting — you found a match but haven't collected it yet.</span></div>
         <div class="legend-row"><span class="legend-icon">✓</span><span>Already collected — this combo is done.</span></div>
-        <div class="legend-row"><span class="legend-icon">≠</span><span>No reaction — these two don't combine.</span></div>
       </div>
     </div>
     <div id="intro-footer">
@@ -178,7 +187,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div id="congrats-message">
         <p>Every element you discovered maps to a real digital marketing concept. Visit our <a href="https://serenichron.com/glossary" target="_blank" rel="noopener">glossary</a> to learn what each one means and how Serenichron can help you build it.</p>
       </div>
-      <div id="confetti-row">🌎 ⚡ 🦋 ♾️ 🏖️</div>
+      <div id="confetti-row"></div>
     </div>
     <div id="congrats-footer">
       <button id="play-again-btn" onclick="resetGame()">↺ Play again</button>
@@ -207,6 +216,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="hp-close" onclick="closeHint()">✕</div>
   </div>
   <div id="toast"></div>
+  <!-- Slide-in detail panel -->
+  <div id="slidein-overlay"></div>
+  <div id="slidein">
+    <div id="slidein-header">
+      <div id="slidein-title"></div>
+      <div id="slidein-close" onclick="closeSlideIn()">&#x2715;</div>
+    </div>
+    <div id="slidein-body"></div>
+  </div>
 </div></div>
 <script>
 const PAL=[
@@ -526,7 +544,7 @@ function showTooltip(name,el){
   const recipeHTML=recipes.length?`<div class="tt-recipe">${recipes.map(([a,b])=>`${ALL[a]?ALL[a].e:'?'} ${a} + ${ALL[b]?ALL[b].e:'?'} ${b}`).join('<br>')}</div>`:'';
   const descLines=info.d.split('\n').map(l=>`<div>${l}</div>`).join('');
   const ctaUrl=`https://serenichron.com/glossary/${slug(name)}`;
-  tooltip.innerHTML=`<div class="tt-title">${ALL[name].e} ${name}</div>${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="${ctaUrl}" target="_blank" rel="noopener">Read more →</a>`;
+  tooltip.innerHTML=`<div class="tt-title">${ALL[name].e} ${name}</div>${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="#" onclick="event.preventDefault();event.stopPropagation();openSlideIn('${name.replace(/'/g,"\\'")}');return false;">Read more →</a>`;
   tooltip.style.left='-9999px';tooltip.style.top='-9999px';tooltip.classList.add('visible');
   const TW=tooltip.offsetWidth,TH=tooltip.offsetHeight,GW=gameEl.offsetWidth,MARGIN=8,TRAY_H=100;
   const gameRect=gameEl.getBoundingClientRect(),cardRect=el.getBoundingClientRect();
@@ -582,6 +600,26 @@ function buildGrid(){
   cntEl.textContent=discovered.size+' / '+TOTAL+' found';
 }
 grid.addEventListener('click',e=>{if(!e.target.closest('.ec'))closeHint();});
+const LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula ut dictum pharetra, nisi nunc fringilla magna, in commodo elit erat nec turpis. Ut pharetra augue nec augue.';
+const LONG_DESC={};
+Object.keys(ALL).forEach(k=>{LONG_DESC[k]=LOREM;});
+const slideinOverlay=document.getElementById('slidein-overlay');
+const slideinPanel=document.getElementById('slidein');
+const slideinTitle=document.getElementById('slidein-title');
+const slideinBody=document.getElementById('slidein-body');
+function openSlideIn(name){
+  const info=ALL[name];if(!info)return;
+  slideinTitle.textContent=info.e+' '+name;
+  slideinBody.textContent=LONG_DESC[name]||LOREM;
+  slideinOverlay.classList.add('active');
+  slideinPanel.classList.add('active');
+  tooltip.classList.remove('visible');
+}
+function closeSlideIn(){
+  slideinOverlay.classList.remove('active');
+  slideinPanel.classList.remove('active');
+}
+slideinOverlay.addEventListener('click',closeSlideIn);
 buildGrid();
 </script>
 </body>
