@@ -1665,22 +1665,24 @@ function highlightWord(charIndex){
 }
 
 function startFallbackHighlight(text){
-  // Estimate ~150 words/min at 0.95 rate → ~145wpm → ~415ms/word
-  const msPerWord=415;
-  let idx=0;
-  narrFallbackTimer=setInterval(()=>{
-    if(!narrBoundaryFired){
-      if(idx<narrWordSpans.length){highlightWordIndex(idx);idx++;}
-      else clearInterval(narrFallbackTimer);
-    } else {
-      // Boundary events kicked in, stop fallback
-      clearInterval(narrFallbackTimer);narrFallbackTimer=null;
-    }
-  },msPerWord);
+  // Estimate total duration from char count: ~14 chars/sec at rate 0.95
+  const charsPerSec=14*0.95;
+  const totalChars=text.length;
+  const totalMs=(totalChars/charsPerSec)*1000;
+  // Schedule each word proportionally by its position in the text
+  narrFallbackTimer=[];
+  for(let i=0;i<narrWordSpans.length;i++){
+    const ci=parseInt(narrWordSpans[i].dataset.ci,10);
+    const delay=(ci/totalChars)*totalMs;
+    const tid=setTimeout(()=>{
+      if(!narrBoundaryFired)highlightWordIndex(i);
+    },delay);
+    narrFallbackTimer.push(tid);
+  }
 }
 
 function stopNarration(){
-  if(narrFallbackTimer){clearInterval(narrFallbackTimer);narrFallbackTimer=null;}
+  if(narrFallbackTimer){narrFallbackTimer.forEach(t=>clearTimeout(t));narrFallbackTimer=null;}
   if(narrationUtterance){speechSynthesis.cancel();narrationUtterance=null;}
   unwrapWords();
   narrBoundaryFired=false;
