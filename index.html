@@ -150,7 +150,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #stats.active{display:flex}
 #stats-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:1px solid #eee;flex-shrink:0;background:#fafaf8}
 #stats-title{font-size:16px;font-weight:600;color:#1a1a1a}
-#stats-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f0efe9;font-size:13px;color:#666;cursor:pointer;flex-shrink:0;transition:background 0.1s}
+#stats-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f0efe9;font-size:13px;color:#666;cursor:pointer;flex-shrink:0;transition:background 0.1s;border:none;padding:0}
 #stats-close:hover{background:#e5e4df}
 #stats-body{flex:1;overflow-y:auto;padding:18px 18px 24px}
 .stats-cards{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px}
@@ -178,7 +178,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #slidein.active{transform:translateY(0)}
 #slidein-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid #eee;flex-shrink:0}
 #slidein-title{font-size:15px;font-weight:600;color:#1a1a1a}
-#slidein-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f0efe9;font-size:13px;color:#666;cursor:pointer;flex-shrink:0;transition:background 0.1s}
+#slidein-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f0efe9;font-size:13px;color:#666;cursor:pointer;flex-shrink:0;transition:background 0.1s;border:none;padding:0}
 #slidein-close:hover{background:#e5e4df}
 #slidein-body{flex:1;overflow-y:auto;padding:18px 20px 24px;font-size:13px;color:#333;line-height:1.7}
 #slidein-body .si-desc{margin-bottom:20px;line-height:17px}
@@ -233,11 +233,21 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
 .confirm-cancel:hover{background:#f5f4f0}
 .confirm-go{border:none;background:#D85A30;color:#fff}
 .confirm-go:hover{opacity:0.85}
+/* Accessibility */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+h1,h2{margin:0;padding:0}
+.ec:focus-visible,.slot:focus-visible,#result-slot:focus-visible,.hdr-btn:focus-visible,button:focus-visible,.ach-popup-close:focus-visible,#slidein-close:focus-visible,#stats-close:focus-visible{outline:2px solid #378ADD;outline-offset:2px;border-radius:inherit}
+@media(prefers-reduced-motion:reduce){
+  .ec,.slot,#result-slot,.pop,.glow,.rarity-ring,.rarity-fill,#ach-popup,#slidein,#slidein-overlay,.particle-burst,.particle{animation:none!important;transition:none!important}
+  .rarity-ring{display:none}
+  @keyframes borderShimmer{0%,100%{transform:none}}
+  @keyframes resultShimmer{0%,100%{transform:none}}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
-<div id="wrap"><div id="game">
+<div id="wrap"><main id="game" role="application" aria-label="BizAlchemy combination game">
   <!-- Intro screen -->
   <div id="intro">
     <div id="intro-body">
@@ -302,30 +312,30 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
     </div>
   </div>
   <!-- Stats screen -->
-  <div id="stats">
+  <div id="stats" role="dialog" aria-modal="true" aria-labelledby="stats-title">
     <div id="stats-header">
-      <div id="stats-title">Statistics</div>
-      <div id="stats-close" onclick="closeStats()">&#x2715;</div>
+      <h2 id="stats-title">Statistics</h2>
+      <button id="stats-close" onclick="closeStats()" aria-label="Close statistics">&#x2715;</button>
     </div>
     <div id="stats-body"></div>
   </div>
   <!-- Game -->
-  <div id="hdr">
-    <div id="ttl">BizAlchemy</div>
+  <header id="hdr">
+    <h1 id="ttl">BizAlchemy</h1>
     <div id="cnt">4 found</div>
-    <button id="stats-btn" class="hdr-btn" onclick="openStats()">📊</button>
-    <button id="hint-btn" class="hdr-btn" onclick="showHint()">💡 Hint</button>
-    <button id="reset-btn" class="hdr-btn" onclick="resetGame()">↺ Reset</button>
-  </div>
-  <div id="grid"></div>
-  <div id="tray">
-    <div class="slot" id="slot-a"><span class="slot-hint">tap a card</span></div>
-    <div id="plus">+</div>
-    <div class="slot" id="slot-b"><span class="slot-hint">tap a card</span></div>
-    <div id="eq">=</div>
-    <div id="result-slot"><span class="res-hint">result</span></div>
-  </div>
-  <div id="tooltip"></div>
+    <button id="stats-btn" class="hdr-btn" onclick="openStats()" aria-label="Open statistics">📊</button>
+    <button id="hint-btn" class="hdr-btn" onclick="showHint()" aria-label="Get a hint">💡 Hint</button>
+    <button id="reset-btn" class="hdr-btn" onclick="resetGame()" aria-label="Reset game">↺ Reset</button>
+  </header>
+  <section id="grid" aria-label="Element cards"></section>
+  <nav id="tray" aria-label="Combination tray">
+    <div class="slot" id="slot-a" role="button" tabindex="0" aria-label="Slot A — empty, tap a card to fill"><span class="slot-hint">tap a card</span></div>
+    <div id="plus" aria-hidden="true">+</div>
+    <div class="slot" id="slot-b" role="button" tabindex="0" aria-label="Slot B — empty, tap a card to fill"><span class="slot-hint">tap a card</span></div>
+    <div id="eq" aria-hidden="true">=</div>
+    <div id="result-slot" role="button" tabindex="0" aria-label="Result — empty"><span class="res-hint">result</span></div>
+  </nav>
+  <div id="tooltip" role="tooltip"></div>
   <div id="hint-popup">
     <div class="hp-label">HINT — TRY THIS</div>
     <div class="hp-combo" id="hp-combo"></div>
@@ -333,21 +343,22 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
   </div>
   <div id="toast"></div>
   <!-- Confirm dialog -->
-  <div id="confirm-overlay"></div>
-  <div id="confirm-box"></div>
+  <div id="confirm-overlay" aria-hidden="true"></div>
+  <div id="confirm-box" role="dialog" aria-modal="true" aria-label="Confirmation dialog"></div>
   <!-- Achievement popup -->
-  <div id="ach-popup-overlay"></div>
-  <div id="ach-popup"></div>
+  <div id="ach-popup-overlay" aria-hidden="true"></div>
+  <div id="ach-popup" role="dialog" aria-modal="true" aria-label="Achievement unlocked"></div>
   <!-- Slide-in detail panel -->
-  <div id="slidein-overlay"></div>
-  <div id="slidein">
+  <div id="slidein-overlay" aria-hidden="true"></div>
+  <div id="slidein" role="dialog" aria-modal="true" aria-labelledby="slidein-title">
     <div id="slidein-header">
-      <div id="slidein-title"></div>
-      <div id="slidein-close" onclick="closeSlideIn()">&#x2715;</div>
+      <h2 id="slidein-title"></h2>
+      <button id="slidein-close" onclick="closeSlideIn()" aria-label="Close panel">&#x2715;</button>
     </div>
     <div id="slidein-body"></div>
   </div>
-</div></div>
+  <div id="announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+</main></div>
 <script>
 const PAL=[
   {bg:'#FAEEDA',b:'#EF9F27',t:'#633806',dot:'#EF9F27'},
@@ -807,9 +818,10 @@ function getIndicator(a,b){
 }
 function applyIndicator(d,ind){
   d.classList.remove('tried-no-result','tried-pending','tried-done');
-  if(ind==='no-result')d.classList.add('tried-no-result');
-  else if(ind==='pending')d.classList.add('tried-pending');
-  else if(ind==='done')d.classList.add('tried-done');
+  if(ind==='no-result'){d.classList.add('tried-no-result');d.setAttribute('title','Tried — no result');}
+  else if(ind==='pending'){d.classList.add('tried-pending');d.setAttribute('title','Result waiting — not yet collected');}
+  else if(ind==='done'){d.classList.add('tried-done');d.setAttribute('title','Already collected');}
+  else{d.removeAttribute('title');}
 }
 function scrollToCard(name){
   const d=domCards.get(name);if(!d)return;
@@ -818,11 +830,13 @@ function scrollToCard(name){
   grid.scrollTo({top:Math.max(0,relTop-(grid.clientHeight/2)+(cr.height/2)),behavior:'smooth'});
 }
 function renderSlot(el,name){
-  if(!name){el.innerHTML='<span class="slot-hint">tap a card</span>';el.classList.remove('filled');el.style.removeProperty('--slot-color');el.style.removeProperty('--slot-bg');return;}
+  const label=el.id==='slot-a'?'Slot A':'Slot B';
+  if(!name){el.innerHTML='<span class="slot-hint">tap a card</span>';el.classList.remove('filled');el.style.removeProperty('--slot-color');el.style.removeProperty('--slot-bg');el.setAttribute('aria-label',label+' — empty, tap a card to fill');return;}
   const c=PAL[ALL[name].tier%PAL.length];
   el.style.setProperty('--slot-color',c.b);el.style.setProperty('--slot-bg',c.bg);el.classList.add('filled');
+  el.setAttribute('aria-label',label+': '+name);
   const sid=el.id==='slot-a'?'a':'b';
-  el.innerHTML=`<span class="slot-clear" onclick="event.stopPropagation();clearSlot('${sid}')">✕</span><span class="slot-e">${ALL[name].e}</span><span class="slot-n" style="color:${PAL[ALL[name].tier%PAL.length].t}">${name}</span>`;
+  el.innerHTML=`<span class="slot-clear" role="button" tabindex="0" aria-label="Remove ${name.replace(/"/g,'&quot;')}" onclick="event.stopPropagation();clearSlot('${sid}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();clearSlot('${sid}')}">✕</span><span class="slot-e" aria-hidden="true">${ALL[name].e}</span><span class="slot-n" style="color:${PAL[ALL[name].tier%PAL.length].t}">${name}</span>`;
 }
 function renderResult(){
   if(!slotA||!slotB){resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';resultEl.onclick=null;resultName=null;resultState=null;return;}
@@ -830,18 +844,21 @@ function renderResult(){
   const res=R[ck(slotA,slotB)];
   if(!res){
     resultEl.className='state-none';resultEl.innerHTML='<span class="res-e">✗</span><span class="res-sub">tap to cancel</span>';
-    resultEl.onclick=cancelCombo;resultName=null;resultState='none';sndFail();
+    resultEl.setAttribute('aria-label','No match — tap to cancel');
+    resultEl.onclick=cancelCombo;resultName=null;resultState='none';sndFail();announce('No match');
   } else if(discovered.has(res)){
     resultEl.className='state-found';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to cancel</span>`;
-    resultEl.onclick=cancelCombo;resultName=res;resultState='found';
+    resultEl.setAttribute('aria-label',res+' — already found, tap to cancel');
+    resultEl.onclick=cancelCombo;resultName=res;resultState='found';announce(res+' — already found');
   } else {
     resultEl.className='state-new';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to add ✦</span>`;
-    resultEl.onclick=addResult;resultName=res;resultState='new';
+    resultEl.setAttribute('aria-label','New discovery: '+res+' — tap to add');
+    resultEl.onclick=addResult;resultName=res;resultState='new';announce('New discovery: '+res+'! Tap result to add.');
   }
 }
 function cancelCombo(){clearSlot('a');clearSlot('b');}
 function clearSlot(which){
-  if(which==='a')slotA=null;else slotB=null;
+  if(which==='a'){slotA=slotB;slotB=null;}else{slotB=null;}
   updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();
 }
 function updateCardStates(){
@@ -881,10 +898,11 @@ function showConfirm(title,msg,onConfirm){
   const bx=document.getElementById('confirm-box');
   bx.innerHTML=`<div class="confirm-title">${title}</div><div class="confirm-msg">${msg}</div><div class="confirm-btns"><button class="confirm-cancel" id="confirm-no">Cancel</button><button class="confirm-go" id="confirm-yes">Reset</button></div>`;
   ov.classList.add('active');bx.classList.add('active');
-  const close=()=>{ov.classList.remove('active');bx.classList.remove('active');};
+  const close=()=>{releaseFocus(bx);ov.classList.remove('active');bx.classList.remove('active');};
   document.getElementById('confirm-no').onclick=close;
   ov.onclick=close;
   document.getElementById('confirm-yes').onclick=()=>{close();onConfirm();};
+  trapFocus(bx);
 }
 function resetGame(){
   showConfirm('Reset progress?','This will erase all discoveries, owned items, and achievements.',doReset);
@@ -904,6 +922,7 @@ function doReset(){
 function showToast(cls,msg){
   if(toastTimer)clearTimeout(toastTimer);
   const t=document.getElementById('toast');t.className=cls;t.textContent=msg;
+  announce(msg);
   toastTimer=setTimeout(()=>{t.className='';t.style.display='none';},2400);
 }
 function closeHint(){clearTimeout(hintPopupTimer);hintPopup.style.display='none';}
@@ -959,34 +978,37 @@ function buildGrid(){
   for(let tier=0;tier<=maxTier;tier++){
     const items=Object.entries(ALL).filter(([,v])=>v.tier===tier);if(!items.length)continue;
     const p=PAL[tier%PAL.length];
-    const hdr=document.createElement('div');hdr.className='tier-hdr';
-    hdr.innerHTML=`<div class="tier-name"><span class="tier-dot" style="background:${p.dot}"></span><span>Tier ${tier} — ${TIER_NAMES[tier]||'Expert'}</span></div><div class="tier-prog">${dpTier[tier]||0} / ${items.length}</div>`;
+    const hdr=document.createElement('h2');hdr.className='tier-hdr';
+    hdr.innerHTML=`<div class="tier-name"><span class="tier-dot" style="background:${p.dot}" aria-hidden="true"></span><span>Tier ${tier} — ${TIER_NAMES[tier]||'Expert'}</span></div><div class="tier-prog">${dpTier[tier]||0} / ${items.length}</div>`;
     grid.appendChild(hdr);
-    const row=document.createElement('div');row.className='cards-row';
+    const row=document.createElement('div');row.className='cards-row';row.setAttribute('role','group');row.setAttribute('aria-label','Tier '+tier+' cards');
     items.forEach(([name,info])=>{
       if(discovered.has(name)){
         const c=PAL[tier%PAL.length];
         const isRarity=tier>=4;
         const d=document.createElement('div');d.className='ec'+(isRarity?' rarity-high':'');
+        d.setAttribute('role','button');d.setAttribute('tabindex','0');d.setAttribute('aria-label',name+(name===slotA||name===slotB?' (selected)':''));
         d.style.cssText=`--card-bg:linear-gradient(135deg,${c.bg} 0%,${c.bg}dd 60%,${c.bg}88 100%);--sel-color:${c.b};--card-shadow:${c.b}30`;
-        const rarityHtml=isRarity?'<span class="rarity-ring"></span><span class="rarity-fill"></span>':'';
-        d.innerHTML=`${rarityHtml}<span class="ec-info" data-name="${name.replace(/"/g,'&quot;')}">i</span><span class="ec-e">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
+        const rarityHtml=isRarity?'<span class="rarity-ring" aria-hidden="true"></span><span class="rarity-fill" aria-hidden="true"></span>':'';
+        d.innerHTML=`${rarityHtml}<span class="ec-info" data-name="${name.replace(/"/g,'&quot;')}" role="button" tabindex="0" aria-label="Info about ${name.replace(/"/g,'&quot;')}">i</span><span class="ec-e" aria-hidden="true">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
         if(name===slotA||name===slotB)d.classList.add('selected');
         const isBlocked=slotA&&!slotB&&name!==slotA&&!hasReaction(slotA,name);
-        if(isBlocked){d.classList.add('no-react');}
+        if(isBlocked){d.classList.add('no-react');d.setAttribute('aria-disabled','true');}
         else{
           if(slotA&&slotB&&name!==slotA&&name!==slotB)d.classList.add('dimmed');
           if(slotA&&!slotB&&name!==slotA){const ind=getIndicator(slotA,name);if(ind)applyIndicator(d,ind);}
         }
         d.addEventListener('click',(e)=>{if(e.target.classList.contains('ec-info'))return;tapCard(name);});
+        d.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tapCard(name);}});
         const infoIcon=d.querySelector('.ec-info');
         const isTouch='ontouchstart' in window;
         infoIcon.addEventListener('click',(e)=>{e.stopPropagation();if(isTouch){cancelHide();showTooltip(name,infoIcon);}else{tapCard(name);}});
+        infoIcon.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();cancelHide();showTooltip(name,infoIcon);}});
         infoIcon.addEventListener('mouseenter',(e)=>{e.stopPropagation();cancelHide();showTooltip(name,infoIcon);});
         infoIcon.addEventListener('mouseleave',(e)=>{e.stopPropagation();scheduleHide();});
         row.appendChild(d);domCards.set(name,d);
       } else {
-        const lock=document.createElement('div');lock.className='ec-lock';
+        const lock=document.createElement('div');lock.className='ec-lock';lock.setAttribute('aria-label','Undiscovered element');
         lock.innerHTML='<div class="ec-lock-e">?</div><div class="ec-lock-n">???</div>';
         row.appendChild(lock);
       }
@@ -1550,6 +1572,74 @@ function launchConfetti(){
   }
   requestAnimationFrame(draw);
 }
+// Accessibility: aria-live announcements
+const announceEl=document.getElementById('announcements');
+function announce(msg){announceEl.textContent='';requestAnimationFrame(()=>{announceEl.textContent=msg;});}
+
+// Accessibility: keyboard navigation for grid (arrow keys)
+grid.addEventListener('keydown',function(e){
+  const cards=[...grid.querySelectorAll('.ec:not(.no-react)')];
+  if(!cards.length)return;
+  const idx=cards.indexOf(document.activeElement);
+  if(idx===-1)return;
+  const cols=3;let next=-1;
+  if(e.key==='ArrowRight')next=idx+1;
+  else if(e.key==='ArrowLeft')next=idx-1;
+  else if(e.key==='ArrowDown')next=idx+cols;
+  else if(e.key==='ArrowUp')next=idx-cols;
+  if(next>=0&&next<cards.length){e.preventDefault();cards[next].focus();}
+});
+
+// Accessibility: keyboard support for slots and result
+[slotAEl,slotBEl,resultEl].forEach(el=>{
+  el.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}
+  });
+});
+
+// Accessibility: focus trap for modals
+function trapFocus(container){
+  const focusable=container.querySelectorAll('button,[tabindex]:not([tabindex="-1"]),a[href],input,select,textarea');
+  if(!focusable.length)return;
+  const first=focusable[0],last=focusable[focusable.length-1];
+  first.focus();
+  function handler(e){
+    if(e.key!=='Tab')return;
+    if(e.shiftKey){if(document.activeElement===first){e.preventDefault();last.focus();}}
+    else{if(document.activeElement===last){e.preventDefault();first.focus();}}
+  }
+  container.addEventListener('keydown',handler);
+  container._trapHandler=handler;
+}
+function releaseFocus(container){
+  if(container._trapHandler){container.removeEventListener('keydown',container._trapHandler);delete container._trapHandler;}
+}
+
+// Patch modal open/close functions for focus trapping and Escape key
+const _origOpenSlideIn=openSlideIn;
+openSlideIn=function(name){_origOpenSlideIn(name);trapFocus(slideinPanel);};
+const _origCloseSlideIn=closeSlideIn;
+closeSlideIn=function(){releaseFocus(slideinPanel);_origCloseSlideIn();};
+const _origOpenStats=openStats;
+openStats=function(){_origOpenStats();trapFocus(statsEl);};
+const _origCloseStats=closeStats;
+closeStats=function(){releaseFocus(statsEl);_origCloseStats();};
+const _origShowNextAch=showNextAch;
+showNextAch=function(){_origShowNextAch();if(achShowing)trapFocus(achPopup);};
+const _origCloseAchPopup=closeAchPopup;
+closeAchPopup=function(){releaseFocus(achPopup);_origCloseAchPopup();};
+// Escape key closes any open modal
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;
+  if(achPopup.classList.contains('active')){closeAchPopup();return;}
+  if(slideinPanel.classList.contains('active')){closeSlideIn();return;}
+  if(statsEl.classList.contains('active')){closeStats();return;}
+  if(document.getElementById('confirm-box').classList.contains('active')){
+    document.getElementById('confirm-overlay').classList.remove('active');
+    document.getElementById('confirm-box').classList.remove('active');return;
+  }
+});
+
 buildGrid();
 // Twemoji: parse all emoji into consistent SVG images
 function tp(el){if(typeof twemoji!=='undefined')twemoji.parse(el||document.body,{folder:'svg',ext:'.svg'});}
