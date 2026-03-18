@@ -346,6 +346,10 @@ h1,h2{margin:0;padding:0}
   .intro-grid{gap:5px}
   .intro-grid-item{padding:7px 9px}
 }
+/* Standalone PWA — prevent body bounce/scroll (no browser bar to reveal) */
+@media(display-mode:standalone){
+  html,body{overflow:hidden;overscroll-behavior:none}
+}
 /* Tablet portrait */
 @media(min-width:600px){
   body{padding-top:26px}
