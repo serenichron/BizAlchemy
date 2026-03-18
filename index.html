@@ -234,10 +234,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .si-lang-opt{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;font-weight:500;color:#333;cursor:pointer;transition:background 0.1s;border:none;background:none;width:100%;text-align:left}
 .si-lang-opt:hover{background:#f5f4f0}
 .si-lang-opt.active{color:#378ADD;font-weight:600}
-.si-lang-opt.disabled{color:#bbb;cursor:default;pointer-events:none}
+.si-lang-opt .si-lang-no-voice{font-size:9px;color:#bbb;margin-left:auto;white-space:nowrap}
+#slidein-narrate.disabled{opacity:0.35;cursor:default;pointer-events:none}
 .si-lang-opt .lang-flag{flex-shrink:0}
 .si-lang-opt .lang-flag img.emoji{height:14px;width:14px}
-.si-lang-no-voice{font-size:9px;color:#bbb;margin-left:auto;white-space:nowrap}
 .si-translating{opacity:0.5;transition:opacity 0.2s}
 #slidein-body{flex:1;overflow-y:auto;padding:18px 20px 24px;font-size:13px;color:#333;line-height:1.7}
 #slidein-body .si-desc{margin-bottom:20px;line-height:17px}
@@ -1689,7 +1689,7 @@ function buildLangDropdown(){
   let html='<button class="si-lang-opt'+(activeLang===null?' active':'')+'" data-lang="en"><span class="lang-flag">🇬🇧</span>English</button>';
   LANGS.forEach(l=>{
     const hasVoice=getVoicesForLang(l.code).length>0;
-    const cls='si-lang-opt'+(activeLang===l.code?' active':'')+(hasVoice?'':' disabled');
+    const cls='si-lang-opt'+(activeLang===l.code?' active':'');
     const noVoice=hasVoice?'':'<span class="si-lang-no-voice">no voice</span>';
     html+=`<button class="${cls}" data-lang="${l.code}"><span class="lang-flag">${l.flag}</span>${l.name}${noVoice}</button>`;
   });
@@ -1712,7 +1712,7 @@ translateBtn.addEventListener('click',function(e){
 langDropdown.addEventListener('click',function(e){
   e.stopPropagation();
   const btn=e.target.closest('.si-lang-opt');
-  if(!btn||btn.classList.contains('disabled'))return;
+  if(!btn)return;
   const lang=btn.dataset.lang;
   langDropdown.classList.remove('open');
   if(lang==='en'){
@@ -1776,10 +1776,13 @@ async function applyTranslation(name,langCode){
   if(!descEl)return;
   // Stop narration if playing
   stopNarration();
+  // Disable narrate while translating
+  narrateBtn.classList.add('disabled');
   // Check cache
   if(!translationCache[langCode])translationCache[langCode]={};
   if(translationCache[langCode][name]){
     descEl.innerHTML=translationCache[langCode][name];
+    updateVoiceForLang();
     return;
   }
   // Save original before overwriting
@@ -1796,21 +1799,26 @@ async function applyTranslation(name,langCode){
     // Translation failed — restore original with error note
     descEl.innerHTML=origHTML;
   }
+  // Re-enable narrate (updateVoiceForLang handles no-voice case)
+  updateVoiceForLang();
 }
 
 function restoreOriginalDesc(){
   if(originalDescHTML===null)return;
   const descEl=slideinBody.querySelector('.si-desc');
   if(descEl)descEl.innerHTML=originalDescHTML;
+  narrateBtn.classList.remove('disabled');
 }
 
 function updateVoiceForLang(){
   const lang=activeLang||'en';
   const voices=speechSynthesis.getVoices();
-  if(lang==='en'){preferredVoice=pickVoice();return;}
+  if(lang==='en'){preferredVoice=pickVoice();narrateBtn.classList.remove('disabled');return;}
   const langVoices=voices.filter(v=>v.lang.toLowerCase().startsWith(lang));
   // Prefer a Google or natural voice
   preferredVoice=langVoices.find(v=>/google/i.test(v.name))||langVoices.find(v=>/natural/i.test(v.name))||langVoices[0]||null;
+  if(preferredVoice){narrateBtn.classList.remove('disabled');}
+  else{narrateBtn.classList.add('disabled');}
 }
 
 const statsEl=document.getElementById('stats');
