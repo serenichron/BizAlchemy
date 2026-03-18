@@ -1629,6 +1629,19 @@ function prepareSentencesForNarration(descEl){
   const fullText=descEl.textContent;
   narrSentences=fullText.match(/[^.!?]*[.!?]+[\s]?|[^.!?]+$/g)||[fullText];
   while(narrSentences.length&&!narrSentences[narrSentences.length-1].trim())narrSentences.pop();
+  // Split any sentence longer than 190 chars at clause boundaries (em dash, comma, semicolon)
+  const split=[];
+  for(const s of narrSentences){
+    if(s.length<=190){split.push(s);continue;}
+    const parts=s.split(/(?<=\s[—–;,])\s/);
+    let buf='';
+    for(const p of parts){
+      if(buf&&(buf+' '+p).length>190){split.push(buf);buf=p;}
+      else{buf=buf?(buf+' '+p):p;}
+    }
+    if(buf)split.push(buf);
+  }
+  narrSentences=split;
   // Record the character offset for each sentence
   narrSentOffsets=[];
   let off=0;
@@ -1710,7 +1723,7 @@ const gttsBrokenLangs=new Set();
 
 function gttsUrl(text,lang){
   const tl=lang||'en';
-  const q=encodeURIComponent(text.substring(0,500));
+  const q=encodeURIComponent(text.substring(0,200));
   return 'https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen='+text.length+'&client=tw-ob&q='+q+'&tl='+tl;
 }
 let fallbackAudio=null;
@@ -1735,8 +1748,7 @@ function speakNextSentence(){
   // Try Google TTS first (better quality) unless it already failed for this lang
   if(!gttsBrokenLangs.has(lang)){
     playGoogleTTS(sentence,lang,advanceNext,function(){
-      // Google TTS failed for this language — remember and try native
-      gttsBrokenLangs.add(lang);
+      // Google TTS failed — try native for this sentence only
       speakNative(sentence,lang,advanceNext);
     });
     return;
