@@ -1710,7 +1710,7 @@ const gttsBrokenLangs=new Set();
 
 function gttsUrl(text,lang){
   const tl=lang||'en';
-  const q=encodeURIComponent(text.substring(0,200));
+  const q=encodeURIComponent(text.substring(0,500));
   return 'https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen='+text.length+'&client=tw-ob&q='+q+'&tl='+tl;
 }
 let fallbackAudio=null;
