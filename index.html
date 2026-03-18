@@ -239,6 +239,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #slidein-narrate.disabled{opacity:0.35;cursor:default;pointer-events:none}
 .si-lang-opt .lang-flag{flex-shrink:0}
 .si-lang-opt .lang-flag img.emoji{height:14px;width:14px}
+.si-lang-divider{height:1px;background:#e5e4df;margin:4px 14px}
 .si-translating{opacity:0.5;transition:opacity 0.2s}
 #slidein-body{flex:1;overflow-y:auto;padding:18px 20px 24px;font-size:13px;color:#333;line-height:1.7}
 #slidein-body .si-desc{margin-bottom:20px;line-height:17px}
@@ -1708,50 +1709,53 @@ narrateBtn.addEventListener('click',function(){
 // Translation system
 const translateBtn=document.getElementById('slidein-translate');
 const langDropdown=document.getElementById('si-lang-dropdown');
-const LANGS=[
+const MAIN_LANGS=[
   {code:'es',name:'Español',flag:'🇪🇸'},
   {code:'fr',name:'Français',flag:'🇫🇷'},
   {code:'de',name:'Deutsch',flag:'🇩🇪'},
   {code:'it',name:'Italiano',flag:'🇮🇹'},
   {code:'pt',name:'Português',flag:'🇵🇹'},
-  {code:'nl',name:'Nederlands',flag:'🇳🇱'},
-  {code:'pl',name:'Polski',flag:'🇵🇱'},
-  {code:'ru',name:'Русский',flag:'🇷🇺'},
+  {code:'zh',name:'中文',flag:'🇨🇳'},
   {code:'ja',name:'日本語',flag:'🇯🇵'},
   {code:'ko',name:'한국어',flag:'🇰🇷'},
-  {code:'zh',name:'中文',flag:'🇨🇳'},
   {code:'ar',name:'العربية',flag:'🇸🇦'},
   {code:'hi',name:'हिन्दी',flag:'🇮🇳'},
+];
+const OTHER_LANGS=[
   {code:'bn',name:'বাংলা',flag:'🇧🇩'},
-  {code:'ur',name:'اردو',flag:'🇵🇰'},
-  {code:'tr',name:'Türkçe',flag:'🇹🇷'},
-  {code:'he',name:'עברית',flag:'🇮🇱'},
-  {code:'fa',name:'فارسی',flag:'🇮🇷'},
-  {code:'sv',name:'Svenska',flag:'🇸🇪'},
-  {code:'no',name:'Norsk',flag:'🇳🇴'},
+  {code:'bg',name:'Български',flag:'🇧🇬'},
+  {code:'ca',name:'Català',flag:'🏴'},
+  {code:'cs',name:'Čeština',flag:'🇨🇿'},
   {code:'da',name:'Dansk',flag:'🇩🇰'},
+  {code:'et',name:'Eesti',flag:'🇪🇪'},
+  {code:'tl',name:'Filipino',flag:'🇵🇭'},
   {code:'fi',name:'Suomi',flag:'🇫🇮'},
   {code:'el',name:'Ελληνικά',flag:'🇬🇷'},
-  {code:'hu',name:'Magyar',flag:'🇭🇺'},
-  {code:'cs',name:'Čeština',flag:'🇨🇿'},
-  {code:'sk',name:'Slovenčina',flag:'🇸🇰'},
-  {code:'ro',name:'Română',flag:'🇷🇴'},
-  {code:'bg',name:'Български',flag:'🇧🇬'},
+  {code:'he',name:'עברית',flag:'🇮🇱'},
   {code:'hr',name:'Hrvatski',flag:'🇭🇷'},
-  {code:'sr',name:'Српски',flag:'🇷🇸'},
-  {code:'sl',name:'Slovenščina',flag:'🇸🇮'},
-  {code:'uk',name:'Українська',flag:'🇺🇦'},
-  {code:'lt',name:'Lietuvių',flag:'🇱🇹'},
+  {code:'hu',name:'Magyar',flag:'🇭🇺'},
+  {code:'id',name:'Indonesia',flag:'🇮🇩'},
+  {code:'sw',name:'Kiswahili',flag:'🇰🇪'},
   {code:'lv',name:'Latviešu',flag:'🇱🇻'},
-  {code:'et',name:'Eesti',flag:'🇪🇪'},
-  {code:'ca',name:'Català',flag:'🏴'},
+  {code:'lt',name:'Lietuvių',flag:'🇱🇹'},
+  {code:'ms',name:'Melayu',flag:'🇲🇾'},
+  {code:'nl',name:'Nederlands',flag:'🇳🇱'},
+  {code:'no',name:'Norsk',flag:'🇳🇴'},
+  {code:'fa',name:'فارسی',flag:'🇮🇷'},
+  {code:'pl',name:'Polski',flag:'🇵🇱'},
+  {code:'ro',name:'Română',flag:'🇷🇴'},
+  {code:'ru',name:'Русский',flag:'🇷🇺'},
+  {code:'sl',name:'Slovenščina',flag:'🇸🇮'},
+  {code:'sk',name:'Slovenčina',flag:'🇸🇰'},
+  {code:'sr',name:'Српски',flag:'🇷🇸'},
+  {code:'sv',name:'Svenska',flag:'🇸🇪'},
   {code:'th',name:'ไทย',flag:'🇹🇭'},
   {code:'vi',name:'Tiếng Việt',flag:'🇻🇳'},
-  {code:'id',name:'Indonesia',flag:'🇮🇩'},
-  {code:'ms',name:'Melayu',flag:'🇲🇾'},
-  {code:'tl',name:'Filipino',flag:'🇵🇭'},
-  {code:'sw',name:'Kiswahili',flag:'🇰🇪'},
+  {code:'tr',name:'Türkçe',flag:'🇹🇷'},
+  {code:'uk',name:'Українська',flag:'🇺🇦'},
+  {code:'ur',name:'اردو',flag:'🇵🇰'},
 ];
+const LANGS=MAIN_LANGS.concat(OTHER_LANGS);
 let activeLang=null; // null = English (original)
 let translationCache={}; // {langCode:{itemName:translatedText}}
 let currentSlideInName=null;
@@ -1761,10 +1765,13 @@ const MYMEMORY_MAP={es:'es-ES',fr:'fr-FR',de:'de-DE',it:'it-IT',pt:'pt-PT',nl:'n
 
 function buildLangDropdown(){
   let html='<button class="si-lang-opt'+(activeLang===null?' active':'')+'" data-lang="en"><span class="lang-flag">🇬🇧</span>English</button>';
-  LANGS.forEach(l=>{
+  function addLang(l){
     const cls='si-lang-opt'+(activeLang===l.code?' active':'');
     html+=`<button class="${cls}" data-lang="${l.code}"><span class="lang-flag">${l.flag}</span>${l.name}</button>`;
-  });
+  }
+  MAIN_LANGS.forEach(addLang);
+  html+='<div class="si-lang-divider"></div>';
+  OTHER_LANGS.forEach(addLang);
   langDropdown.innerHTML=html;
   tp(langDropdown);
 }
