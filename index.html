@@ -1516,6 +1516,7 @@ const narrateBtn=document.getElementById('slidein-narrate');
 let narrationUtterance=null;
 let preferredVoice=null;
 function pickVoice(){
+  if(typeof speechSynthesis==='undefined')return null;
   const voices=speechSynthesis.getVoices();
   if(!voices.length)return null;
   // Prefer natural/premium English voices
@@ -1524,7 +1525,6 @@ function pickVoice(){
   // Fallback: any English voice
   return voices.find(v=>/en/i.test(v.lang))||null;
 }
-speechSynthesis.addEventListener('voiceschanged',()=>{preferredVoice=pickVoice();});
 preferredVoice=pickVoice();
 
 let narrOriginalHTML=null;
@@ -1605,25 +1605,76 @@ function highlightSentence(idx){
   }
 }
 
+// Check if native SpeechSynthesis is usable
+let useFallbackTTS=false;
+function checkSpeechSupport(){
+  if(typeof speechSynthesis==='undefined'){useFallbackTTS=true;return;}
+  const voices=speechSynthesis.getVoices();
+  if(voices.length===0){useFallbackTTS=true;}
+}
+checkSpeechSupport();
+if(typeof speechSynthesis!=='undefined'){
+  speechSynthesis.addEventListener('voiceschanged',()=>{
+    preferredVoice=pickVoice();
+    useFallbackTTS=speechSynthesis.getVoices().length===0;
+  });
+}
+
+// Google Translate TTS fallback (returns audio URL for text)
+function gttsUrl(text,lang){
+  const tl=lang||'en';
+  // Google Translate TTS has ~200 char limit; we chunk in speakNextSentence
+  const q=encodeURIComponent(text.substring(0,200));
+  return 'https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen='+text.length+'&client=tw-ob&q='+q+'&tl='+tl;
+}
+let fallbackAudio=null;
+
 function speakNextSentence(){
   if(narrSentIdx>=narrSentences.length){stopNarration();return;}
   highlightSentence(narrSentIdx);
+  if(useFallbackTTS){
+    // Use Google Translate TTS audio fallback
+    if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
+    const lang=activeLang||'en';
+    const audio=new Audio(gttsUrl(narrSentences[narrSentIdx].trim(),lang));
+    fallbackAudio=audio;
+    audio.addEventListener('ended',function(){narrSentIdx++;speakNextSentence();});
+    audio.addEventListener('error',function(){stopNarration();});
+    audio.play().catch(()=>{stopNarration();});
+    return;
+  }
+  // Native SpeechSynthesis path with silent-failure detection
   const utt=new SpeechSynthesisUtterance(narrSentences[narrSentIdx]);
   if(preferredVoice)utt.voice=preferredVoice;
   if(activeLang)utt.lang=activeLang;
   utt.rate=0.95;
   utt.pitch=1.05;
   narrationUtterance=utt;
+  let spoke=false;
+  utt.addEventListener('start',function(){spoke=true;});
   utt.addEventListener('end',function(){
     narrSentIdx++;
     speakNextSentence();
   });
-  utt.addEventListener('error',function(){stopNarration();});
+  utt.addEventListener('error',function(){
+    // Native TTS failed — switch to fallback and retry this sentence
+    useFallbackTTS=true;
+    speakNextSentence();
+  });
   speechSynthesis.speak(utt);
+  // Timeout: if nothing happened after 3s, switch to fallback
+  setTimeout(()=>{
+    if(!spoke&&narrationUtterance===utt){
+      speechSynthesis.cancel();
+      useFallbackTTS=true;
+      speakNextSentence();
+    }
+  },3000);
 }
 
 function stopNarration(){
-  speechSynthesis.cancel();
+  if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
+  if(typeof speechSynthesis!=='undefined')speechSynthesis.cancel();
   narrationUtterance=null;
   restoreNarration();
   narrSentIdx=0;
@@ -1832,13 +1883,18 @@ function restoreOriginalDesc(){
 
 function updateVoiceForLang(){
   const lang=activeLang||'en';
+  if(typeof speechSynthesis==='undefined'||useFallbackTTS){
+    // Fallback TTS supports all languages via Google Translate
+    preferredVoice=null;
+    narrateBtn.classList.remove('disabled');
+    return;
+  }
   const voices=speechSynthesis.getVoices();
   if(lang==='en'){preferredVoice=pickVoice();narrateBtn.classList.remove('disabled');return;}
   const langVoices=voices.filter(v=>v.lang.toLowerCase().startsWith(lang));
-  // Prefer a Google or natural voice
   preferredVoice=langVoices.find(v=>/google/i.test(v.name))||langVoices.find(v=>/natural/i.test(v.name))||langVoices[0]||null;
-  if(preferredVoice){narrateBtn.classList.remove('disabled');}
-  else{narrateBtn.classList.add('disabled');}
+  // Even without a native voice, fallback TTS will work
+  narrateBtn.classList.remove('disabled');
 }
 
 const statsEl=document.getElementById('stats');
