@@ -974,7 +974,7 @@ function renderResult(){
     resultEl.onclick=addResult;resultName=res;resultState='new';announce('New discovery: '+res+'! Tap result to add.');
   }
 }
-function cancelCombo(){clearSlot('a');clearSlot('b');}
+function cancelCombo(){slotA=null;slotB=null;updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();}
 function clearSlot(which){
   if(which==='a'){slotA=slotB;slotB=null;}else{slotB=null;}
   updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();
