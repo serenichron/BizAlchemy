@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
 <title>BizAlchemy</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1628,9 +1629,7 @@ let fallbackAudio=null;
 // Play via Google Translate TTS with no-referrer to avoid origin-based blocking
 function playGoogleTTS(text,lang,onEnd,onError){
   if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
-  const audio=document.createElement('audio');
-  audio.setAttribute('referrerpolicy','no-referrer');
-  audio.src=gttsUrl(text,lang);
+  const audio=new Audio(gttsUrl(text,lang));
   fallbackAudio=audio;
   audio.addEventListener('ended',onEnd);
   audio.addEventListener('error',onError);
