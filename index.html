@@ -98,11 +98,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #tooltip .tt-desc div+div{margin-top:2px}
 #tooltip .tt-cta{display:inline-block;font-size:10px;font-weight:600;color:#378ADD;text-decoration:none}
 #tooltip .tt-cta:hover{text-decoration:underline}
-#tooltip .tt-seg{display:inline-flex;border-radius:6px;overflow:hidden;border:1px solid #ddd;margin-bottom:6px;-webkit-user-select:none;user-select:none}
-#tooltip .tt-seg-btn{padding:3px 10px;font-size:9.5px;font-weight:600;cursor:pointer;border:none;background:#fafaf8;color:#888;transition:background 0.15s,color 0.15s}
-#tooltip .tt-seg-btn+.tt-seg-btn{border-left:1px solid #ddd}
-#tooltip .tt-seg-btn.active-no{background:#f0eeea;color:#666}
-#tooltip .tt-seg-btn.active-yes{background:#5a9a3c;color:#fff}
+#tooltip .tt-owned{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;color:#5a9a3c;font-weight:600;margin-bottom:6px}
 #tooltip .tt-close{position:absolute;top:6px;right:8px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#aaa;cursor:pointer;border-radius:50%;transition:background 0.1s}
 #tooltip .tt-close:hover{background:#f0efe9;color:#666}
 #hint-popup{position:absolute;top:50px;left:12px;right:12px;background:#fff;border:1px solid #ddd;border-radius:12px;padding:10px 14px;z-index:80;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
@@ -237,7 +233,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .si-seg{display:inline-flex;border-radius:8px;overflow:hidden;border:1px solid #ddd;-webkit-user-select:none;user-select:none}
 .si-seg-btn{padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:#fafaf8;color:#888;transition:background 0.15s,color 0.15s}
 .si-seg-btn+.si-seg-btn{border-left:1px solid #ddd}
-.si-seg-btn.active-no{background:#f0eeea;color:#666}
+.si-seg-btn.active-no{background:#fdeae3;color:#c0442a}
 .si-seg-btn.active-yes{background:#5a9a3c;color:#fff}
 img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
 .ec-e img.emoji{height:24px;width:24px;margin:0;vertical-align:baseline}
@@ -1076,18 +1072,8 @@ function showTooltip(name,el){
   const recipeHTML=recipes.length?`<div class="tt-recipe">${recipes.map(([a,b])=>`${ALL[a]?ALL[a].e:'?'} ${a} + ${ALL[b]?ALL[b].e:'?'} ${b}`).join('<br>')}</div>`:'';
   const descLines=info.d.split('\n').map(l=>`<div>${l}</div>`).join('');
   const ctaUrl=`https://serenichron.com/glossary/${slug(name)}`;
-  const isOwned=owned.has(name);
-  const ttSegHTML=`<div class="tt-seg" data-name="${name.replace(/"/g,'&quot;')}"><button class="tt-seg-btn${isOwned?'':' active-no'}" data-v="no">Not yet</button><button class="tt-seg-btn${isOwned?' active-yes':''}" data-v="yes">✓ Yes</button></div>`;
-  tooltip.innerHTML=`<span class="tt-close" onclick="event.stopPropagation();forceHideTooltip();">✕</span><div class="tt-title">${ALL[name].e} ${name}</div>${ttSegHTML}${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="#" onclick="event.preventDefault();event.stopPropagation();openSlideIn('${name.replace(/'/g,"\\'")}');return false;">Read more →</a>`;
-  tooltip.querySelector('.tt-seg').addEventListener('click',function(e){
-    const btn=e.target.closest('.tt-seg-btn');if(!btn)return;
-    e.stopPropagation();
-    const n=this.dataset.name,yes=btn.dataset.v==='yes';
-    if(yes){owned.add(n);}else{owned.delete(n);}
-    this.querySelector('[data-v="no"]').className='tt-seg-btn'+(yes?'':' active-no');
-    this.querySelector('[data-v="yes"]').className='tt-seg-btn'+(yes?' active-yes':'');
-    saveProgress();checkAchievements();updateCardStates();
-  });
+  const ownedHTML=owned.has(name)?'<div class="tt-owned">✓ Owned</div>':'';
+  tooltip.innerHTML=`<span class="tt-close" onclick="event.stopPropagation();forceHideTooltip();">✕</span><div class="tt-title">${ALL[name].e} ${name}</div>${ownedHTML}${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="#" onclick="event.preventDefault();event.stopPropagation();openSlideIn('${name.replace(/'/g,"\\'")}');return false;">Read more →</a>`;
   tooltip.style.left='-9999px';tooltip.style.top='-9999px';tooltip.classList.add('visible');
   const TW=tooltip.offsetWidth,TH=tooltip.offsetHeight,GW=gameEl.offsetWidth,MARGIN=4,TRAY_H=100;
   const gameRect=gameEl.getBoundingClientRect(),cardRect=el.getBoundingClientRect();
@@ -1582,7 +1568,7 @@ function openSlideIn(name){
   const cta=CTA_TEXT[name]||'Talk to us about your next step';
   const isOwned=owned.has(name);
   const ownLabel=OWNED_LABEL[name]||'I have this';
-  slideinBody.innerHTML=`<div class="si-owned"><div class="si-owned-label">${ownLabel}</div><div class="si-seg" id="si-seg"><button class="si-seg-btn${isOwned?'':' active-no'}" data-v="no">Not yet</button><button class="si-seg-btn${isOwned?' active-yes':''}" data-v="yes">✓ Yes</button></div></div><p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
+  slideinBody.innerHTML=`<div class="si-owned"><div class="si-owned-label">${ownLabel}</div><div class="si-seg" id="si-seg"><button class="si-seg-btn${isOwned?'':' active-no'}" data-v="no">Not yet</button><button class="si-seg-btn${isOwned?' active-yes':''}" data-v="yes">Yes</button></div></div><p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
   document.getElementById('si-seg').addEventListener('click',function(e){
     const btn=e.target.closest('.si-seg-btn');if(!btn)return;
     const yes=btn.dataset.v==='yes';
