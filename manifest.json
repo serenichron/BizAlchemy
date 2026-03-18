@@ -1,11 +1,14 @@
 {
   "name": "BizAlchemy",
   "short_name": "BizAlchemy",
-  "description": "Brew powerful strategies by combining 102 digital marketing concepts — start with 4 raw ideas and transmute your way to a Digital Empire!",
+  "description": "Learn digital marketing by playing! Combine 102 business concepts — start with 4 raw ideas and transmute your way to a Digital Empire.",
+  "lang": "en",
   "start_url": ".",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#f5f4f0",
   "theme_color": "#1D9E75",
+  "categories": ["games", "education", "business"],
   "icons": [
     {
       "src": "icons/icon-192.png",
