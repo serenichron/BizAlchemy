@@ -2125,6 +2125,7 @@ new MutationObserver(function(muts){
   muts.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)tp(n);});});
 }).observe(document.getElementById('game'),{childList:true,subtree:true});
 tp();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}
 </script>
 </body>
 </html>

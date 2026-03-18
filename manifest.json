@@ -6,6 +6,8 @@
   "dir": "ltr",
   "scope": "/",
   "start_url": ".",
+  "id": "/",
+  "orientation": "portrait",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "background_color": "#f5f4f0",
