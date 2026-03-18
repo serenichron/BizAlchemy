@@ -1642,6 +1642,7 @@ function startNarration(){
   speakNextSentence();
 }
 narrateBtn.addEventListener('click',function(){
+  if(narrateBtn.classList.contains('disabled'))return;
   if(narrateBtn.classList.contains('playing')){stopNarration();}else{startNarration();}
 });
 // Translation system
