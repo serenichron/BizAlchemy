@@ -1148,7 +1148,7 @@ function addResult(){
     const d=domCards.get(added);
     if(d){d.classList.add('pop','glow');scrollToCard(added);setTimeout(()=>{d.classList.remove('pop','glow');},1200);}
   }));
-  showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');sndCombo();
+  showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');sndDiscover();
   checkWin();checkAchievements();
 }
 function showConfirm(title,msg,onConfirm){
