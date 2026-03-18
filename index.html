@@ -1731,20 +1731,43 @@ langDropdown.addEventListener('click',function(e){
 // Close dropdown when clicking outside
 document.addEventListener('click',function(){langDropdown.classList.remove('open');});
 
-async function fetchTranslation(text,langCode){
+// Split text into chunks under maxLen at sentence boundaries
+function splitForTranslation(text,maxLen){
+  if(text.length<=maxLen)return[text];
+  const chunks=[];
+  const sentences=text.match(/[^.!?]*[.!?]+[\s]?|[^.!?]+$/g)||[text];
+  let buf='';
+  for(const s of sentences){
+    if(buf.length+s.length>maxLen&&buf){chunks.push(buf.trim());buf='';}
+    buf+=s;
+  }
+  if(buf.trim())chunks.push(buf.trim());
+  return chunks;
+}
+
+async function fetchChunk(text,langCode){
   const target=MYMEMORY_MAP[langCode]||langCode;
   const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${target}`;
+  const res=await fetch(url);
+  const data=await res.json();
+  if(data.responseStatus===200&&data.responseData&&data.responseData.translatedText){
+    let t=data.responseData.translatedText;
+    // MyMemory returns UPPERCASED text when it's machine-only; fix casing
+    if(t===t.toUpperCase()&&t.length>20)t=t.charAt(0).toUpperCase()+t.slice(1).toLowerCase().replace(/\.\s*[a-z]/g,m=>m.toUpperCase());
+    return t;
+  }
+  throw new Error('API returned status '+data.responseStatus);
+}
+
+async function fetchTranslation(text,langCode){
   try{
-    const res=await fetch(url);
-    const data=await res.json();
-    if(data.responseStatus===200&&data.responseData&&data.responseData.translatedText){
-      let t=data.responseData.translatedText;
-      // MyMemory returns UPPERCASED text when it's machine-only; decode it
-      if(t===t.toUpperCase()&&t.length>20)t=t.charAt(0).toUpperCase()+t.slice(1).toLowerCase().replace(/\.\s*[a-z]/g,m=>m.toUpperCase());
-      return t;
+    const chunks=splitForTranslation(text,450);
+    const results=[];
+    for(const chunk of chunks){
+      results.push(await fetchChunk(chunk,langCode));
     }
-  }catch(e){console.warn('Translation failed',e);}
-  return null;
+    return results.join(' ');
+  }catch(e){console.warn('Translation failed',e);return null;}
 }
 
 async function applyTranslation(name,langCode){
@@ -1759,15 +1782,19 @@ async function applyTranslation(name,langCode){
     descEl.innerHTML=translationCache[langCode][name];
     return;
   }
+  // Save original before overwriting
+  const origHTML=descEl.innerHTML;
   // Show loading state
-  descEl.classList.add('si-translating');
-  const original=descEl.textContent;
+  descEl.innerHTML='<div style="color:#999;font-style:italic">Translating…</div>';
+  const original=originalDescHTML.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
   const translated=await fetchTranslation(original,langCode);
-  descEl.classList.remove('si-translating');
   if(translated&&activeLang===langCode){
-    const html=translated.split('\n').map(l=>`<div>${l}</div>`).join('');
+    const html=translated.split(/\.\s+/).map(s=>s.trim()).filter(Boolean).map(s=>`<div>${s}.</div>`).join('');
     translationCache[langCode][name]=html;
     descEl.innerHTML=html;
+  }else if(activeLang===langCode){
+    // Translation failed — restore original with error note
+    descEl.innerHTML=origHTML;
   }
 }
 
