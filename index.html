@@ -1605,21 +1605,19 @@ function highlightSentence(idx){
 }
 
 // Check if native SpeechSynthesis is usable
-let useFallbackTTS=false;
-function checkSpeechSupport(){
-  if(typeof speechSynthesis==='undefined'){useFallbackTTS=true;return;}
-  const voices=speechSynthesis.getVoices();
-  if(voices.length===0){useFallbackTTS=true;}
-}
-checkSpeechSupport();
-if(typeof speechSynthesis!=='undefined'){
+// TTS engine: prefer Google Translate TTS (better voices), native SpeechSynthesis as fallback
+let noNativeTTS=typeof speechSynthesis==='undefined';
+if(!noNativeTTS){
+  const v=speechSynthesis.getVoices();
+  if(!v.length){noNativeTTS=true;}
   speechSynthesis.addEventListener('voiceschanged',()=>{
     preferredVoice=pickVoice();
-    useFallbackTTS=speechSynthesis.getVoices().length===0;
+    noNativeTTS=speechSynthesis.getVoices().length===0;
   });
 }
+// Track languages where Google TTS failed so we don't retry every sentence
+const gttsBrokenLangs=new Set();
 
-// Google Translate TTS fallback — fetch as blob to avoid CORB
 function gttsUrl(text,lang){
   const tl=lang||'en';
   const q=encodeURIComponent(text.substring(0,200));
@@ -1627,56 +1625,63 @@ function gttsUrl(text,lang){
 }
 let fallbackAudio=null;
 
+// Play via Google Translate TTS with no-referrer to avoid origin-based blocking
+function playGoogleTTS(text,lang,onEnd,onError){
+  if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
+  const audio=document.createElement('audio');
+  audio.setAttribute('referrerpolicy','no-referrer');
+  audio.src=gttsUrl(text,lang);
+  fallbackAudio=audio;
+  audio.addEventListener('ended',onEnd);
+  audio.addEventListener('error',onError);
+  audio.play().catch(onError);
+}
+
 function speakNextSentence(){
   if(narrSentIdx>=narrSentences.length){stopNarration();return;}
   highlightSentence(narrSentIdx);
-  if(useFallbackTTS){
-    // Use Audio element directly (no-cors by default, avoids CORS/CORB)
-    if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
-    const lang=activeLang||'en';
-    const audio=new Audio(gttsUrl(narrSentences[narrSentIdx].trim(),lang));
-    fallbackAudio=audio;
-    audio.addEventListener('ended',function(){narrSentIdx++;speakNextSentence();});
-    audio.addEventListener('error',function(){stopNarration();});
-    audio.play().catch(()=>{stopNarration();});
+  const lang=activeLang||'en';
+  const sentence=narrSentences[narrSentIdx].trim();
+  const advanceNext=function(){narrSentIdx++;speakNextSentence();};
+
+  // Try Google TTS first (better quality) unless it already failed for this lang
+  if(!gttsBrokenLangs.has(lang)){
+    playGoogleTTS(sentence,lang,advanceNext,function(){
+      // Google TTS failed for this language — remember and try native
+      gttsBrokenLangs.add(lang);
+      speakNative(sentence,lang,advanceNext);
+    });
     return;
   }
-  // Native SpeechSynthesis path with silent-failure detection
-  const utt=new SpeechSynthesisUtterance(narrSentences[narrSentIdx]);
+  // Google TTS known-broken for this lang, go straight to native
+  speakNative(sentence,lang,advanceNext);
+}
+
+function speakNative(sentence,lang,onDone){
+  if(noNativeTTS){stopNarration();return;}
+  const utt=new SpeechSynthesisUtterance(sentence);
   if(preferredVoice)utt.voice=preferredVoice;
-  if(activeLang)utt.lang=activeLang;
+  utt.lang=lang;
   utt.rate=0.95;
   utt.pitch=1.05;
   narrationUtterance=utt;
   let spoke=false;
   utt.addEventListener('start',function(){spoke=true;});
-  utt.addEventListener('end',function(){
-    narrSentIdx++;
-    speakNextSentence();
-  });
-  utt.addEventListener('error',function(){
-    // Native TTS failed — switch to fallback and retry this sentence
-    useFallbackTTS=true;
-    speakNextSentence();
-  });
+  utt.addEventListener('end',function(){onDone();});
+  utt.addEventListener('error',function(){stopNarration();});
   speechSynthesis.speak(utt);
-  // Timeout: if nothing happened after 3s, switch to fallback
+  // Timeout: if nothing happened after 3s, give up
   setTimeout(()=>{
     if(!spoke&&narrationUtterance===utt){
       speechSynthesis.cancel();
-      useFallbackTTS=true;
-      speakNextSentence();
+      stopNarration();
     }
   },3000);
 }
 
 function stopNarration(){
   if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
-  if(typeof speechSynthesis!=='undefined'){
-    speechSynthesis.cancel();
-    // Reset fallback flag so next narration retries native voices first
-    if(speechSynthesis.getVoices().length>0)useFallbackTTS=false;
-  }
+  if(!noNativeTTS)speechSynthesis.cancel();
   narrationUtterance=null;
   restoreNarration();
   narrSentIdx=0;
@@ -1896,24 +1901,11 @@ function restoreOriginalDesc(){
 
 function updateVoiceForLang(){
   const lang=activeLang||'en';
-  if(typeof speechSynthesis==='undefined'){
-    preferredVoice=null;
-    useFallbackTTS=true;
-    narrateBtn.classList.remove('disabled');
-    return;
-  }
-  // Re-evaluate native voice availability (reset sticky fallback state)
-  const voices=speechSynthesis.getVoices();
-  if(voices.length>0){useFallbackTTS=false;}
-  if(useFallbackTTS){
-    preferredVoice=null;
-    narrateBtn.classList.remove('disabled');
-    return;
-  }
+  if(noNativeTTS){preferredVoice=null;narrateBtn.classList.remove('disabled');return;}
   if(lang==='en'){preferredVoice=pickVoice();narrateBtn.classList.remove('disabled');return;}
+  const voices=speechSynthesis.getVoices();
   const langVoices=voices.filter(v=>v.lang.toLowerCase().startsWith(lang));
   preferredVoice=langVoices.find(v=>/google/i.test(v.name))||langVoices.find(v=>/natural/i.test(v.name))||langVoices[0]||null;
-  // Even without a native voice, fallback TTS will work
   narrateBtn.classList.remove('disabled');
 }
 
