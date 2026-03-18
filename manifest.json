@@ -13,6 +13,35 @@
   "background_color": "#f5f4f0",
   "theme_color": "#1D9E75",
   "categories": ["games", "education", "business"],
+  "shortcuts": [
+    {
+      "name": "Play BizAlchemy",
+      "short_name": "Play",
+      "url": ".",
+      "description": "Start discovering digital marketing concepts",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "file_handlers": [],
+  "protocol_handlers": [],
+  "share_target": {},
+  "widgets": [],
+  "edge_side_panel": {},
+  "note_taking": {
+    "new_note_url": ""
+  },
+  "scope_extensions": [],
   "icons": [
     {
       "src": "icons/icon-192.png",
