@@ -14,10 +14,10 @@ The game is educational: every element maps to a real digital marketing concept 
 
 - **Genre:** Crafting / Combination puzzle (similar to Little Alchemy, Doodle God)
 - **Theme:** Digital marketing & online business building
-- **Goal:** Discover all 102 elements across 7 tiers by combining pairs of elements
+- **Goal:** Discover all 103 elements across 7 tiers by combining pairs of elements
 - **Secondary goal:** Mark discovered elements as "owned" to track real business coverage
 - **Educational purpose:** Each element represents a real digital marketing concept with descriptions explaining what it is and why it matters
-- **Win condition:** Discover all 102 elements to unlock the "Digital Empire achieved" congratulations screen
+- **Win condition:** Discover all 103 elements to unlock the "Digital Empire achieved" congratulations screen
 
 ---
 
@@ -55,19 +55,19 @@ Result slot states:
 
 ## Tier System
 
-The game organizes all 102 elements into 7 tiers, each with a unique color palette:
+The game organizes all 103 elements into 7 tiers, each with a unique color palette:
 
 | Tier | Name                | Color   | Elements | Description |
 |------|---------------------|---------|----------|-------------|
 | 0    | Raw Ingredients     | Gold    | 4        | Starting elements |
 | 1    | Core Assets         | Blue    | 8        | First combinations from base elements |
 | 2    | Digital Foundations  | Green   | 22       | Building blocks of digital marketing |
-| 3    | Marketing Channels  | Orange  | 24       | Active marketing tools and channels |
+| 3    | Marketing Channels  | Orange  | 25       | Active marketing tools and channels |
 | 4    | Growth Strategy     | Purple  | 23       | Scaling and optimization systems |
 | 5    | Advanced Systems    | Pink    | 13       | Automated and advanced business systems |
 | 6    | Endgame             | Lime    | 8        | Ultimate business outcomes |
 
-**Total: 102 elements, 117 recipes (some elements have multiple recipes)**
+**Total: 103 elements, 118 recipes (some elements have multiple recipes)**
 
 ---
 
@@ -99,29 +99,30 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 | Keyword Research | 🔑 | Niche + Article |
 | Landing Page | 🛬 | Niche + Website |
 | Lead Magnet | 🧲 | Niche + Newsletter |
-| Persona | 🪞 | Niche + CRM _or_ Audience + Niche |
+| Persona | 🪞 | Niche + CRM |
 | Offer | 💎 | Niche + Template |
 | Blog | 📰 | Article + Website |
-| Content Strategy | 🗺️ | Article + Newsletter |
+| Content Strategy | 🗺️ | Article + Social Media |
 | Content Calendar | 🗓️ | Article + Template |
-| Copywriting | ✏️ | Article + CRM |
-| Email Capture | 🎣 | Website + Newsletter |
-| Analytics | 📊 | Website + CRM |
+| Copywriting | ✏️ | Article + Persona |
+| Email Capture | 🎣 | Website + Lead Magnet |
+| Analytics | 📊 | Website + Tool |
 | Wireframe | 📐 | Website + Template |
-| Email List | 📬 | Newsletter + CRM |
+| Email List | 📬 | Lead Magnet + CRM |
 | Nurture Sequence | 💌 | Newsletter + Template |
 | Automation | 🤖 | CRM + Template |
-| Web Design | 🌈 | Idea + Website |
-| Headline | 🏷️ | Idea + Niche |
-| Brand Guide | 🎨 | Niche + Web Design |
+| Web Design | 🌈 | Website + Wireframe |
+| Headline | 🏷️ | Value Proposition + Niche |
+| Pitch Deck | 📊 | Value Proposition + Template |
 | Subscriber | 🔔 | Audience + Newsletter |
 | Script | 🎬 | Idea + Template |
 | Hosting | ☁️ | Tool + Website |
 | Workflow | ⚙️ | Tool + Template |
 
-### Tier 3 — Marketing Channels (24)
+### Tier 3 — Marketing Channels (25)
 | Element | Emoji | Recipe |
 |---------|-------|--------|
+| Brand Guide | 🎨 | Web Design + Copywriting |
 | SEO | 🔍 | Keyword Research + Blog |
 | Rank Tracker | 📈 | Keyword Research + Analytics |
 | Sales Page | 💰 | Landing Page + Offer |
@@ -142,7 +143,7 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 | Organic Traffic | 🌱 | SEO + Content Strategy |
 | Outreach | 📤 | CRM + Persona |
 | Podcast | 🎙️ | Script + Tool |
-| Social Proof | 🌟 | Subscriber + Offer |
+| Social Proof | 🌟 | Offer + Subscriber |
 | Tripwire | 🪝 | Lead Magnet + Offer |
 | A/B Test | 🧪 | Analytics + Landing Page |
 | AI Writing | 🪄 | Automation + Copywriting |
@@ -150,21 +151,21 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 ### Tier 4 — Growth Strategy (23)
 | Element | Emoji | Recipe(s) |
 |---------|-------|-----------|
-| Sales Funnel | 💸 | Sales Copy + Email Funnel |
+| Sales Funnel | 💸 | Sales Copy + Email Funnel _or_ Tripwire + Email Funnel |
 | Launch Sequence | 🏁 | Sales Page + Email Funnel |
-| Inbound Sales | 🤝 | Organic Traffic + Sales Page _or_ Lead Generation + Sales Page |
+| Inbound Sales | 🤝 | Organic Traffic + Sales Page _or_ Discovery Call + Sales Page |
 | Webinar Funnel | 🎞️ | Webinar + Email Funnel |
-| High-Ticket Offer | 👑 | Sales Page + Social Proof |
+| High-Ticket Offer | 👑 | Sales Page + Social Proof _or_ Discovery Call + Offer _or_ Portfolio + Sales Page |
 | Authority Site | 🏆 | Rank Tracker + Organic Traffic |
 | Product Design | 🎁 | Prototype + Brand Identity |
-| Marketing OS | 💻 | Opt-in Page + Marketing Stack |
+| Marketing OS | 💻 | Email List + Marketing Stack _or_ Opt-in Page + Marketing Stack |
 | Conversion | ✅ | Email Funnel + Sales Page |
 | Social Brand | 📲 | Social Media + Brand Identity |
-| Content Machine | 🏭 | Editorial Plan + Social Media |
-| Performance Report | 📑 | Dashboard + Marketing Stack |
+| Content Machine | 🏭 | Editorial Plan + Social Media _or_ Podcast + Editorial Plan |
+| Performance Report | 📑 | Dashboard + Marketing Stack _or_ A/B Test + Marketing Stack |
 | Ad Campaign | 📢 | Ad Copy + Landing Page |
 | Video Channel | 📺 | Video + Subscriber |
-| Checkout Page | 💳 | Sales Page + Automation |
+| Checkout Page | 💳 | Sales Page + Offer |
 | Retargeting | 🔁 | Ad Campaign + Analytics |
 | AI Automation | 🧩 | Marketing Stack + AI Writing |
 | Discovery Call | 📞 | Outreach + Lead Generation |
@@ -175,11 +176,11 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 | Portfolio | 🗂️ | Social Proof + Brand Identity |
 
 ### Tier 5 — Advanced Systems (13)
-| Element | Emoji | Recipe |
-|---------|-------|--------|
-| Automated Sales | 🦾 | Sales Funnel + Marketing OS |
-| Thought Leadership | 🧠 | Authority Site + Content Machine |
-| Product Launch | 🚀 | Online Course + Launch Sequence _or_ Product Design + Launch Sequence |
+| Element | Emoji | Recipe(s) |
+|---------|-------|-----------|
+| Automated Sales | 🦾 | Sales Funnel + Marketing OS _or_ Online Course + Marketing OS |
+| Thought Leadership | 🧠 | Authority Site + Content Machine _or_ Partnership + Authority Site |
+| Product Launch | 🚀 | Product Design + Launch Sequence _or_ Online Course + Launch Sequence |
 | Automated Webinar | 📽️ | Webinar Funnel + Marketing OS |
 | Revenue Engine | 💹 | Inbound Sales + Conversion _or_ Digital Product + Sales Funnel |
 | Premium Brand | 🏅 | High-Ticket Offer + Authority Site |
@@ -188,17 +189,17 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 | Sales Machine | ⚡ | Launch Sequence + Marketing OS |
 | SaaS Product | 🔌 | Product Design + Automation |
 | Performance Marketing | 🏹 | Retargeting + Conversion |
-| AI Content System | 🧬 | AI Writing + Content Machine |
+| AI Content System | 🧬 | AI Automation + Content Machine |
 | Upsell | ⬆️ | Checkout Page + Offer |
 
 ### Tier 6 — Endgame (8)
-| Element | Emoji | Recipe |
-|---------|-------|--------|
-| Passive Income | 💤 | Sales Machine + Revenue Engine |
-| Recurring Revenue | ♾️ | SaaS Product + Automated Sales |
-| Viral Growth | 🦠 | Growth System + Influence |
-| Personal Brand | 🦋 | Thought Leadership + Influence |
-| Market Leader | 🥇 | Portfolio + Premium Brand |
+| Element | Emoji | Recipe(s) |
+|---------|-------|-----------|
+| Passive Income | 💤 | Sales Machine + Revenue Engine _or_ Automated Webinar + Automated Sales |
+| Recurring Revenue | ♾️ | SaaS Product + Automated Sales _or_ Upsell + Sales Machine |
+| Viral Growth | 🦠 | Growth System + Influence _or_ Referral Program + Growth System |
+| Personal Brand | 🦋 | Thought Leadership + Influence _or_ Partnership + Influence |
+| Market Leader | 🥇 | Premium Brand + Performance Marketing _or_ Portfolio + Premium Brand |
 | Financial Freedom | 🏖️ | Passive Income + Recurring Revenue _or_ Upsell + Revenue Engine |
 | Digital Empire | 🌎 | Market Leader + Viral Growth _or_ Product Launch + Revenue Engine |
 | AI Marketing OS | 🌌 | AI Content System + Marketing OS |
@@ -209,9 +210,16 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 
 ### 1. Intro Screen
 - Displays on first load and after reset
-- Shows the game logo (⚗️), title, and tagline
-- Four-step tutorial explaining how to play
-- Card indicator legend (★ pending, ✓ done)
+- Shows the game logo, title, and tagline
+- **New players** see:
+  - Three-step tutorial (Mix, Discover, Learn)
+  - Feature grid highlighting: achievements, hints, glossary, tracking, audio narration, multilanguage support
+- **Returning players** see a welcome-back dashboard with:
+  - Stats summary (discovered, owned, achievements)
+  - Overall progress bar with percentage
+  - Per-tier breakdown mini-chart
+  - Recent achievements
+  - Next achievement teaser
 - "Start discovering →" button to begin
 
 ### 2. Card Grid
@@ -276,6 +284,7 @@ These indicators only appear when one card is selected, showing the status of th
   - Recipe(s) that create this element
   - "Read more" link to Serenichron glossary
   - **"I already have this" checkbox** — marks the element as owned
+  - **Narration button** — play/pause text-to-speech of the description (with language selector)
   - CTA link to book a consultation call
 - Closeable via ✕ button or tapping the overlay
 
@@ -295,7 +304,7 @@ These indicators only appear when one card is selected, showing the status of th
 - If all elements are found, shows "You found everything!" message
 
 ### 13. Progress Counter
-- Displayed in the header as a pill badge: `X / 102 found`
+- Displayed in the header as a pill badge: `X / 103 found`
 - Updates in real-time as elements are discovered
 
 ### 14. Statistics Screen
@@ -315,10 +324,10 @@ These indicators only appear when one card is selected, showing the status of th
 | 🧭 Explorer | Discover 25 elements |
 | ⚗️ Alchemist | Discover 50 elements |
 | 🔮 Master Alchemist | Discover 75 elements |
-| 👑 Grand Master | Discover all 102 elements |
+| 👑 Grand Master | Discover all 103 elements |
 | 🧪 Experimenter | Try 30 recipes |
 | ⚡ Mad Scientist | Try 75 recipes |
-| 🏆 Completionist | Try all 117 recipes |
+| 🏆 Completionist | Try all 118 recipes |
 
 **Business Coverage (4):**
 | Achievement | Condition |
@@ -326,7 +335,7 @@ These indicators only appear when one card is selected, showing the status of th
 | 🚶 Getting Started | Mark 5 items as owned |
 | 🧱 Foundation | Mark 15 items as owned |
 | ⛰️ Halfway There | Mark 50 items as owned |
-| 🦄 Full Stack Business | Mark all 102 items as owned |
+| 🦄 Full Stack Business | Mark all 103 items as owned |
 
 **Department Badges (16):**
 | Achievement | Department | Condition |
@@ -362,16 +371,45 @@ These indicators only appear when one card is selected, showing the status of th
 - Returns to the intro screen
 
 ### 17. Win / Congratulations Screen
-- Triggers automatically when all 102 elements are discovered (600ms delay)
+- Triggers automatically when all 103 elements are discovered (600ms delay)
 - Animated trophy emoji burst
+- "Achievement unlocked" label
 - Title: "Digital Empire achieved."
-- Stats display: elements discovered + combinations tried
-- Message linking to the Serenichron glossary
+- Subtitle: "You've discovered every concept in the BizAlchemy tree."
+- **Business coverage bar** — animated progress bar showing percentage of elements marked as owned
+- **Encouragement message** — motivational text about building a real business
+- **Achievement summary** — grid of all 28 achievement chips (unlocked in color, locked greyed out)
+- **Learning message** — reflection on the educational value of the game
+- **CTA** — "Book a free discovery call" link to Serenichron
 - Confetti-style emoji row with fade-in animation
-- Two buttons: "Play again" (resets) and "Visit glossary" (external link)
+- Two buttons: "Back to overview →" (returns to game board) and "↺ Start fresh" (resets)
 - Debug: `showCongrats()` can be called from the browser console to preview
 
-### 18. Glossary Integration
+### 18. Sound Effects
+- Synthesized in real-time via the **Web Audio API** (no audio files)
+- **Discovery chime** — 3-note ascending tone (523, 659, 784 Hz)
+- **Achievement fanfare** — 4-note ascending chord (523, 659, 784, 1047 Hz)
+- **Combo click** — Single sine wave (440 Hz, 0.12s)
+- **Fail tone** — 2-note descending tone (330 → 294 Hz)
+
+### 19. Text-to-Speech Narration
+- Available in the slide-in detail panel via a play/pause button
+- Uses the **Web Speech API** (`speechSynthesis`) as primary TTS engine
+- Falls back to **Google Translate TTS** if native voices are unavailable
+- **Language selector** with 30+ languages and flag emoji indicators
+- Translates element descriptions via the Google Translate API when a non-English language is selected
+- **Screen wake lock** — prevents the device from sleeping during narration (via `navigator.wakeLock`)
+- Narrate button disabled while translation is in progress
+
+### 20. PWA Support
+- **`manifest.json`** — Full Web App manifest with app name, icons, theme color, and screenshots
+- **Service worker** (`sw.js`) — Cache v7 with network-first strategy for own assets, cache-first for CDN resources
+- Installable as a standalone app on mobile and desktop
+- Portrait orientation enforced
+- Auto-reload when a new service worker activates
+- Body scroll/bounce disabled in standalone PWA mode
+
+### 21. Glossary Integration
 - Every tooltip includes a "Read more →" link
 - Slide-in detail panel includes a glossary link
 - Links follow the pattern: `https://serenichron.com/glossary/[slug]`
@@ -395,13 +433,20 @@ Seven distinct color palettes, one per tier:
 
 ---
 
-## Mobile-First Design
-- Max width: 390px (iPhone-sized)
-- Fixed height: 720px
+## Responsive Design
+- **Mobile (default):** Max width 390px, fixed height 720px (or 100svh in standalone PWA mode)
+- **Tablet/desktop:** Grid expands to 4–5 columns at wider breakpoints
+- **Landscape mode:** Special layout with sidebar combination tray when viewport is short and wide
 - Touch-optimized: tap to select, long-press for detail panel
 - Scrollable grid area with padding for the fixed tray
-- Rounded corners (20px game container, 13px cards, 14px slots)
+- Rounded corners (20px game container, 13px cards, 14px slots — removed on mobile < 430px)
 - Cross-platform emoji via Twemoji CDN
+
+## Accessibility
+- Full **ARIA labels** on all interactive elements (buttons, cards, slots, dialogs)
+- **Screen reader announcements** via sr-only live region
+- **`prefers-reduced-motion`** support — animations disabled when the user prefers reduced motion
+- Semantic HTML with `role="application"`, `role="dialog"`, `aria-modal`, etc.
 
 ---
 
@@ -421,23 +466,34 @@ Seven distinct color palettes, one per tier:
 
 ## Recipe Tree Summary
 
-The game contains **117 recipes** producing 98 non-starting elements (some elements have multiple recipes).
+The game contains **118 recipes** producing 99 non-starting elements (many elements have multiple recipes).
 
 ### Recipe Structure
-- **Tier 0 → Tier 1:** All 6 combinations of the 4 starters (4 choose 2) + 2 cross-tier recipes
-- **Tier 1 → Tier 2:** 16 recipes from Tier 1 pairs + cross-tier
-- **Tier 2 → Tier 3:** 24 recipes
-- **Tier 3 → Tier 4:** 23 recipes
-- **Tier 4 → Tier 5:** 17 recipes (some elements have 2 recipes)
-- **Tier 5 → Tier 6:** 11 recipes (some elements have 2 recipes)
+- **Tier 0 → Tier 1:** All 6 combinations of the 4 starters (4 choose 2) + 2 cross-tier recipes (8 total)
+- **Tier 1 → Tier 2:** 22 recipes from Tier 1 pairs + cross-tier
+- **Tier 2 → Tier 3:** 25 recipes
+- **Tier 3 → Tier 4:** 30 recipes (many elements have 2–3 recipes)
+- **Tier 4 → Tier 5:** 18 recipes (some elements have 2 recipes)
+- **Tier 5 → Tier 6:** 15 recipes (most elements have 2 recipes)
 
 ### Multi-Recipe Elements
-Several elements can be created via multiple recipes:
-- **Persona:** Niche + CRM _or_ Audience + Niche
-- **Inbound Sales:** Organic Traffic + Sales Page _or_ Lead Generation + Sales Page
-- **Product Launch:** Online Course + Launch Sequence _or_ Product Design + Launch Sequence
+Many elements can be created via multiple recipes (18 elements total):
+- **Sales Funnel:** Sales Copy + Email Funnel _or_ Tripwire + Email Funnel
+- **Inbound Sales:** Organic Traffic + Sales Page _or_ Discovery Call + Sales Page
+- **High-Ticket Offer:** Sales Page + Social Proof _or_ Discovery Call + Offer _or_ Portfolio + Sales Page
+- **Marketing OS:** Email List + Marketing Stack _or_ Opt-in Page + Marketing Stack
+- **Content Machine:** Editorial Plan + Social Media _or_ Podcast + Editorial Plan
+- **Performance Report:** Dashboard + Marketing Stack _or_ A/B Test + Marketing Stack
+- **Automated Sales:** Sales Funnel + Marketing OS _or_ Online Course + Marketing OS
+- **Thought Leadership:** Authority Site + Content Machine _or_ Partnership + Authority Site
+- **Product Launch:** Product Design + Launch Sequence _or_ Online Course + Launch Sequence
 - **Revenue Engine:** Inbound Sales + Conversion _or_ Digital Product + Sales Funnel
 - **Growth System:** Performance Report + Revenue Engine _or_ Referral Program + Content Machine
+- **Passive Income:** Sales Machine + Revenue Engine _or_ Automated Webinar + Automated Sales
+- **Recurring Revenue:** SaaS Product + Automated Sales _or_ Upsell + Sales Machine
+- **Viral Growth:** Growth System + Influence _or_ Referral Program + Growth System
+- **Personal Brand:** Thought Leadership + Influence _or_ Partnership + Influence
+- **Market Leader:** Premium Brand + Performance Marketing _or_ Portfolio + Premium Brand
 - **Financial Freedom:** Passive Income + Recurring Revenue _or_ Upsell + Revenue Engine
 - **Digital Empire:** Market Leader + Viral Growth _or_ Product Launch + Revenue Engine
 
@@ -496,8 +552,24 @@ Progress auto-loads on page refresh. If saved progress is found with at least th
 | `saveProgress()` | Saves all state to localStorage |
 | `loadProgress()` | Loads state from localStorage |
 
+### Audio System
+- `audioCtx` — Shared `AudioContext` instance (lazy-initialized)
+- `playTone(freq, dur, type, vol, delay)` — Core tone generator using oscillator nodes
+- `sndDiscover()` — 3-note ascending chime on element discovery
+- `sndAchieve()` — 4-note fanfare on achievement unlock
+- `sndCombo()` — Single click tone on card selection
+- `sndFail()` — 2-note descending tone on failed combination
+
+### Narration System
+- `narrationUtterance` — Current `SpeechSynthesisUtterance` instance
+- `preferredVoice` — Selected voice for the current language
+- `startNarration()` / `stopNarration()` — Play/stop text-to-speech
+- `requestWakeLock()` / `releaseWakeLock()` — Screen wake lock during narration
+- Falls back to Google Translate TTS URL when `speechSynthesis` is unavailable
+
 ### External Dependencies
 - **Twemoji** (v15.1.0 via CDN) — Cross-platform emoji rendering
+- **Google Translate API** — Used for element description translation and TTS fallback
 - No frameworks (React, Vue, etc.)
 - No CSS preprocessors
 - No build tools
@@ -526,7 +598,7 @@ The 102 elements cover these core business domains:
 | Content & Publishing | Article, Blog, Content Strategy, Content Calendar, Editorial Plan, Content Machine, AI Content System, Podcast, Video, Video Channel | ~10 |
 | Email Marketing | Newsletter, Email Capture, Email List, Subscriber, Nurture Sequence, Email Funnel, Lead Generation, Lead Magnet | ~8 |
 | Marketing & Ads | Social Media, SEO, Keyword Research, Rank Tracker, Organic Traffic, Ad Copy, Ad Campaign, Analytics, Dashboard, A/B Test, Retargeting, Marketing Stack, Performance Marketing | ~13 |
-| Sales | Offer, Sales Page, Sales Copy, Sales Funnel, Checkout Page, Discovery Call, Tripwire, Inbound Sales, High-Ticket Offer, Upsell | ~10 |
+| Sales | Offer, Sales Page, Sales Copy, Sales Funnel, Checkout Page, Discovery Call, Tripwire, Inbound Sales, High-Ticket Offer, Upsell, Pitch Deck | ~11 |
 | Branding | Value Proposition, Niche, Persona, Brand Guide, Brand Voice, Brand Identity, Design System, Headline, Social Brand, Premium Brand, Personal Brand, Portfolio | ~12 |
 | Products | Digital Product, Online Course, SaaS Product, Product Design, Product Launch | 5 |
 | Revenue & Growth | Revenue Engine, Automated Sales, Sales Machine, Passive Income, Recurring Revenue, Growth System, Market Leader, Financial Freedom, Digital Empire | ~9 |
@@ -555,11 +627,11 @@ The 102 elements cover these core business domains:
       [Achievement check → popup if unlocked]
       [Card unlocked for future combinations]
             |
-            v  (repeat until all 102 found)
+            v  (repeat until all 103 found)
 [Congratulations Screen]
       |
-      ├── "Play again" → reset to intro
-      └── "Visit glossary" → serenichron.com/glossary
+      ├── "Back to overview →" → return to game board
+      └── "↺ Start fresh" → reset to intro
 ```
 
 **Secondary loops:**
@@ -581,7 +653,7 @@ The 102 elements cover these core business domains:
 
 ## Debug / Developer Tools
 
-- `window.unlockAll()` — Discover all 102 elements at once
+- `window.unlockAll()` — Discover all 103 elements at once
 - `showCongrats()` — Preview the congratulations screen
 - All state is in global variables: `discovered`, `tried`, `owned`, `unlockedAch`
 - Console: `discovered.size` to check progress count
