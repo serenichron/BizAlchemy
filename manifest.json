@@ -24,5 +24,31 @@
       "sizes": "512x512",
       "type": "image/png"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/Screenshot 1.jpeg",
+      "sizes": "851x1599",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshots/Screenshot 2.jpeg",
+      "sizes": "851x1599",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshots/Screenshot 3.jpeg",
+      "sizes": "853x1600",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshots/Screenshot 4.jpeg",
+      "sizes": "852x1600",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
   ]
 }
