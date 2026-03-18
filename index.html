@@ -235,7 +235,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .si-lang-opt{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;font-weight:500;color:#333;cursor:pointer;transition:background 0.1s;border:none;background:none;width:100%;text-align:left}
 .si-lang-opt:hover{background:#f5f4f0}
 .si-lang-opt.active{color:#378ADD;font-weight:600}
-.si-lang-opt .si-lang-no-voice{font-size:9px;color:#bbb;margin-left:auto;white-space:nowrap}
 #slidein-narrate.disabled{opacity:0.35;cursor:default;pointer-events:none}
 .si-lang-opt .lang-flag{flex-shrink:0}
 .si-lang-opt .lang-flag img.emoji{height:14px;width:14px}
@@ -1620,27 +1619,37 @@ if(typeof speechSynthesis!=='undefined'){
   });
 }
 
-// Google Translate TTS fallback (returns audio URL for text)
+// Google Translate TTS fallback — fetch as blob to avoid CORB
 function gttsUrl(text,lang){
   const tl=lang||'en';
-  // Google Translate TTS has ~200 char limit; we chunk in speakNextSentence
   const q=encodeURIComponent(text.substring(0,200));
   return 'https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen='+text.length+'&client=tw-ob&q='+q+'&tl='+tl;
 }
 let fallbackAudio=null;
+let fallbackBlobUrl=null;
+
+function playFallbackTTS(text,lang){
+  if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
+  if(fallbackBlobUrl){URL.revokeObjectURL(fallbackBlobUrl);fallbackBlobUrl=null;}
+  fetch(gttsUrl(text,lang)).then(r=>{
+    if(!r.ok)throw new Error('TTS fetch failed');
+    return r.blob();
+  }).then(blob=>{
+    fallbackBlobUrl=URL.createObjectURL(blob);
+    const audio=new Audio(fallbackBlobUrl);
+    fallbackAudio=audio;
+    audio.addEventListener('ended',function(){narrSentIdx++;speakNextSentence();});
+    audio.addEventListener('error',function(){stopNarration();});
+    audio.play().catch(()=>{stopNarration();});
+  }).catch(()=>{stopNarration();});
+}
 
 function speakNextSentence(){
   if(narrSentIdx>=narrSentences.length){stopNarration();return;}
   highlightSentence(narrSentIdx);
   if(useFallbackTTS){
-    // Use Google Translate TTS audio fallback
-    if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
     const lang=activeLang||'en';
-    const audio=new Audio(gttsUrl(narrSentences[narrSentIdx].trim(),lang));
-    fallbackAudio=audio;
-    audio.addEventListener('ended',function(){narrSentIdx++;speakNextSentence();});
-    audio.addEventListener('error',function(){stopNarration();});
-    audio.play().catch(()=>{stopNarration();});
+    playFallbackTTS(narrSentences[narrSentIdx].trim(),lang);
     return;
   }
   // Native SpeechSynthesis path with silent-failure detection
@@ -1674,6 +1683,7 @@ function speakNextSentence(){
 
 function stopNarration(){
   if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
+  if(fallbackBlobUrl){URL.revokeObjectURL(fallbackBlobUrl);fallbackBlobUrl=null;}
   if(typeof speechSynthesis!=='undefined')speechSynthesis.cancel();
   narrationUtterance=null;
   restoreNarration();
@@ -1716,37 +1726,48 @@ const LANGS=[
   {code:'zh',name:'中文',flag:'🇨🇳'},
   {code:'ar',name:'العربية',flag:'🇸🇦'},
   {code:'hi',name:'हिन्दी',flag:'🇮🇳'},
+  {code:'bn',name:'বাংলা',flag:'🇧🇩'},
+  {code:'ur',name:'اردو',flag:'🇵🇰'},
   {code:'tr',name:'Türkçe',flag:'🇹🇷'},
+  {code:'he',name:'עברית',flag:'🇮🇱'},
+  {code:'fa',name:'فارسی',flag:'🇮🇷'},
   {code:'sv',name:'Svenska',flag:'🇸🇪'},
+  {code:'no',name:'Norsk',flag:'🇳🇴'},
   {code:'da',name:'Dansk',flag:'🇩🇰'},
   {code:'fi',name:'Suomi',flag:'🇫🇮'},
   {code:'el',name:'Ελληνικά',flag:'🇬🇷'},
+  {code:'hu',name:'Magyar',flag:'🇭🇺'},
   {code:'cs',name:'Čeština',flag:'🇨🇿'},
+  {code:'sk',name:'Slovenčina',flag:'🇸🇰'},
   {code:'ro',name:'Română',flag:'🇷🇴'},
+  {code:'bg',name:'Български',flag:'🇧🇬'},
+  {code:'hr',name:'Hrvatski',flag:'🇭🇷'},
+  {code:'sr',name:'Српски',flag:'🇷🇸'},
+  {code:'sl',name:'Slovenščina',flag:'🇸🇮'},
   {code:'uk',name:'Українська',flag:'🇺🇦'},
+  {code:'lt',name:'Lietuvių',flag:'🇱🇹'},
+  {code:'lv',name:'Latviešu',flag:'🇱🇻'},
+  {code:'et',name:'Eesti',flag:'🇪🇪'},
+  {code:'ca',name:'Català',flag:'🏴'},
   {code:'th',name:'ไทย',flag:'🇹🇭'},
   {code:'vi',name:'Tiếng Việt',flag:'🇻🇳'},
   {code:'id',name:'Indonesia',flag:'🇮🇩'},
+  {code:'ms',name:'Melayu',flag:'🇲🇾'},
+  {code:'tl',name:'Filipino',flag:'🇵🇭'},
+  {code:'sw',name:'Kiswahili',flag:'🇰🇪'},
 ];
 let activeLang=null; // null = English (original)
 let translationCache={}; // {langCode:{itemName:translatedText}}
 let currentSlideInName=null;
 let originalDescHTML=null;
 // MyMemory language code mapping
-const MYMEMORY_MAP={es:'es-ES',fr:'fr-FR',de:'de-DE',it:'it-IT',pt:'pt-PT',nl:'nl-NL',pl:'pl-PL',ru:'ru-RU',ja:'ja-JP',ko:'ko-KR',zh:'zh-CN',ar:'ar-SA',hi:'hi-IN',tr:'tr-TR',sv:'sv-SE',da:'da-DK',fi:'fi-FI',el:'el-GR',cs:'cs-CZ',ro:'ro-RO',uk:'uk-UA',th:'th-TH',vi:'vi-VN',id:'id-ID'};
-
-function getVoicesForLang(langCode){
-  const voices=speechSynthesis.getVoices();
-  return voices.filter(v=>v.lang.toLowerCase().startsWith(langCode.toLowerCase()));
-}
+const MYMEMORY_MAP={es:'es-ES',fr:'fr-FR',de:'de-DE',it:'it-IT',pt:'pt-PT',nl:'nl-NL',pl:'pl-PL',ru:'ru-RU',ja:'ja-JP',ko:'ko-KR',zh:'zh-CN',ar:'ar-SA',hi:'hi-IN',bn:'bn-BD',ur:'ur-PK',tr:'tr-TR',he:'he-IL',fa:'fa-IR',sv:'sv-SE',no:'nb-NO',da:'da-DK',fi:'fi-FI',el:'el-GR',hu:'hu-HU',cs:'cs-CZ',sk:'sk-SK',ro:'ro-RO',bg:'bg-BG',hr:'hr-HR',sr:'sr-RS',sl:'sl-SI',uk:'uk-UA',lt:'lt-LT',lv:'lv-LV',et:'et-EE',ca:'ca-ES',th:'th-TH',vi:'vi-VN',id:'id-ID',ms:'ms-MY',tl:'tl-PH',sw:'sw-KE'};
 
 function buildLangDropdown(){
   let html='<button class="si-lang-opt'+(activeLang===null?' active':'')+'" data-lang="en"><span class="lang-flag">🇬🇧</span>English</button>';
   LANGS.forEach(l=>{
-    const hasVoice=getVoicesForLang(l.code).length>0;
     const cls='si-lang-opt'+(activeLang===l.code?' active':'');
-    const noVoice=hasVoice?'':'<span class="si-lang-no-voice">no voice</span>';
-    html+=`<button class="${cls}" data-lang="${l.code}"><span class="lang-flag">${l.flag}</span>${l.name}${noVoice}</button>`;
+    html+=`<button class="${cls}" data-lang="${l.code}"><span class="lang-flag">${l.flag}</span>${l.name}</button>`;
   });
   langDropdown.innerHTML=html;
   tp(langDropdown);
