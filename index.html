@@ -227,6 +227,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #slidein-translate:hover{background:#e5e4df}
 #slidein-translate.active{background:#378ADD;color:#fff}
 #slidein-translate.active:hover{background:#2a6db5}
+#slidein-translate.disabled{opacity:0.35;cursor:default;pointer-events:none}
 .lang-icon{font-weight:700;font-size:11px;font-family:system-ui,sans-serif;line-height:1}
 #si-lang-wrap{position:relative}
 #si-lang-dropdown{display:none;position:absolute;top:34px;right:0;background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.12);z-index:320;max-height:240px;overflow-y:auto;min-width:150px;padding:4px 0;-webkit-overflow-scrolling:touch}
@@ -1628,6 +1629,7 @@ function stopNarration(){
   narrSentIdx=0;
   narrateBtn.classList.remove('playing');
   narrateBtn.setAttribute('aria-label','Narrate description');
+  translateBtn.classList.remove('disabled');
 }
 function startNarration(){
   const descEl=slideinBody.querySelector('.si-desc');
@@ -1639,6 +1641,7 @@ function startNarration(){
   narrSentIdx=0;
   narrateBtn.classList.add('playing');
   narrateBtn.setAttribute('aria-label','Stop narration');
+  translateBtn.classList.add('disabled');
   speakNextSentence();
 }
 narrateBtn.addEventListener('click',function(){
@@ -1707,6 +1710,7 @@ function toggleLangDropdown(){
 
 translateBtn.addEventListener('click',function(e){
   e.stopPropagation();
+  if(translateBtn.classList.contains('disabled'))return;
   toggleLangDropdown();
 });
 
@@ -1725,7 +1729,6 @@ langDropdown.addEventListener('click',function(e){
     activeLang=lang;
     translateBtn.classList.add('active');
     applyTranslation(currentSlideInName,lang);
-    updateVoiceForLang();
   }
 });
 
@@ -1789,7 +1792,8 @@ async function applyTranslation(name,langCode){
   // Save original before overwriting
   const origHTML=descEl.innerHTML;
   // Show loading state
-  descEl.innerHTML='<div style="color:#999;font-style:italic">Translating…</div>';
+  const langName=LANGS.find(l=>l.code===langCode);
+  descEl.innerHTML='<div style="color:#999;font-style:italic">Translating to '+(langName?langName.name:langCode)+'…</div>';
   const original=originalDescHTML.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
   const translated=await fetchTranslation(original,langCode);
   if(translated&&activeLang===langCode){
