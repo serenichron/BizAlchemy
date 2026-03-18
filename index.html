@@ -1626,30 +1626,19 @@ function gttsUrl(text,lang){
   return 'https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen='+text.length+'&client=tw-ob&q='+q+'&tl='+tl;
 }
 let fallbackAudio=null;
-let fallbackBlobUrl=null;
-
-function playFallbackTTS(text,lang){
-  if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
-  if(fallbackBlobUrl){URL.revokeObjectURL(fallbackBlobUrl);fallbackBlobUrl=null;}
-  fetch(gttsUrl(text,lang)).then(r=>{
-    if(!r.ok)throw new Error('TTS fetch failed');
-    return r.blob();
-  }).then(blob=>{
-    fallbackBlobUrl=URL.createObjectURL(blob);
-    const audio=new Audio(fallbackBlobUrl);
-    fallbackAudio=audio;
-    audio.addEventListener('ended',function(){narrSentIdx++;speakNextSentence();});
-    audio.addEventListener('error',function(){stopNarration();});
-    audio.play().catch(()=>{stopNarration();});
-  }).catch(()=>{stopNarration();});
-}
 
 function speakNextSentence(){
   if(narrSentIdx>=narrSentences.length){stopNarration();return;}
   highlightSentence(narrSentIdx);
   if(useFallbackTTS){
+    // Use Audio element directly (no-cors by default, avoids CORS/CORB)
+    if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
     const lang=activeLang||'en';
-    playFallbackTTS(narrSentences[narrSentIdx].trim(),lang);
+    const audio=new Audio(gttsUrl(narrSentences[narrSentIdx].trim(),lang));
+    fallbackAudio=audio;
+    audio.addEventListener('ended',function(){narrSentIdx++;speakNextSentence();});
+    audio.addEventListener('error',function(){stopNarration();});
+    audio.play().catch(()=>{stopNarration();});
     return;
   }
   // Native SpeechSynthesis path with silent-failure detection
@@ -1683,8 +1672,11 @@ function speakNextSentence(){
 
 function stopNarration(){
   if(fallbackAudio){fallbackAudio.pause();fallbackAudio=null;}
-  if(fallbackBlobUrl){URL.revokeObjectURL(fallbackBlobUrl);fallbackBlobUrl=null;}
-  if(typeof speechSynthesis!=='undefined')speechSynthesis.cancel();
+  if(typeof speechSynthesis!=='undefined'){
+    speechSynthesis.cancel();
+    // Reset fallback flag so next narration retries native voices first
+    if(speechSynthesis.getVoices().length>0)useFallbackTTS=false;
+  }
   narrationUtterance=null;
   restoreNarration();
   narrSentIdx=0;
@@ -1904,13 +1896,20 @@ function restoreOriginalDesc(){
 
 function updateVoiceForLang(){
   const lang=activeLang||'en';
-  if(typeof speechSynthesis==='undefined'||useFallbackTTS){
-    // Fallback TTS supports all languages via Google Translate
+  if(typeof speechSynthesis==='undefined'){
+    preferredVoice=null;
+    useFallbackTTS=true;
+    narrateBtn.classList.remove('disabled');
+    return;
+  }
+  // Re-evaluate native voice availability (reset sticky fallback state)
+  const voices=speechSynthesis.getVoices();
+  if(voices.length>0){useFallbackTTS=false;}
+  if(useFallbackTTS){
     preferredVoice=null;
     narrateBtn.classList.remove('disabled');
     return;
   }
-  const voices=speechSynthesis.getVoices();
   if(lang==='en'){preferredVoice=pickVoice();narrateBtn.classList.remove('disabled');return;}
   const langVoices=voices.filter(v=>v.lang.toLowerCase().startsWith(lang));
   preferredVoice=langVoices.find(v=>/google/i.test(v.name))||langVoices.find(v=>/natural/i.test(v.name))||langVoices[0]||null;
