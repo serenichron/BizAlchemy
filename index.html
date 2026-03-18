@@ -1749,29 +1749,44 @@ function splitForTranslation(text,maxLen){
   return chunks;
 }
 
-async function fetchChunk(text,langCode){
-  const target=MYMEMORY_MAP[langCode]||langCode;
-  const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${target}`;
+// Primary: Google Translate unofficial endpoint (handles long text, no key)
+async function fetchViaGoogle(text,langCode){
+  const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl='+langCode+'&dt=t&q='+encodeURIComponent(text);
   const res=await fetch(url);
+  if(!res.ok)throw new Error('Google Translate HTTP '+res.status);
   const data=await res.json();
-  if(data.responseStatus===200&&data.responseData&&data.responseData.translatedText){
-    let t=data.responseData.translatedText;
-    // MyMemory returns UPPERCASED text when it's machine-only; fix casing
-    if(t===t.toUpperCase()&&t.length>20)t=t.charAt(0).toUpperCase()+t.slice(1).toLowerCase().replace(/\.\s*[a-z]/g,m=>m.toUpperCase());
-    return t;
+  // Response is [[["translated sentence","original",...],...],...]
+  if(Array.isArray(data)&&Array.isArray(data[0])){
+    return data[0].map(s=>s[0]).join('');
   }
-  throw new Error('API returned status '+data.responseStatus);
+  throw new Error('Unexpected Google Translate response');
+}
+
+// Fallback: MyMemory (500 char limit per chunk)
+async function fetchViaMyMemory(text,langCode){
+  const target=MYMEMORY_MAP[langCode]||langCode;
+  const chunks=splitForTranslation(text,450);
+  const results=[];
+  for(const chunk of chunks){
+    const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=en|${target}`;
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.responseStatus===200&&data.responseData&&data.responseData.translatedText){
+      let t=data.responseData.translatedText;
+      if(t===t.toUpperCase()&&t.length>20)t=t.charAt(0).toUpperCase()+t.slice(1).toLowerCase().replace(/\.\s*[a-z]/g,m=>m.toUpperCase());
+      results.push(t);
+    }else{throw new Error('MyMemory status '+data.responseStatus);}
+  }
+  return results.join(' ');
 }
 
 async function fetchTranslation(text,langCode){
-  try{
-    const chunks=splitForTranslation(text,450);
-    const results=[];
-    for(const chunk of chunks){
-      results.push(await fetchChunk(chunk,langCode));
-    }
-    return results.join(' ');
-  }catch(e){console.warn('Translation failed',e);return null;}
+  // Try Google first, fall back to MyMemory
+  try{return await fetchViaGoogle(text,langCode);}
+  catch(e){console.warn('Google Translate failed, trying MyMemory:',e);}
+  try{return await fetchViaMyMemory(text,langCode);}
+  catch(e){console.warn('MyMemory also failed:',e);}
+  return null;
 }
 
 async function applyTranslation(name,langCode){
@@ -1802,7 +1817,7 @@ async function applyTranslation(name,langCode){
     descEl.innerHTML=html;
   }else if(activeLang===langCode){
     // Translation failed — restore original with error note
-    descEl.innerHTML=origHTML;
+    descEl.innerHTML='<div style="color:#c0442a;font-style:italic;margin-bottom:12px">Translation unavailable — showing original text.</div>'+origHTML;
   }
   // Re-enable narrate (updateVoiceForLang handles no-voice case)
   updateVoiceForLang();
