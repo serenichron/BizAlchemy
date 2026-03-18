@@ -3,6 +3,8 @@
   "short_name": "BizAlchemy",
   "description": "Learn digital marketing by playing! Combine 102 business concepts — start with 4 raw ideas and transmute your way to a Digital Empire.",
   "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
   "start_url": ".",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
