@@ -105,6 +105,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #tooltip .tt-cta{display:inline-block;font-size:11px;font-weight:600;color:#378ADD;text-decoration:none}
 #tooltip .tt-cta:hover{text-decoration:underline}
 #tooltip .tt-owned{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;color:#5a9a3c;font-weight:600;margin-bottom:6px}
+#tooltip .tt-partial{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;color:#c07b2a;font-weight:600;margin-bottom:6px}
 #tooltip .tt-close{position:absolute;top:6px;right:8px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#aaa;cursor:pointer;border-radius:50%;transition:background 0.1s}
 #tooltip .tt-close:hover{background:#f0efe9;color:#666}
 #hint-popup{position:absolute;top:50px;left:12px;right:12px;background:#fff;border:1px solid #ddd;border-radius:12px;padding:10px 14px;z-index:80;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
@@ -227,6 +228,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stats-biz-items{display:flex;flex-wrap:wrap;gap:4px}
 .stats-biz-item{font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid #eee;background:#fafaf8;color:#999}
 .stats-biz-item.owned{border-color:#5a9a3c;background:#f4faf0;color:#3a7a22;font-weight:500}
+.stats-biz-item.partial{border-color:#e0a030;background:#fef9f0;color:#9a6d1a;font-weight:500}
 .stats-biz-item.not-discovered{border:1px dashed #ddd;color:#ccc}
 /* Slide-in panel */
 #slidein-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s ease;border-radius:20px}
@@ -266,10 +268,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .si-owned{margin-bottom:18px}
 .si-owned-label{font-size:14px;color:#444;font-weight:500;line-height:1.3;margin-bottom:8px}
 .si-seg{display:inline-flex;border-radius:8px;overflow:hidden;border:1px solid #ddd;-webkit-user-select:none;user-select:none}
-.si-seg-btn{padding:6px 16px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#fafaf8;color:#888;transition:background 0.15s,color 0.15s}
+.si-seg-btn{padding:6px 16px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#fafaf8;color:#888;transition:background 0.15s,color 0.15s,padding 0.2s,min-width 0.2s}
 .si-seg-btn+.si-seg-btn{border-left:1px solid #ddd}
-.si-seg-btn.active-no{background:#fdeae3;color:#c0442a}
-.si-seg-btn.active-yes{background:#5a9a3c;color:#fff}
+.si-seg-btn.active-0{background:#fdeae3;color:#c0442a}
+.si-seg-btn.active-1{background:#fef3e0;color:#c07b2a}
+.si-seg-btn.active-2{background:#5a9a3c;color:#fff}
+.si-seg-btn.dot-0{background:#fdeae3;color:#c0442a;padding:6px 10px}
+.si-seg-btn.dot-1{background:#fef3e0;color:#c07b2a;padding:6px 10px}
+.si-seg-btn.dot-2{background:#e8f5e0;color:#5a9a3c;padding:6px 10px}
 img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
 .ec-e img.emoji{height:24px;width:24px;margin:0;vertical-align:baseline}
 .slot-e img.emoji{height:22px;width:22px;margin:0;vertical-align:baseline}
@@ -844,8 +850,9 @@ function loadProgress(){
     const d=localStorage.getItem('ba_discovered');
     const t=localStorage.getItem('ba_tried');
     const o=localStorage.getItem('ba_owned');
+    const p=localStorage.getItem('ba_partial');
     const a=localStorage.getItem('ba_achievements');
-    if(d){const arr=JSON.parse(d);if(arr.length>=STARTS.length)return{discovered:new Set(arr),tried:new Set(t?JSON.parse(t):[]),owned:new Set(o?JSON.parse(o):[]),achievements:new Set(a?JSON.parse(a):[])};}
+    if(d){const arr=JSON.parse(d);if(arr.length>=STARTS.length)return{discovered:new Set(arr),tried:new Set(t?JSON.parse(t):[]),owned:new Set(o?JSON.parse(o):[]),partial:new Set(p?JSON.parse(p):[]),achievements:new Set(a?JSON.parse(a):[])};}
   }catch(e){}
   return null;
 }
@@ -854,6 +861,7 @@ function saveProgress(){
     localStorage.setItem('ba_discovered',JSON.stringify([...discovered]));
     localStorage.setItem('ba_tried',JSON.stringify([...tried]));
     localStorage.setItem('ba_owned',JSON.stringify([...owned]));
+    localStorage.setItem('ba_partial',JSON.stringify([...partial]));
     localStorage.setItem('ba_achievements',JSON.stringify([...unlockedAch]));
   }catch(e){}
 }
@@ -861,6 +869,7 @@ const saved=loadProgress();
 let discovered=saved?saved.discovered:new Set(STARTS);
 let tried=saved?saved.tried:new Set();
 let owned=saved?saved.owned:new Set();
+let partial=saved?saved.partial:new Set();
 let unlockedAch=saved?saved.achievements:new Set();
 // Achievements
 const ACHIEVEMENTS=[
@@ -1165,14 +1174,14 @@ function resetGame(){
   showConfirm('Reset progress?','This will erase all discoveries, owned items, and achievements. Item descriptions will be unavailable until you rediscover them.',doReset);
 }
 function doReset(){
-  discovered=new Set(STARTS);tried=new Set();owned=new Set();unlockedAch=new Set();
+  discovered=new Set(STARTS);tried=new Set();owned=new Set();partial=new Set();unlockedAch=new Set();
   slotA=null;slotB=null;resultName=null;resultState=null;
   clearTimeout(hintPopupTimer);clearInterval(hintCooldownTimer);
   hintBtn.disabled=false;hintBtn.textContent='💡 Hint';
   closeHint();renderSlot(slotAEl,null);renderSlot(slotBEl,null);
   resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';
   congratsEl.style.display='none';
-  try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');localStorage.removeItem('ba_owned');localStorage.removeItem('ba_achievements');}catch(e){}
+  try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');localStorage.removeItem('ba_owned');localStorage.removeItem('ba_partial');localStorage.removeItem('ba_achievements');}catch(e){}
   buildGrid();
   introEl.style.display='flex';
   document.getElementById('intro-new').style.display='';
@@ -1212,8 +1221,8 @@ function showTooltip(name,el){
   const recipeHTML=recipes.length?`<div class="tt-recipe">${recipes.map(([a,b])=>`${ALL[a]?ALL[a].e:'?'} ${a} + ${ALL[b]?ALL[b].e:'?'} ${b}`).join('<br>')}</div>`:'';
   const descLines=info.d.split('\n').map(l=>`<div>${l}</div>`).join('');
   const ctaUrl=`https://serenichron.com/glossary/${slug(name)}`;
-  const ownedHTML=owned.has(name)?'<div class="tt-owned">✓ Owned</div>':'';
-  tooltip.innerHTML=`<span class="tt-close" onclick="event.stopPropagation();forceHideTooltip();">✕</span><div class="tt-title">${ALL[name].e} ${name}</div>${ownedHTML}${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="#" onclick="event.preventDefault();event.stopPropagation();openSlideIn('${name.replace(/'/g,"\\'")}');return false;">Read more →</a>`;
+  const stateHTML=owned.has(name)?'<div class="tt-owned">✓ Owned</div>':partial.has(name)?'<div class="tt-partial">◐ Partially</div>':'';
+  tooltip.innerHTML=`<span class="tt-close" onclick="event.stopPropagation();forceHideTooltip();">✕</span><div class="tt-title">${ALL[name].e} ${name}</div>${stateHTML}${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="#" onclick="event.preventDefault();event.stopPropagation();openSlideIn('${name.replace(/'/g,"\\'")}');return false;">Read more →</a>`;
   tooltip.style.left='-9999px';tooltip.style.top='-9999px';tooltip.classList.add('visible');
   const TW=tooltip.offsetWidth,TH=tooltip.offsetHeight,GW=gameEl.offsetWidth,MARGIN=4,TRAY_H=100;
   const gameRect=gameEl.getBoundingClientRect(),cardRect=el.getBoundingClientRect();
@@ -1600,25 +1609,36 @@ const slideinOverlay=document.getElementById('slidein-overlay');
 const slideinPanel=document.getElementById('slidein');
 const slideinTitle=document.getElementById('slidein-title');
 const slideinBody=document.getElementById('slidein-body');
+function getItemState(name){return owned.has(name)?2:partial.has(name)?1:0;}
+function setItemState(name,v){owned.delete(name);partial.delete(name);if(v===2)owned.add(name);else if(v===1)partial.add(name);}
+function renderSegBtns(seg,active){
+  const labels=['Not yet','Partially','Yes'];
+  seg.querySelectorAll('.si-seg-btn').forEach(btn=>{
+    const v=parseInt(btn.dataset.v);
+    if(v===active){btn.className='si-seg-btn active-'+v;btn.textContent=v+' — '+labels[v];}
+    else{btn.className='si-seg-btn dot-'+v;btn.textContent=String(v);}
+  });
+}
 function openSlideIn(name){
   const info=ALL[name];if(!info)return;
   slideinTitle.textContent=info.e+' '+name;
   slideinBody.scrollTop=0;
   const desc=LONG_DESC[name]||LOREM;
   const cta=CTA_TEXT[name]||'Talk to us about your next step';
-  const isOwned=owned.has(name);
+  const curState=getItemState(name);
   const ownLabel=OWNED_LABEL;
-  slideinBody.innerHTML=`<div class="si-owned"><div class="si-owned-label">${ownLabel}</div><div class="si-seg" id="si-seg"><button class="si-seg-btn${isOwned?'':' active-no'}" data-v="no">Not yet</button><button class="si-seg-btn${isOwned?' active-yes':''}" data-v="yes">Yes</button></div></div><p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
+  slideinBody.innerHTML=`<div class="si-owned"><div class="si-owned-label">${ownLabel}</div><div class="si-seg" id="si-seg"><button class="si-seg-btn" data-v="0"></button><button class="si-seg-btn" data-v="1"></button><button class="si-seg-btn" data-v="2"></button></div></div><p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
+  const seg=document.getElementById('si-seg');
+  renderSegBtns(seg,curState);
   currentSlideInName=name;
   originalDescHTML=desc;
   // Apply active translation if set
   if(activeLang){applyTranslation(name,activeLang);}
-  document.getElementById('si-seg').addEventListener('click',function(e){
+  seg.addEventListener('click',function(e){
     const btn=e.target.closest('.si-seg-btn');if(!btn)return;
-    const yes=btn.dataset.v==='yes';
-    if(yes){owned.add(name);}else{owned.delete(name);}
-    this.querySelector('[data-v="no"]').className='si-seg-btn'+(yes?'':' active-no');
-    this.querySelector('[data-v="yes"]').className='si-seg-btn'+(yes?' active-yes':'');
+    const v=parseInt(btn.dataset.v);
+    setItemState(name,v);
+    renderSegBtns(this,v);
     saveProgress();checkAchievements();updateCardStates();
   });
   slideinOverlay.classList.add('active');
@@ -2061,6 +2081,7 @@ function openStats(){
   const totalItems=Object.keys(ALL).length;
   const totalRecipes=Object.keys(R).length;
   const ownedCount=owned.size;
+  const partialCount=partial.size;
   const discoveredCount=discovered.size;
   // Build tier data
   const tiers=[];
@@ -2068,7 +2089,8 @@ function openStats(){
     const items=Object.entries(ALL).filter(([,v])=>v.tier===t);
     const disc=items.filter(([n])=>discovered.has(n));
     const own=items.filter(([n])=>owned.has(n));
-    tiers.push({tier:t,name:TIER_NAMES[t]||'Expert',items,disc,own,color:PAL[t%PAL.length]});
+    const part=items.filter(([n])=>partial.has(n));
+    tiers.push({tier:t,name:TIER_NAMES[t]||'Expert',items,disc,own,part,color:PAL[t%PAL.length]});
   }
   let html='';
   // Achievements
@@ -2080,16 +2102,17 @@ function openStats(){
   });
   html+='</div></div>';
   // Summary cards
-  const covPct=totalItems?Math.round((ownedCount/totalItems)*100):0;
+  const covPct=totalItems?Math.round(((ownedCount+partialCount*0.5)/totalItems)*100):0;
   html+='<div class="stats-cards">';
   html+=`<div class="stats-card"><div class="stats-card-num">${discoveredCount}<span style="font-size:12px;color:#999;font-weight:400">/${totalItems}</span></div><div class="stats-card-label">elements<br>discovered</div></div>`;
   html+=`<div class="stats-card"><div class="stats-card-num">${tried.size}<span style="font-size:12px;color:#999;font-weight:400">/${totalRecipes}</span></div><div class="stats-card-label">recipes<br>tried</div></div>`;
-  html+=`<div class="stats-card"><div class="stats-card-num">${ownedCount}<span style="font-size:12px;color:#999;font-weight:400">/${totalItems}</span></div><div class="stats-card-label">in your<br>business</div></div>`;
+  html+=`<div class="stats-card"><div class="stats-card-num">${ownedCount}${partialCount?`<span style="font-size:12px;color:#c07b2a;font-weight:400">+${partialCount}</span>`:''}<span style="font-size:12px;color:#999;font-weight:400">/${totalItems}</span></div><div class="stats-card-label">in your<br>business</div></div>`;
   html+=`<div class="stats-card"><div class="stats-card-num">${covPct}%</div><div class="stats-card-label">business<br>coverage</div></div>`;
   html+='</div>';
   // Legend
   html+='<div class="stats-legend">';
   html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#5a9a3c"></div>In your business</div>';
+  html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#e0a030"></div>Partially</div>';
   html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#e5e4df"></div>Discovered</div>';
   html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#fff;border:1px dashed #ccc"></div>Not yet found</div>';
   html+='</div>';
@@ -2098,13 +2121,14 @@ function openStats(){
     const discPct=t.items.length?Math.round((t.disc.length/t.items.length)*100):0;
     const ownPct=t.items.length?Math.round((t.own.length/t.items.length)*100):0;
     html+=`<div class="stats-biz-tier">`;
-    html+=`<div class="stats-biz-tier-hdr"><span class="tier-dot" style="background:${t.color.dot}"></span>Tier ${t.tier} — ${t.name}<div class="stats-tier-counts"><span>${t.disc.length}/${t.items.length} found</span><span style="color:#5a9a3c">${t.own.length} owned</span></div></div>`;
+    html+=`<div class="stats-biz-tier-hdr"><span class="tier-dot" style="background:${t.color.dot}"></span>Tier ${t.tier} — ${t.name}<div class="stats-tier-counts"><span>${t.disc.length}/${t.items.length} found</span>${t.part.length?`<span style="color:#c07b2a">${t.part.length} partial</span>`:''}<span style="color:#5a9a3c">${t.own.length} owned</span></div></div>`;
     html+=`<div class="stats-bar"><div class="stats-bar-fill" style="width:${discPct}%;background:${t.color.dot}"></div><div class="stats-bar-own" style="width:${ownPct}%"></div></div>`;
     html+=`<div class="stats-biz-items">`;
     t.items.forEach(([n])=>{
       const isOwned=owned.has(n);
+      const isPartial=partial.has(n);
       const isDisc=discovered.has(n);
-      const cls=isOwned?'owned':(!isDisc?'not-discovered':'');
+      const cls=isOwned?'owned':isPartial?'partial':(!isDisc?'not-discovered':'');
       html+=`<span class="stats-biz-item ${cls}">${isDisc?ALL[n].e+' ':''} ${isDisc?n:'???'}</span>`;
     });
     html+=`</div></div>`;
