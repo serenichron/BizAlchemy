@@ -870,6 +870,7 @@ let tried=saved?saved.tried:new Set();
 let owned=saved?saved.owned:new Set();
 let partial=saved?saved.partial:new Set();
 let unlockedAch=saved?saved.achievements:new Set();
+discovered.forEach(n=>markAllRecipes(n));
 // Achievements
 const ACHIEVEMENTS=[
   // Game progression
@@ -1076,6 +1077,7 @@ function checkWin(){
   }
 }
 function ck(a,b){return[a,b].sort().join('||');}
+function markAllRecipes(name){if(REV[name])REV[name].forEach(([a,b])=>tried.add(ck(a,b)));}
 function hasReaction(a,b){return!!R[ck(a,b)];}
 function getIndicator(a,b){
   const k=ck(a,b);if(!tried.has(k))return null;
@@ -1149,7 +1151,7 @@ function tapCard(name){
 }
 function addResult(){
   if(!resultName||resultState!=='new')return;
-  discovered.add(resultName);saveProgress();const added=resultName;
+  discovered.add(resultName);markAllRecipes(resultName);saveProgress();const added=resultName;
   slotA=null;slotB=null;resultName=null;resultState=null;
   renderSlot(slotAEl,null);renderSlot(slotBEl,null);renderResult();
   buildGrid();
