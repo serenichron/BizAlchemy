@@ -14,10 +14,10 @@ The game is educational: every element maps to a real digital marketing concept 
 
 - **Genre:** Crafting / Combination puzzle (similar to Little Alchemy, Doodle God)
 - **Theme:** Digital marketing & online business building
-- **Goal:** Discover all 102 elements across 7 tiers by combining pairs of elements
+- **Goal:** Discover all 103 elements across 7 tiers by combining pairs of elements
 - **Secondary goal:** Mark discovered elements as "owned" to track real business coverage
 - **Educational purpose:** Each element represents a real digital marketing concept with descriptions explaining what it is and why it matters
-- **Win condition:** Discover all 102 elements to unlock the "Digital Empire achieved" congratulations screen
+- **Win condition:** Discover all 103 elements to unlock the "Digital Empire achieved" congratulations screen
 
 ---
 
@@ -31,7 +31,7 @@ Players begin with 4 base elements:
 | Idea      | 💡    | The spark that starts every business |
 | Audience  | 👥    | The people you exist to serve |
 | Content   | 📝    | The value you create and put into the world |
-| Tool + CRM | 🔧   | The software, systems, and contact management platform that turn ideas into reality |
+| Tool      | 🔧    | The software and systems that turn ideas into reality |
 
 ### Combination System
 - **Select two cards** from the grid to attempt a combination
@@ -55,19 +55,19 @@ Result slot states:
 
 ## Tier System
 
-The game organizes all 102 elements into 7 tiers, each with a unique color palette:
+The game organizes all 103 elements into 7 tiers, each with a unique color palette:
 
 | Tier | Name                | Color   | Elements | Description |
 |------|---------------------|---------|----------|-------------|
 | 0    | Raw Ingredients     | Gold    | 4        | Starting elements |
-| 1    | Core Assets         | Blue    | 7        | First combinations from base elements |
+| 1    | Core Assets         | Blue    | 8        | First combinations from base elements |
 | 2    | Digital Foundations  | Green   | 22       | Building blocks of digital marketing |
 | 3    | Marketing Channels  | Orange  | 25       | Active marketing tools and channels |
 | 4    | Growth Strategy     | Purple  | 23       | Scaling and optimization systems |
 | 5    | Advanced Systems    | Pink    | 13       | Automated and advanced business systems |
 | 6    | Endgame             | Lime    | 8        | Ultimate business outcomes |
 
-**Total: 102 elements, 117 recipes (some elements have multiple recipes)**
+**Total: 103 elements, 118 recipes (some elements have multiple recipes)**
 
 ---
 
@@ -79,16 +79,17 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 | Idea | 💡 |
 | Audience | 👥 |
 | Content | 📝 |
-| Tool + CRM | 🔧 |
+| Tool | 🔧 |
 
-### Tier 1 — Core Assets (7)
+### Tier 1 — Core Assets (8)
 | Element | Emoji | Recipe |
 |---------|-------|--------|
 | Niche | 🎯 | Idea + Audience |
 | Article | ✍️ | Idea + Content |
-| Website | 🌐 | Idea + Tool + CRM |
+| Website | 🌐 | Idea + Tool |
 | Newsletter | 📧 | Audience + Content |
-| Template | 📋 | Content + Tool + CRM |
+| CRM | 🗃️ | Audience + Tool |
+| Template | 📋 | Content + Tool |
 | Value Proposition | ✨ | Idea + Niche |
 | Social Media | 📱 | Audience + Website |
 
@@ -98,25 +99,25 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 | Keyword Research | 🔑 | Niche + Article |
 | Landing Page | 🛬 | Niche + Website |
 | Lead Magnet | 🧲 | Niche + Newsletter |
-| Persona | 🪞 | Niche + Tool + CRM |
+| Persona | 🪞 | Niche + CRM |
 | Offer | 💎 | Niche + Template |
 | Blog | 📰 | Article + Website |
 | Content Strategy | 🗺️ | Article + Social Media |
 | Content Calendar | 🗓️ | Article + Template |
 | Copywriting | ✏️ | Article + Persona |
 | Email Capture | 🎣 | Website + Lead Magnet |
-| Analytics | 📊 | Content + Website |
+| Analytics | 📊 | Website + Tool |
 | Wireframe | 📐 | Website + Template |
-| Email List | 📬 | Lead Magnet + Tool + CRM |
+| Email List | 📬 | Lead Magnet + CRM |
 | Nurture Sequence | 💌 | Newsletter + Template |
-| Automation | 🤖 | Tool + CRM + Template |
+| Automation | 🤖 | CRM + Template |
 | Web Design | 🌈 | Website + Wireframe |
 | Headline | 🏷️ | Value Proposition + Niche |
 | Pitch Deck | 📊 | Value Proposition + Template |
 | Subscriber | 🔔 | Audience + Newsletter |
 | Script | 🎬 | Idea + Template |
-| Hosting | ☁️ | Tool + CRM + Website |
-| Workflow | ⚙️ | Content + Template |
+| Hosting | ☁️ | Tool + Website |
+| Workflow | ⚙️ | Tool + Template |
 
 ### Tier 3 — Marketing Channels (25)
 | Element | Emoji | Recipe |
@@ -140,8 +141,8 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 | Opt-in Page | 📮 | Email Capture + Lead Magnet |
 | Sales Copy | 💬 | Copywriting + Offer |
 | Organic Traffic | 🌱 | SEO + Content Strategy |
-| Outreach | 📤 | Tool + CRM + Persona |
-| Podcast | 🎙️ | Script + Tool + CRM |
+| Outreach | 📤 | CRM + Persona |
+| Podcast | 🎙️ | Script + Tool |
 | Social Proof | 🌟 | Offer + Subscriber |
 | Tripwire | 🪝 | Lead Magnet + Offer |
 | A/B Test | 🧪 | Analytics + Landing Page |
@@ -151,7 +152,7 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 | Element | Emoji | Recipe(s) |
 |---------|-------|-----------|
 | Sales Funnel | 💸 | Sales Copy + Email Funnel _or_ Tripwire + Email Funnel |
-| Launch Sequence | 🏁 | Nurture Sequence + Sales Page |
+| Launch Sequence | 🏁 | Sales Page + Email Funnel |
 | Inbound Sales | 🤝 | Organic Traffic + Sales Page _or_ Discovery Call + Sales Page |
 | Webinar Funnel | 🎞️ | Webinar + Email Funnel |
 | High-Ticket Offer | 👑 | Sales Page + Social Proof _or_ Discovery Call + Offer _or_ Portfolio + Sales Page |
@@ -303,7 +304,7 @@ These indicators only appear when one card is selected, showing the status of th
 - If all elements are found, shows "You found everything!" message
 
 ### 13. Progress Counter
-- Displayed in the header as a pill badge: `X / 102 found`
+- Displayed in the header as a pill badge: `X / 103 found`
 - Updates in real-time as elements are discovered
 
 ### 14. Statistics Screen
@@ -323,10 +324,10 @@ These indicators only appear when one card is selected, showing the status of th
 | 🧭 Explorer | Discover 25 elements |
 | ⚗️ Alchemist | Discover 50 elements |
 | 🔮 Master Alchemist | Discover 75 elements |
-| 👑 Grand Master | Discover all 102 elements |
+| 👑 Grand Master | Discover all 103 elements |
 | 🧪 Experimenter | Try 30 recipes |
 | ⚡ Mad Scientist | Try 75 recipes |
-| 🏆 Completionist | Try all 117 recipes |
+| 🏆 Completionist | Try all 118 recipes |
 
 **Business Coverage (4):**
 | Achievement | Condition |
@@ -334,7 +335,7 @@ These indicators only appear when one card is selected, showing the status of th
 | 🚶 Getting Started | Mark 5 items as owned |
 | 🧱 Foundation | Mark 15 items as owned |
 | ⛰️ Halfway There | Mark 50 items as owned |
-| 🦄 Full Stack Business | Mark all 102 items as owned |
+| 🦄 Full Stack Business | Mark all 103 items as owned |
 
 **Department Badges (16):**
 | Achievement | Department | Condition |
@@ -349,7 +350,7 @@ These indicators only appear when one card is selected, showing the status of th
 | ⚡ Sales Machine | Sales | Own all 12 sales items |
 | 🎨 Brand Builder | Brand | Own Value Proposition, Brand Voice, Brand Identity |
 | 👑 Brand Empire | Brand | Own all 10 brand items |
-| 🔧 Tech Ready | Tech | Own Website, Tool + CRM, Analytics, Automation |
+| 🔧 Tech Ready | Tech | Own Website, CRM, Analytics, Automation |
 | 🤖 Automation Expert | Tech | Own Automation, AI Automation, Marketing OS, Workflow |
 | 🎁 Product Creator | Products | Own any 2 product items |
 | 📦 Product Empire | Products | Own all 5 product items |
@@ -370,7 +371,7 @@ These indicators only appear when one card is selected, showing the status of th
 - Returns to the intro screen
 
 ### 17. Win / Congratulations Screen
-- Triggers automatically when all 102 elements are discovered (600ms delay)
+- Triggers automatically when all 103 elements are discovered (600ms delay)
 - Animated trophy emoji burst
 - "Achievement unlocked" label
 - Title: "Digital Empire achieved."
@@ -465,11 +466,11 @@ Seven distinct color palettes, one per tier:
 
 ## Recipe Tree Summary
 
-The game contains **117 recipes** producing 98 non-starting elements (many elements have multiple recipes).
+The game contains **118 recipes** producing 99 non-starting elements (many elements have multiple recipes).
 
 ### Recipe Structure
-- **Tier 0 → Tier 1:** 5 combinations from 4 starters + 2 cross-tier recipes (7 total)
-- **Tier 1 → Tier 2:** 22 recipes from Tier 0/1 pairs + cross-tier
+- **Tier 0 → Tier 1:** All 6 combinations of the 4 starters (4 choose 2) + 2 cross-tier recipes (8 total)
+- **Tier 1 → Tier 2:** 22 recipes from Tier 1 pairs + cross-tier
 - **Tier 2 → Tier 3:** 25 recipes
 - **Tier 3 → Tier 4:** 30 recipes (many elements have 2–3 recipes)
 - **Tier 4 → Tier 5:** 18 recipes (some elements have 2 recipes)
@@ -652,33 +653,94 @@ The 102 elements cover these core business domains:
 
 ## Debug / Developer Tools
 
-- `window.unlockAll()` — Discover all 102 elements at once
+- `window.unlockAll()` — Discover all 103 elements at once
 - `showCongrats()` — Preview the congratulations screen
 - All state is in global variables: `discovered`, `tried`, `owned`, `unlockedAch`
 - Console: `discovered.size` to check progress count
 
 ---
 
-## Change Log
+## Review Notes — Proposed Changes
 
-### Implemented Changes
+### 1. Merge "Tool" + "CRM" into a single Tier 0 starter
 
-**1. Merged "Tool" + "CRM" into a single Tier 0 starter**
-- Renamed Tier 0 starter "Tool" → "Tool + CRM" 🔧
-- Removed "CRM" 🗃️ from Tier 1 (8 → 7 elements)
-- Total elements: 103 → 102, Total recipes: 118 → 117
-- Updated all recipes that referenced Tool or CRM as ingredients
-- Fixed recipe key conflicts caused by the merge:
-  - Analytics: changed from Website + Tool to **Content + Website**
-  - Workflow: changed from Tool + Template to **Content + Template**
-- Fixed pre-existing recipe conflict: Launch Sequence changed from Sales Page + Email Funnel to **Nurture Sequence + Sales Page** (was colliding with Conversion)
-- Updated "Tech Ready" achievement to reference "Tool + CRM"
+**Change:** Rename the Tier 0 starter **Tool** 🔧 to **Tool + CRM** 🔧 (or a combined name like **Tools & CRM**). Remove **CRM** 🗃️ from Tier 1.
 
-**2. Clarified "Nurture Sequence" vs "Email Funnel" descriptions (Option C)**
-- Both items kept; descriptions rewritten to make the distinction clear
-- **Nurture Sequence** (Tier 2): Trust-building, value-focused email series — no selling, just relationship building on autopilot
-- **Email Funnel** (Tier 3): Goal-oriented conversion pipeline with sales triggers, deadlines, and CTAs — the engine that turns subscribers into buyers
+**Rationale:** Tool and CRM are both foundational software/systems concepts. Combining them into a single starter simplifies Tier 0 and better reflects that a CRM is one of the core tools a business needs from day one.
 
-**3. Clarified "Email Capture" vs "Opt-in Page" descriptions**
-- **Email Capture** (Tier 2): The backend system — form, validation, integration that populates CRM/email software with subscriber data
-- **Opt-in Page** (Tier 3): The frontend page — what visitors actually see, designed to convince them to subscribe
+**Cascading impacts:**
+
+| Area | Current | Proposed |
+|------|---------|----------|
+| Tier 0 starters | 4 (Idea, Audience, Content, Tool) | 4 (Idea, Audience, Content, Tool + CRM) |
+| Tier 1 elements | 8 (includes CRM) | 7 (CRM removed) |
+| Total elements | 103 | 102 |
+| Total recipes | 118 | ~113 (CRM recipe removed, CRM-dependent recipes updated) |
+
+**Recipe changes required:**
+
+| Current Recipe | Current Result | Proposed Change |
+|---------------|---------------|-----------------|
+| Audience + Tool → CRM | CRM (Tier 1) | **Removed** — CRM is now a starter |
+| Niche + CRM → Persona | Persona (Tier 2) | Niche + **Tool + CRM** → Persona |
+| Lead Magnet + CRM → Email List | Email List (Tier 2) | Lead Magnet + **Tool + CRM** → Email List |
+| CRM + Template → Automation | Automation (Tier 2) | **Tool + CRM** + Template → Automation |
+| CRM + Persona → Outreach | Outreach (Tier 3) | **Tool + CRM** + Persona → Outreach |
+| Website + Tool → Analytics | Analytics (Tier 2) | Website + **Tool + CRM** → Analytics |
+| Tool + Website → Hosting | Hosting (Tier 2) | **Tool + CRM** + Website → Hosting |
+| Tool + Template → Workflow | Workflow (Tier 2) | **Tool + CRM** + Template → Workflow |
+| Script + Tool → Podcast | Podcast (Tier 3) | Script + **Tool + CRM** → Podcast |
+| Idea + Tool → Website | Website (Tier 1) | Idea + **Tool + CRM** → Website |
+| Content + Tool → Template | Template (Tier 1) | Content + **Tool + CRM** → Template |
+
+**Achievement updates:**
+- "Tech Ready" badge condition: Own Website, **Tool + CRM**, Analytics, and Automation (was CRM)
+
+**Description for merged starter:**
+> *The software, systems, and contact management platform that turn ideas into operational realities at scale. The right tools — including a CRM to manage every relationship — remove bottlenecks and buy back your most valuable resource: time.*
+
+---
+
+### 2. Overlap: "Nurture Sequence" (Tier 2) vs "Email Funnel" (Tier 3)
+
+**Issue:** These two items describe very similar concepts — both are automated email sequences that guide subscribers over time.
+
+| Item | Tier | Recipe | Current Description |
+|------|------|--------|-------------------|
+| **Nurture Sequence** 💌 | 2 | Newsletter + Template | "A series of emails that builds genuine trust with new subscribers automatically over time." |
+| **Email Funnel** 📨 | 3 | Email List + Nurture Sequence | "A sequence of emails that guides a subscriber from curious stranger to ready-to-buy prospect." |
+
+**Preference:** Keep **Nurture Sequence** as the primary term.
+
+**Options to resolve:**
+- **Option A — Rename Email Funnel:** Change "Email Funnel" to a more distinct concept (e.g., "Email Automation," "Conversion Sequence," or "Sales Sequence") to differentiate it as the sales-focused evolution of the nurture approach.
+- **Option B — Remove Email Funnel:** Eliminate Email Funnel entirely and replace all recipe references with Nurture Sequence. This would require updating 6 Tier 4 recipes that currently use Email Funnel as an ingredient (Sales Funnel, Launch Sequence, Webinar Funnel, Conversion, and their alternates).
+- **Option C — Clarify descriptions only:** Keep both items but rewrite descriptions to make the distinction clearer — Nurture Sequence is the trust-building relationship series, Email Funnel is the structured sales pipeline that uses nurture sequences as building blocks.
+
+**Recipes that depend on Email Funnel (Tier 4):**
+- Sales Copy + Email Funnel → Sales Funnel
+- Tripwire + Email Funnel → Sales Funnel
+- Sales Page + Email Funnel → Launch Sequence
+- Webinar + Email Funnel → Webinar Funnel
+- Email Funnel + Sales Page → Conversion
+
+---
+
+### 3. Clarification: "Email Capture" (Tier 2) vs "Opt-in Page" (Tier 3)
+
+**Issue:** These two items are related but serve different roles that need clearer descriptions.
+
+| Item | Tier | Recipe | Role |
+|------|------|--------|------|
+| **Email Capture** 🎣 | 2 | Website + Lead Magnet | The **backend system/mechanism** — the form, integration, and data flow that takes an email submission and populates the CRM/email software |
+| **Opt-in Page** 📮 | 3 | Email Capture + Lead Magnet | The **frontend page** — the actual landing page designed to convince visitors to subscribe |
+
+**Proposed updated descriptions:**
+
+**Email Capture** (updated):
+> *The system and mechanism that collects email addresses from website forms and populates your CRM and email software with subscriber data. Your website paired with a lead magnet creates the technical pipeline — form, validation, integration — that turns a visitor's interest into a contact record you can nurture.*
+
+**Opt-in Page** (updated):
+> *A dedicated page built entirely around one purpose: convincing visitors to subscribe. While email capture is the system working behind the scenes, the opt-in page is what visitors actually see — one page, one offer, one irresistible reason to say yes.*
+
+These two items have a clear parent-child relationship in the recipe tree (Email Capture is an ingredient of Opt-in Page), reinforcing the distinction: you build the capture system first, then design the page that uses it.
