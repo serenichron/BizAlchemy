@@ -227,7 +227,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stats-biz-tier-hdr .tier-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .stats-biz-items{display:flex;flex-wrap:wrap;gap:4px}
 .stats-biz-item{font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid #eee;background:#fafaf8;color:#999}
-.stats-biz-item.owned{border-color:#5a9a3c;background:#f4faf0;color:#3a7a22;font-weight:500}
+.stats-biz-item.owned{border-color:#378ADD;background:#eef5fc;color:#2a6db5;font-weight:500}
 .stats-biz-item.partial{border-color:#e0a030;background:#fef9f0;color:#9a6d1a;font-weight:500}
 .stats-biz-item.not-discovered{border:1px dashed #ddd;color:#ccc}
 /* Slide-in panel */
@@ -243,12 +243,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #slidein-narrate.playing{background:#378ADD}
 #slidein-narrate.playing:hover{background:#2a6db5}
 #slidein-narrate.playing .narr-icon{width:8px;height:8px;border:none;border-radius:1px;background:#fff;margin-left:0}
-#slidein-translate{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f0efe9;font-size:14px;color:#666;cursor:pointer;flex-shrink:0;transition:background 0.15s,color 0.15s;border:none;padding:0}
-#slidein-translate:hover{background:#e5e4df}
-#slidein-translate.active{background:#378ADD;color:#fff}
-#slidein-translate.active:hover{background:#2a6db5}
+#slidein-translate{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 10px;border-radius:13px;background:#378ADD;font-size:11px;font-weight:600;color:#fff;cursor:pointer;flex-shrink:0;transition:background 0.15s;border:none;white-space:nowrap}
+#slidein-translate:hover{background:#2a6db5}
 #slidein-translate.disabled{opacity:0.35;cursor:default;pointer-events:none}
-.lang-icon{font-weight:700;font-size:12px;font-family:system-ui,sans-serif;line-height:1}
 #si-lang-wrap{position:relative}
 #si-lang-dropdown{display:none;position:absolute;top:34px;right:0;background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.12);z-index:320;max-height:240px;overflow-y:auto;min-width:150px;padding:4px 0;-webkit-overflow-scrolling:touch}
 #si-lang-dropdown.open{display:block}
@@ -541,7 +538,7 @@ h1,h2{margin:0;padding:0}
       <h2 id="slidein-title"></h2>
       <div style="display:flex;align-items:center;gap:6px">
         <div id="si-lang-wrap">
-          <button id="slidein-translate" aria-label="Translate description"><span class="lang-icon">あ</span></button>
+          <button id="slidein-translate" aria-label="Translate description">🇬🇧 English</button>
           <div id="si-lang-dropdown"></div>
         </div>
         <button id="slidein-narrate" aria-label="Narrate description"><span class="narr-icon"></span></button>
@@ -1226,7 +1223,7 @@ function showTooltip(name,el){
   const descLines=info.d.split('\n').map(l=>`<div>${l}</div>`).join('');
   const ctaUrl=`https://serenichron.com/glossary/${slug(name)}`;
   const stateHTML=owned.has(name)?'<div class="tt-owned">✓ Owned</div>':partial.has(name)?'<div class="tt-partial">◐ Partially</div>':'';
-  tooltip.innerHTML=`<span class="tt-close" onclick="event.stopPropagation();forceHideTooltip();">✕</span><div class="tt-title">${ALL[name].e} ${name}</div>${stateHTML}${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="#" onclick="event.preventDefault();event.stopPropagation();openSlideIn('${name.replace(/'/g,"\\'")}');return false;">Read more →</a>`;
+  tooltip.innerHTML=`<span class="tt-close" onclick="event.stopPropagation();forceHideTooltip();">✕</span><div class="tt-title">${ALL[name].e} ${name}</div>${stateHTML}${recipeHTML}<div class="tt-desc">${descLines}</div><a class="tt-cta" href="#" onclick="event.preventDefault();event.stopPropagation();openSlideIn('${name.replace(/'/g,"\\'")}');return false;">Read/listen more →</a>`;
   tooltip.style.left='-9999px';tooltip.style.top='-9999px';tooltip.classList.add('visible');
   const TW=tooltip.offsetWidth,TH=tooltip.offsetHeight,GW=gameEl.offsetWidth,MARGIN=4,TRAY_H=100;
   const gameRect=gameEl.getBoundingClientRect(),cardRect=el.getBoundingClientRect();
@@ -1633,9 +1630,9 @@ function openSlideIn(name){
   const ownLabel=OWNED_LABEL;
   const recipes=REV[name]||[];
   const recipeHTML=recipes.length?`<div class="si-recipe">${recipes.map(([a,b])=>`${ALL[a]?ALL[a].e:'?'} ${a} + ${ALL[b]?ALL[b].e:'?'} ${b}`).join('<br>')}</div>`:'';
-  const langObj=activeLang?LANGS.find(l=>l.code===activeLang):null;
-  const langBadge=langObj?`<span class="si-lang-badge">${langObj.flag} ${langObj.name}</span> `:`<span class="si-lang-badge">🇬🇧 English</span> `;
-  slideinBody.innerHTML=`<div class="si-owned"><div class="si-owned-label">${ownLabel}</div><div class="si-seg" id="si-seg"><button class="si-seg-btn" data-v="0"></button><button class="si-seg-btn" data-v="1"></button><button class="si-seg-btn" data-v="2"></button></div></div>${recipeHTML}${langBadge}<p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
+  // Update the language tag button in the header
+  if(activeLang){const lObj=LANGS.find(l=>l.code===activeLang);if(lObj)translateBtn.innerHTML=lObj.flag+' '+lObj.name;}else{translateBtn.innerHTML='🇬🇧 English';}
+  slideinBody.innerHTML=`<div class="si-owned"><div class="si-owned-label">${ownLabel}</div><div class="si-seg" id="si-seg"><button class="si-seg-btn" data-v="0"></button><button class="si-seg-btn" data-v="1"></button><button class="si-seg-btn" data-v="2"></button></div></div>${recipeHTML}<p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
   const seg=document.getElementById('si-seg');
   renderSegBtns(seg,curState);
   currentSlideInName=name;
@@ -1964,12 +1961,13 @@ langDropdown.addEventListener('click',function(e){
   langDropdown.classList.remove('open');
   if(lang==='en'){
     activeLang=null;
-    translateBtn.classList.remove('active');
+    translateBtn.innerHTML='🇬🇧 English';
     restoreOriginalDesc();
     updateVoiceForLang();
   }else{
+    const lObj=LANGS.find(l=>l.code===lang);
     activeLang=lang;
-    translateBtn.classList.add('active');
+    if(lObj)translateBtn.innerHTML=lObj.flag+' '+lObj.name;
     applyTranslation(currentSlideInName,lang);
   }
 });
