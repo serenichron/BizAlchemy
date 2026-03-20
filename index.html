@@ -226,7 +226,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stats-biz-tier-hdr{font-size:12px;font-weight:600;color:#666;margin-bottom:6px;display:flex;align-items:center;gap:5px}
 .stats-biz-tier-hdr .tier-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .stats-biz-items{display:flex;flex-wrap:wrap;gap:4px}
-.stats-biz-item{font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid #eee;background:#fafaf8;color:#999}
+.stats-biz-item{font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid #eee;background:#fafaf8;color:#999;transition:background 0.15s,border-color 0.15s,color 0.15s}
+.stats-biz-item.tappable{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.stats-biz-item.tappable:active{transform:scale(0.95)}
 .stats-biz-item.owned{border-color:#378ADD;background:#eef5fc;color:#2a6db5;font-weight:500}
 .stats-biz-item.partial{border-color:#e0a030;background:#fef9f0;color:#9a6d1a;font-weight:500}
 .stats-biz-item.not-discovered{border:1px dashed #ddd;color:#ccc}
@@ -2131,6 +2133,7 @@ function openStats(){
   html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#e0a030"></div>Partially</div>';
   html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#e5e4df"></div>Discovered</div>';
   html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#fff;border:1px dashed #ccc"></div>Not yet found</div>';
+  html+='<div class="stats-legend-item" style="color:#bbb;font-style:italic">tap items to update</div>';
   html+='</div>';
   // Per-tier breakdown
   tiers.forEach(t=>{
@@ -2145,11 +2148,45 @@ function openStats(){
       const isPartial=partial.has(n);
       const isDisc=discovered.has(n);
       const cls=isOwned?'owned':isPartial?'partial':(!isDisc?'not-discovered':'');
-      html+=`<span class="stats-biz-item ${cls}">${isDisc?ALL[n].e+' ':''} ${isDisc?n:'???'}</span>`;
+      const tap=isDisc?' tappable':'';
+      html+=`<span class="stats-biz-item ${cls}${tap}"${isDisc?' data-name="'+n.replace(/"/g,'&quot;')+'"':''}>${isDisc?ALL[n].e+' ':''} ${isDisc?n:'???'}</span>`;
     });
     html+=`</div></div>`;
   });
   statsBody.innerHTML=html;
+  statsBody.onclick=function(e){
+    const pill=e.target.closest('.stats-biz-item.tappable');
+    if(!pill)return;
+    const name=pill.dataset.name;if(!name)return;
+    const cur=getItemState(name);
+    const next=cur===0?1:cur===1?2:0;
+    setItemState(name,next);saveProgress();checkAchievements();updateCardStates();
+    pill.classList.remove('owned','partial');
+    if(next===2)pill.classList.add('owned');else if(next===1)pill.classList.add('partial');
+    // Live-update summary cards
+    const totalItems=Object.keys(ALL).length;
+    const oc=owned.size,pc=partial.size;
+    const covPct=totalItems?Math.round(((oc+pc*0.5)/totalItems)*100):0;
+    const bizCard=statsBody.querySelectorAll('.stats-card')[2];
+    if(bizCard)bizCard.querySelector('.stats-card-num').innerHTML=oc+(pc?'<span style="font-size:12px;color:#c07b2a;font-weight:400">+'+pc+'</span>':'')+'<span style="font-size:12px;color:#999;font-weight:400">/'+totalItems+'</span>';
+    const covCard=statsBody.querySelectorAll('.stats-card')[3];
+    if(covCard)covCard.querySelector('.stats-card-num').textContent=covPct+'%';
+    // Live-update tier row
+    const tierDiv=pill.closest('.stats-biz-tier');
+    if(tierDiv){
+      const items=tierDiv.querySelectorAll('.stats-biz-item');
+      let tOwn=0,tPart=0,tTotal=items.length;
+      items.forEach(p=>{if(p.classList.contains('owned'))tOwn++;if(p.classList.contains('partial'))tPart++;});
+      const counts=tierDiv.querySelector('.stats-tier-counts');
+      if(counts){const spans=counts.querySelectorAll('span');
+        if(spans.length>=2){spans[spans.length-1].textContent=tOwn+' owned';
+        if(tPart){if(spans.length>=3)spans[spans.length-2].textContent=tPart+' partial';
+        else{const s=document.createElement('span');s.style.color='#c07b2a';s.textContent=tPart+' partial';counts.insertBefore(s,spans[spans.length-1]);}}
+        else{const ps=counts.querySelector('span[style*="c07b2a"]');if(ps)ps.remove();}}}
+      const ownBar=tierDiv.querySelector('.stats-bar-own');
+      if(ownBar)ownBar.style.width=Math.round((tOwn/tTotal)*100)+'%';
+    }
+  };
   statsEl.classList.add('active');
 }
 function closeStats(){statsEl.classList.remove('active');}
