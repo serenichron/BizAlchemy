@@ -106,7 +106,7 @@ The game organizes all 103 elements into 7 tiers, each with a unique color palet
 | Content Calendar | 🗓️ | Article + Template |
 | Copywriting | ✏️ | Article + Persona |
 | Email Capture | 🎣 | Website + Lead Magnet |
-| Analytics | 📊 | Website + Tool |
+| Analytics | 📊 | Tool + CRM |
 | Wireframe | 📐 | Website + Template |
 | Email List | 📬 | Lead Magnet + CRM |
 | Nurture Sequence | 💌 | Newsletter + Template |
@@ -660,87 +660,19 @@ The 102 elements cover these core business domains:
 
 ---
 
-## Review Notes — Proposed Changes
+## Change Log
 
-### 1. Merge "Tool" + "CRM" into a single Tier 0 starter
+### Changes Applied
 
-**Change:** Rename the Tier 0 starter **Tool** 🔧 to **Tool + CRM** 🔧 (or a combined name like **Tools & CRM**). Remove **CRM** 🗃️ from Tier 1.
+**1. Analytics recipe updated**
+- Changed from `Website + Tool` → `Tool + CRM`
+- Tool and CRM combined now produce Analytics — your tools paired with relationship data reveal what's working
 
-**Rationale:** Tool and CRM are both foundational software/systems concepts. Combining them into a single starter simplifies Tier 0 and better reflects that a CRM is one of the core tools a business needs from day one.
+**2. Clarified "Nurture Sequence" vs "Email Funnel" descriptions (Option C)**
+- Both items kept; descriptions rewritten to make the distinction clear
+- **Nurture Sequence** (Tier 2): Trust-building, value-focused email series — no selling, just relationship building on autopilot
+- **Email Funnel** (Tier 3): Goal-oriented conversion pipeline with sales triggers, deadlines, and CTAs — the engine that turns subscribers into buyers
 
-**Cascading impacts:**
-
-| Area | Current | Proposed |
-|------|---------|----------|
-| Tier 0 starters | 4 (Idea, Audience, Content, Tool) | 4 (Idea, Audience, Content, Tool + CRM) |
-| Tier 1 elements | 8 (includes CRM) | 7 (CRM removed) |
-| Total elements | 103 | 102 |
-| Total recipes | 118 | ~113 (CRM recipe removed, CRM-dependent recipes updated) |
-
-**Recipe changes required:**
-
-| Current Recipe | Current Result | Proposed Change |
-|---------------|---------------|-----------------|
-| Audience + Tool → CRM | CRM (Tier 1) | **Removed** — CRM is now a starter |
-| Niche + CRM → Persona | Persona (Tier 2) | Niche + **Tool + CRM** → Persona |
-| Lead Magnet + CRM → Email List | Email List (Tier 2) | Lead Magnet + **Tool + CRM** → Email List |
-| CRM + Template → Automation | Automation (Tier 2) | **Tool + CRM** + Template → Automation |
-| CRM + Persona → Outreach | Outreach (Tier 3) | **Tool + CRM** + Persona → Outreach |
-| Website + Tool → Analytics | Analytics (Tier 2) | Website + **Tool + CRM** → Analytics |
-| Tool + Website → Hosting | Hosting (Tier 2) | **Tool + CRM** + Website → Hosting |
-| Tool + Template → Workflow | Workflow (Tier 2) | **Tool + CRM** + Template → Workflow |
-| Script + Tool → Podcast | Podcast (Tier 3) | Script + **Tool + CRM** → Podcast |
-| Idea + Tool → Website | Website (Tier 1) | Idea + **Tool + CRM** → Website |
-| Content + Tool → Template | Template (Tier 1) | Content + **Tool + CRM** → Template |
-
-**Achievement updates:**
-- "Tech Ready" badge condition: Own Website, **Tool + CRM**, Analytics, and Automation (was CRM)
-
-**Description for merged starter:**
-> *The software, systems, and contact management platform that turn ideas into operational realities at scale. The right tools — including a CRM to manage every relationship — remove bottlenecks and buy back your most valuable resource: time.*
-
----
-
-### 2. Overlap: "Nurture Sequence" (Tier 2) vs "Email Funnel" (Tier 3)
-
-**Issue:** These two items describe very similar concepts — both are automated email sequences that guide subscribers over time.
-
-| Item | Tier | Recipe | Current Description |
-|------|------|--------|-------------------|
-| **Nurture Sequence** 💌 | 2 | Newsletter + Template | "A series of emails that builds genuine trust with new subscribers automatically over time." |
-| **Email Funnel** 📨 | 3 | Email List + Nurture Sequence | "A sequence of emails that guides a subscriber from curious stranger to ready-to-buy prospect." |
-
-**Preference:** Keep **Nurture Sequence** as the primary term.
-
-**Options to resolve:**
-- **Option A — Rename Email Funnel:** Change "Email Funnel" to a more distinct concept (e.g., "Email Automation," "Conversion Sequence," or "Sales Sequence") to differentiate it as the sales-focused evolution of the nurture approach.
-- **Option B — Remove Email Funnel:** Eliminate Email Funnel entirely and replace all recipe references with Nurture Sequence. This would require updating 6 Tier 4 recipes that currently use Email Funnel as an ingredient (Sales Funnel, Launch Sequence, Webinar Funnel, Conversion, and their alternates).
-- **Option C — Clarify descriptions only:** Keep both items but rewrite descriptions to make the distinction clearer — Nurture Sequence is the trust-building relationship series, Email Funnel is the structured sales pipeline that uses nurture sequences as building blocks.
-
-**Recipes that depend on Email Funnel (Tier 4):**
-- Sales Copy + Email Funnel → Sales Funnel
-- Tripwire + Email Funnel → Sales Funnel
-- Sales Page + Email Funnel → Launch Sequence
-- Webinar + Email Funnel → Webinar Funnel
-- Email Funnel + Sales Page → Conversion
-
----
-
-### 3. Clarification: "Email Capture" (Tier 2) vs "Opt-in Page" (Tier 3)
-
-**Issue:** These two items are related but serve different roles that need clearer descriptions.
-
-| Item | Tier | Recipe | Role |
-|------|------|--------|------|
-| **Email Capture** 🎣 | 2 | Website + Lead Magnet | The **backend system/mechanism** — the form, integration, and data flow that takes an email submission and populates the CRM/email software |
-| **Opt-in Page** 📮 | 3 | Email Capture + Lead Magnet | The **frontend page** — the actual landing page designed to convince visitors to subscribe |
-
-**Proposed updated descriptions:**
-
-**Email Capture** (updated):
-> *The system and mechanism that collects email addresses from website forms and populates your CRM and email software with subscriber data. Your website paired with a lead magnet creates the technical pipeline — form, validation, integration — that turns a visitor's interest into a contact record you can nurture.*
-
-**Opt-in Page** (updated):
-> *A dedicated page built entirely around one purpose: convincing visitors to subscribe. While email capture is the system working behind the scenes, the opt-in page is what visitors actually see — one page, one offer, one irresistible reason to say yes.*
-
-These two items have a clear parent-child relationship in the recipe tree (Email Capture is an ingredient of Opt-in Page), reinforcing the distinction: you build the capture system first, then design the page that uses it.
+**3. Clarified "Email Capture" vs "Opt-in Page" descriptions**
+- **Email Capture** (Tier 2): The backend system — form, validation, integration that populates CRM/email software with subscriber data
+- **Opt-in Page** (Tier 3): The frontend page — what visitors actually see, designed to convince them to subscribe
