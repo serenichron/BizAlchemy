@@ -229,7 +229,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stats-biz-item{font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid #eee;background:#fafaf8;color:#999;transition:background 0.15s,border-color 0.15s,color 0.15s}
 .stats-biz-item.tappable{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .stats-biz-item.tappable:active{transform:scale(0.95)}
-.stats-biz-item.owned{border-color:#378ADD;background:#eef5fc;color:#2a6db5;font-weight:500}
+.stats-biz-item.owned{border-color:#5a9a3c;background:#e8f5e0;color:#3d7a24;font-weight:500}
 .stats-biz-item.partial{border-color:#e0a030;background:#fef9f0;color:#9a6d1a;font-weight:500}
 .stats-biz-item.not-discovered{border:1px dashed #ddd;color:#ccc}
 /* Slide-in panel */
@@ -1691,17 +1691,25 @@ function prepareSentencesForNarration(descEl){
   const fullText=descEl.textContent;
   narrSentences=fullText.match(/[^.!?]*[.!?]+[\s]?|[^.!?]+$/g)||[fullText];
   while(narrSentences.length&&!narrSentences[narrSentences.length-1].trim())narrSentences.pop();
-  // Split any sentence longer than 190 chars at clause boundaries (em dash, comma, semicolon)
+  // Split any sentence longer than 190 chars at clause boundaries (comma, semicolon, em/en dash)
   const split=[];
   for(const s of narrSentences){
     if(s.length<=190){split.push(s);continue;}
-    const parts=s.split(/(?<=\s[—–;,])\s/);
+    const parts=s.split(/(?<=[,;—–])\s+/);
     let buf='';
     for(const p of parts){
       if(buf&&(buf+' '+p).length>190){split.push(buf);buf=p;}
       else{buf=buf?(buf+' '+p):p;}
     }
-    if(buf)split.push(buf);
+    // Fallback: if any chunk is still too long, break at last space before 190
+    if(buf){
+      while(buf.length>190){
+        const idx=buf.lastIndexOf(' ',190);
+        if(idx<=0){split.push(buf.substring(0,190));buf=buf.substring(190);}
+        else{split.push(buf.substring(0,idx));buf=buf.substring(idx+1);}
+      }
+      if(buf)split.push(buf);
+    }
   }
   narrSentences=split;
   // Record the character offset for each sentence
@@ -1785,8 +1793,9 @@ const gttsBrokenLangs=new Set();
 
 function gttsUrl(text,lang){
   const tl=lang||'en';
-  const q=encodeURIComponent(text.substring(0,200));
-  return 'https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen='+text.length+'&client=tw-ob&q='+q+'&tl='+tl;
+  const t=text.substring(0,200);
+  const q=encodeURIComponent(t);
+  return 'https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen='+t.length+'&client=tw-ob&q='+q+'&tl='+tl;
 }
 let fallbackAudio=null;
 
