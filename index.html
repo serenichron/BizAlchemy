@@ -55,7 +55,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes glow{0%{box-shadow:0 0 0 0 var(--sel-color,#1D9E75)}40%{box-shadow:0 0 16px 6px var(--sel-color,#1D9E75)}100%{box-shadow:none}}
 /* Result slot shimmer */
 #result-slot.state-new::after,#result-slot.state-found::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.5) 50%,transparent 60%);animation:resultShimmer 1s linear forwards;pointer-events:none;border-radius:inherit}
-@keyframes resultShimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+@keyframes resultShimmer{0%{transform:translateX(-100%);opacity:1}99%{transform:translateX(100%);opacity:1}100%{transform:translateX(100%);opacity:0}}
 /* Tier rarity border shimmer for T4+ */
 .ec.rarity-high{overflow:hidden}
 .rarity-ring{position:absolute;inset:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent 55%,color-mix(in srgb,var(--sel-color) 45%,transparent) 65%,transparent 75%);animation:borderShimmer 4s linear infinite;pointer-events:none;z-index:0}
