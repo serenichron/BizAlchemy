@@ -1,4 +1,4 @@
-const CACHE='bizalchemy-v7';
+const CACHE='bizalchemy-v8';
 const PRECACHE=[
   './',
   './index.html',
