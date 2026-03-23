@@ -21,6 +21,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .hdr-btn{padding:4px 10px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:11px;font-weight:500;color:#333;cursor:pointer;white-space:nowrap;transition:background 0.1s,opacity 0.1s}
 .hdr-btn:disabled{opacity:0.45;cursor:default}
 .hdr-btn:not(:disabled):hover{background:#f5f4f0}
+#menu-wrap{position:relative}
+#menu-dropdown{display:none;position:absolute;top:34px;right:0;background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.12);z-index:320;min-width:140px;padding:4px 0}
+#menu-dropdown.open{display:block}
+.menu-item{display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:13px;font-weight:500;color:#333;cursor:pointer;transition:background 0.1s;border:none;background:none;width:100%;text-align:left}
+.menu-item:hover{background:#f5f4f0}
+.menu-danger{color:#c0392b}
+.menu-divider{height:1px;background:#e5e4df;margin:4px 10px}
 #grid{overflow-y:auto;flex:1;padding:8px 10px 120px;position:relative}
 .tier-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 2px 5px;font-size:11.5px;font-weight:600;color:#888;letter-spacing:0.3px;border-top:none;margin-top:4px;position:relative}
 .tier-hdr::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,#ddd 30%,#ddd 70%,transparent)}
@@ -525,7 +532,15 @@ h1,h2{margin:0;padding:0}
     <div id="cnt">4 found</div>
     <button id="stats-btn" class="hdr-btn" onclick="openStats()" aria-label="Open statistics">📊</button>
     <button id="hint-btn" class="hdr-btn" onclick="showHint()" aria-label="Get a hint">💡 Hint</button>
-    <button id="reset-btn" class="hdr-btn" onclick="resetGame()" aria-label="Reset game">↺ Reset</button>
+    <div id="menu-wrap">
+      <button id="menu-btn" class="hdr-btn" onclick="toggleMenu()" aria-label="Menu">☰</button>
+      <div id="menu-dropdown">
+        <button class="menu-item" onclick="exportGame()">📥 Export</button>
+        <button class="menu-item" onclick="importGame()">📤 Import</button>
+        <div class="menu-divider"></div>
+        <button class="menu-item menu-danger" onclick="resetGame()">↺ Reset</button>
+      </div>
+    </div>
   </header>
   <nav id="dept-tabs" aria-label="Department filters"></nav>
   <section id="grid" aria-label="Element cards"></section>
@@ -895,6 +910,12 @@ function loadProgress(){
   }catch(e){}
   return null;
 }
+function genSessionId(){
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let id='';for(let i=0;i<8;i++)id+=chars.charAt(Math.floor(Math.random()*chars.length));
+  return id;
+}
+let sessionId=genSessionId();
 function saveProgress(){
   try{
     localStorage.setItem('ba_discovered',JSON.stringify([...discovered]));
@@ -902,6 +923,7 @@ function saveProgress(){
     localStorage.setItem('ba_owned',JSON.stringify([...owned]));
     localStorage.setItem('ba_partial',JSON.stringify([...partial]));
     localStorage.setItem('ba_achievements',JSON.stringify([...unlockedAch]));
+    localStorage.setItem('ba_session',sessionId);
   }catch(e){}
 }
 const saved=loadProgress();
@@ -1200,18 +1222,78 @@ function addResult(){
   showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');sndDiscover();
   checkWin();checkAchievements();
 }
-function showConfirm(title,msg,onConfirm){
+function showConfirm(title,msg,onConfirm,confirmLabel){
   const ov=document.getElementById('confirm-overlay');
   const bx=document.getElementById('confirm-box');
-  bx.innerHTML=`<div class="confirm-title">${title}</div><div class="confirm-msg">${msg}</div><div class="confirm-btns"><button class="confirm-cancel" id="confirm-no">Cancel</button><button class="confirm-go" id="confirm-yes">Reset</button></div>`;
+  const label=confirmLabel||'Confirm';
+  bx.innerHTML=`<div class="confirm-title">${title}</div><div class="confirm-msg">${msg}</div><div class="confirm-btns"><button class="confirm-cancel" id="confirm-no">Cancel</button><button class="confirm-go" id="confirm-yes">${label}</button></div>`;
   ov.classList.add('active');bx.classList.add('active');
   const close=()=>{ov.classList.remove('active');bx.classList.remove('active');};
   document.getElementById('confirm-no').onclick=close;
   ov.onclick=close;
   document.getElementById('confirm-yes').onclick=()=>{close();onConfirm();};
 }
+function toggleMenu(){
+  const dd=document.getElementById('menu-dropdown');
+  dd.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#menu-wrap'))document.getElementById('menu-dropdown').classList.remove('open');
+});
 function resetGame(){
-  showConfirm('Reset progress?','This will erase all discoveries, owned items, and achievements. Item descriptions will be unavailable until you rediscover them.',doReset);
+  document.getElementById('menu-dropdown').classList.remove('open');
+  showConfirm('Reset progress?','This will erase all discoveries, owned items, and achievements. Item descriptions will be unavailable until you rediscover them.',doReset,'Reset');
+}
+function exportGame(){
+  document.getElementById('menu-dropdown').classList.remove('open');
+  const data={
+    session:sessionId,
+    discovered:[...discovered],
+    tried:[...tried],
+    owned:[...owned],
+    partial:[...partial],
+    achievements:[...unlockedAch],
+    exportedAt:new Date().toISOString()
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='bizalchemy-save-'+sessionId+'.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('tok','Progress exported!');
+}
+function importGame(){
+  document.getElementById('menu-dropdown').classList.remove('open');
+  showConfirm('Import save?','This will replace your current progress with the imported data. Your current discoveries, owned items, and achievements will be lost.',doImport,'Import');
+}
+function doImport(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='.json,application/json';
+  input.onchange=function(){
+    const file=input.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=function(){
+      try{
+        const data=JSON.parse(reader.result);
+        if(!data.discovered||!Array.isArray(data.discovered)){showToast('err','Invalid save file.');return;}
+        discovered=new Set(data.discovered);
+        tried=new Set(data.tried||[]);
+        owned=new Set(data.owned||[]);
+        partial=new Set(data.partial||[]);
+        unlockedAch=new Set(data.achievements||[]);
+        sessionId=genSessionId();
+        discovered.forEach(n=>markAllRecipes(n));
+        saveProgress();buildGrid();
+        slotA=null;slotB=null;resultName=null;resultState=null;
+        renderSlot(slotAEl,null);renderSlot(slotBEl,null);
+        resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';
+        showToast('tok','Progress imported!');
+      }catch(e){showToast('err','Could not read save file.');}
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 function doReset(){
   discovered=new Set(STARTS);tried=new Set();owned=new Set();partial=new Set();unlockedAch=new Set();
@@ -1221,7 +1303,8 @@ function doReset(){
   closeHint();renderSlot(slotAEl,null);renderSlot(slotBEl,null);
   resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';
   congratsEl.style.display='none';
-  try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');localStorage.removeItem('ba_owned');localStorage.removeItem('ba_partial');localStorage.removeItem('ba_achievements');}catch(e){}
+  sessionId=genSessionId();
+  try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');localStorage.removeItem('ba_owned');localStorage.removeItem('ba_partial');localStorage.removeItem('ba_achievements');localStorage.removeItem('ba_session');}catch(e){}
   buildGrid();
   introEl.style.display='flex';
   document.getElementById('intro-new').style.display='';
