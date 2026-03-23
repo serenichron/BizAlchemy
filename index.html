@@ -574,6 +574,7 @@ h1,h2{margin:0;padding:0}
         <div id="menu-session"><span id="menu-session-id" onclick="copySessionId(this,event)"></span><span id="menu-sync"><span class="sync-dot sync-pending" id="menu-sync-dot"></span><span id="menu-sync-label"></span></span></div>
         <div class="menu-divider"></div>
         <button class="menu-item" onclick="loadSession()">🔄 Load session</button>
+        <button class="menu-item" id="menu-install" style="display:none" onclick="installApp()">📲 Install app</button>
         <div class="menu-divider"></div>
         <button class="menu-item menu-danger" onclick="resetGame()">↺ Reset</button>
       </div>
@@ -1013,6 +1014,28 @@ function updateOfflineUI(){
   if(barSync){const ls=formatLastSync();barSync.textContent=ls?' \u00B7 last synced '+ls:'';}
 }
 updateOfflineUI();
+
+// PWA install prompt
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  const btn=document.getElementById('menu-install');
+  if(btn)btn.style.display='';
+});
+window.addEventListener('appinstalled',function(){
+  deferredInstallPrompt=null;
+  const btn=document.getElementById('menu-install');
+  if(btn)btn.style.display='none';
+});
+function installApp(){
+  document.getElementById('menu-dropdown').classList.remove('open');
+  if(!deferredInstallPrompt)return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.then(function(r){
+    if(r.outcome==='accepted')deferredInstallPrompt=null;
+  });
+}
 
 async function loadFromSupabase(id){
   try{
