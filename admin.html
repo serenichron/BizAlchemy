@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BizAlchemy Admin</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#333;min-height:100vh}
+/* Password gate */
+#gate{position:fixed;inset:0;background:#f5f5f5;z-index:1000;display:flex;align-items:center;justify-content:center}
+#gate.hidden{display:none}
+.gate-box{background:#fff;border-radius:16px;padding:40px;box-shadow:0 4px 24px rgba(0,0,0,0.1);max-width:380px;width:90%;text-align:center}
+.gate-box h1{font-size:22px;margin-bottom:6px}
+.gate-box p{font-size:14px;color:#888;margin-bottom:24px}
+.gate-box input{width:100%;padding:12px 16px;border:1.5px solid #ddd;border-radius:10px;font-size:15px;outline:none;transition:border-color 0.15s}
+.gate-box input:focus{border-color:#7F77DD}
+.gate-box button{width:100%;padding:12px;border:none;border-radius:10px;background:#7F77DD;color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:12px;transition:opacity 0.15s}
+.gate-box button:hover{opacity:0.85}
+.gate-err{color:#D85A30;font-size:13px;margin-top:10px;display:none}
+/* Dashboard */
+#app{display:none;max-width:1100px;margin:0 auto;padding:24px 20px 60px}
+#app.visible{display:block}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+header h1{font-size:22px;font-weight:700}
+header .meta{font-size:13px;color:#888}
+.refresh-btn{padding:8px 16px;border:1.5px solid #ddd;border-radius:8px;background:#fff;font-size:13px;cursor:pointer;transition:border-color 0.15s}
+.refresh-btn:hover{border-color:#7F77DD}
+/* Summary cards */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px}
+.card{background:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.card .label{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.card .value{font-size:28px;font-weight:700}
+.card .sub{font-size:12px;color:#aaa;margin-top:4px}
+/* Section headers */
+.section-hdr{font-size:17px;font-weight:700;margin:28px 0 14px;display:flex;align-items:center;gap:8px}
+.section-hdr .badge{background:#eee;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600;color:#666}
+/* Filters */
+.filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filters input{padding:8px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;min-width:200px}
+.filters input:focus{border-color:#7F77DD}
+.filters select{padding:8px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;background:#fff;cursor:pointer}
+/* Tables */
+.tbl-wrap{overflow-x:auto;background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:12px 14px;border-bottom:2px solid #f0f0f0;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;user-select:none}
+th:hover{color:#7F77DD}
+th .arrow{font-size:10px;margin-left:3px}
+td{padding:10px 14px;border-bottom:1px solid #f5f5f5;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.mono{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:12px;letter-spacing:0.5px}
+/* Progress bars */
+.pbar{display:inline-flex;align-items:center;gap:8px;min-width:140px}
+.pbar-track{width:80px;height:6px;background:#eee;border-radius:3px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:3px;transition:width 0.3s}
+.pbar-text{font-size:12px;color:#666;min-width:36px}
+.clr-green{background:#1D9E75}
+.clr-blue{background:#378ADD}
+.clr-purple{background:#7F77DD}
+.clr-orange{background:#D85A30}
+/* Detail panel */
+.detail-row{display:none}
+.detail-row.open{display:table-row}
+.detail-cell{padding:16px 20px;background:#fafaf8}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.detail-card{background:#fff;border-radius:10px;padding:14px;border:1px solid #eee}
+.detail-card h4{font-size:13px;font-weight:600;margin-bottom:8px}
+.detail-card ul{list-style:none;font-size:12px;color:#555}
+.detail-card li{padding:2px 0}
+.detail-card li::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
+.detail-card li.discovered::before{background:#1D9E75}
+.detail-card li.owned::before{background:#378ADD}
+.detail-card li.partial::before{background:#EF9F27}
+.detail-card li.missing::before{background:#ddd}
+/* Insights */
+.insights{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:32px}
+.insight{background:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.insight .label{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+.insight-list{list-style:none;font-size:13px}
+.insight-list li{padding:4px 0;display:flex;justify-content:space-between}
+.insight-list .ct{font-weight:600;color:#7F77DD}
+/* Distribution */
+.dist-row{display:flex;align-items:end;gap:4px;height:80px;margin-top:8px}
+.dist-bar{flex:1;background:#7F77DD;border-radius:3px 3px 0 0;min-width:12px;transition:height 0.3s;position:relative}
+.dist-bar:hover{opacity:0.8}
+.dist-labels{display:flex;gap:4px;font-size:10px;color:#aaa;margin-top:4px}
+.dist-labels span{flex:1;text-align:center}
+/* Pagination */
+.pagination{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px}
+.pagination button{padding:6px 14px;border:1.5px solid #ddd;border-radius:8px;background:#fff;font-size:13px;cursor:pointer}
+.pagination button:hover{border-color:#7F77DD}
+.pagination button:disabled{opacity:0.4;cursor:default}
+.pagination .pg-info{font-size:13px;color:#888}
+/* Loading */
+.loading{text-align:center;padding:60px;color:#aaa;font-size:15px}
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#333;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:100;opacity:0;transition:opacity 0.3s}
+.toast.show{opacity:1}
+@media(max-width:600px){
+  .summary{grid-template-columns:1fr 1fr}
+  .card .value{font-size:22px}
+  #app{padding:16px 12px 40px}
+}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <h1>BizAlchemy Admin</h1>
+    <p>Enter the admin password to continue</p>
+    <input type="password" id="gate-pw" placeholder="Password" autocomplete="off">
+    <button id="gate-btn">Unlock</button>
+    <div class="gate-err" id="gate-err">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <div>
+      <h1>BizAlchemy Admin</h1>
+      <div class="meta" id="last-load"></div>
+    </div>
+    <button class="refresh-btn" id="refresh-btn">Refresh data</button>
+  </header>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="section-hdr">Discovery Distribution <span class="badge" id="dist-count"></span></div>
+  <div class="card" style="margin-bottom:32px">
+    <div class="dist-row" id="dist-row"></div>
+    <div class="dist-labels" id="dist-labels"></div>
+  </div>
+
+  <div class="section-hdr">Engagement Insights</div>
+  <div class="insights" id="insights"></div>
+
+  <div class="section-hdr">Recent Sessions <span class="badge">Last 10</span></div>
+  <div class="tbl-wrap" id="recent-wrap">
+    <table id="recent-table"><thead><tr></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="section-hdr">All Sessions <span class="badge" id="all-count"></span></div>
+  <div class="filters">
+    <input type="text" id="search" placeholder="Search session ID...">
+    <select id="time-filter">
+      <option value="all">All time</option>
+      <option value="24h">Last 24 hours</option>
+      <option value="7d">Last 7 days</option>
+      <option value="30d">Last 30 days</option>
+    </select>
+    <select id="sort-by">
+      <option value="updated_at">Sort: Last sync</option>
+      <option value="discovered">Sort: Discovery</option>
+      <option value="owned">Sort: Owned</option>
+      <option value="achievements">Sort: Achievements</option>
+      <option value="tried">Sort: Recipes tried</option>
+    </select>
+  </div>
+  <div class="tbl-wrap" id="all-wrap">
+    <table id="all-table"><thead><tr></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_URL='https://srijjrsayrhkdoqjpmjf.supabase.co';
+const SUPA_KEY='sb_publishable_-YZQ80VSkJp-ogAQQQ3P4Q_xVgmeN43';
+const PW_HASH='d95c2ce3da8224be16d155f411c2b7869c7f1a7ef2ef39dd7578875d18db5b88';
+const TOTAL_ELEMENTS=103;
+const TOTAL_RECIPES=117;
+const TOTAL_ACHIEVEMENTS=28;
+const PAGE_SIZE=20;
+const STARTS=['Idea','Audience','Content','Tool'];
+
+// All elements by tier for detail view
+const TIERS=[
+  {name:'Raw Ingredients',tier:0,items:['Idea','Audience','Content','Tool']},
+  {name:'Core Assets',tier:1,items:['Niche','Article','Website','Newsletter','CRM','Template','Value Proposition','Social Media']},
+  {name:'Digital Foundations',tier:2,items:['Keyword Research','Landing Page','Lead Magnet','Persona','Offer','Blog','Content Strategy','Content Calendar','Copywriting','Email Capture','Analytics','Wireframe','Email List','Nurture Sequence','Automation','Web Design','Headline','Pitch Deck','Subscriber','Script','Hosting','Workflow']},
+  {name:'Marketing Channels',tier:3,items:['Brand Guide','SEO','Rank Tracker','Sales Page','Lead Generation','Brand Voice','Design System','Prototype','Editorial Plan','Email Funnel','Marketing Stack','Webinar','Video','Ad Copy','Dashboard','Brand Identity','Opt-in Page','Sales Copy','Organic Traffic','Outreach','Podcast','Social Proof','Tripwire','A/B Test','AI Writing']},
+  {name:'Growth Strategy',tier:4,items:['Sales Funnel','Launch Sequence','Inbound Sales','Webinar Funnel','High-Ticket Offer','Authority Site','Product Design','Marketing OS','Conversion','Social Brand','Content Machine','Performance Report','Ad Campaign','Video Channel','Checkout Page','Retargeting','AI Automation','Discovery Call','Online Course','Referral Program','Digital Product','Partnership','Portfolio']},
+  {name:'Advanced Systems',tier:5,items:['Automated Sales','Thought Leadership','Product Launch','Automated Webinar','Revenue Engine','Premium Brand','Influence','Growth System','Sales Machine','SaaS Product','Performance Marketing','AI Content System','Upsell']},
+  {name:'Endgame',tier:6,items:['Passive Income','Recurring Revenue','Viral Growth','Personal Brand','Market Leader','Financial Freedom','Digital Empire','AI Marketing OS']}
+];
+
+let allSessions=[];
+let currentPage=0;
+let sortDir=-1;
+
+// --- Auth ---
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkPassword(){
+  const pw=document.getElementById('gate-pw').value;
+  if(!pw)return;
+  const hash=await sha256(pw);
+  if(hash===PW_HASH){
+    sessionStorage.setItem('ba_admin','1');
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    loadData();
+  } else {
+    document.getElementById('gate-err').style.display='block';
+    document.getElementById('gate-pw').value='';
+    document.getElementById('gate-pw').focus();
+  }
+}
+
+document.getElementById('gate-btn').addEventListener('click',checkPassword);
+document.getElementById('gate-pw').addEventListener('keydown',e=>{if(e.key==='Enter')checkPassword();});
+
+if(sessionStorage.getItem('ba_admin')==='1'){
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+  loadData();
+}
+
+// --- Data ---
+function supaFetch(path){
+  return fetch(SUPA_URL+'/rest/v1/'+path,{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+  });
+}
+
+async function loadData(){
+  document.getElementById('summary').innerHTML='<div class="loading" style="grid-column:1/-1">Loading sessions...</div>';
+  try{
+    const res=await supaFetch('game_saves?select=*&order=updated_at.desc');
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const rows=await res.json();
+    // Filter out admin/special rows and bounced sessions
+    allSessions=rows.filter(r=>r.session_id&&r.session_id.length===8);
+    document.getElementById('last-load').textContent='Loaded '+allSessions.length+' sessions at '+new Date().toLocaleTimeString();
+    renderAll();
+  }catch(e){
+    document.getElementById('summary').innerHTML='<div class="loading" style="grid-column:1/-1;color:#D85A30">Failed to load: '+e.message+'</div>';
+  }
+}
+
+document.getElementById('refresh-btn').addEventListener('click',loadData);
+
+// --- Helpers ---
+function arrLen(v){return Array.isArray(v)?v.length:0;}
+function ago(iso){
+  if(!iso)return'never';
+  const d=Date.now()-new Date(iso).getTime();
+  if(d<60000)return Math.floor(d/1000)+'s ago';
+  if(d<3600000)return Math.floor(d/60000)+'m ago';
+  if(d<86400000)return Math.floor(d/3600000)+'h ago';
+  return Math.floor(d/86400000)+'d ago';
+}
+function pct(n,total){return Math.round(n/total*100);}
+function mean(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;}
+
+function pbar(val,total,color){
+  const p=pct(val,total);
+  return `<div class="pbar"><div class="pbar-track"><div class="pbar-fill ${color}" style="width:${p}%"></div></div><span class="pbar-text">${val}/${total}</span></div>`;
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// --- Render ---
+function renderAll(){
+  renderSummary();
+  renderDistribution();
+  renderInsights();
+  renderRecent();
+  renderAllTable();
+}
+
+function renderSummary(){
+  const s=allSessions;
+  const now=Date.now();
+  const active7d=s.filter(r=>r.updated_at&&now-new Date(r.updated_at).getTime()<7*86400000).length;
+  const active24h=s.filter(r=>r.updated_at&&now-new Date(r.updated_at).getTime()<86400000).length;
+  const complete=s.filter(r=>arrLen(r.discovered)>=TOTAL_ELEMENTS).length;
+
+  const discArr=s.map(r=>arrLen(r.discovered));
+  const ownArr=s.map(r=>arrLen(r.owned)+arrLen(r.partial));
+  const achArr=s.map(r=>arrLen(r.achievements));
+  const triedArr=s.map(r=>arrLen(r.tried));
+
+  const bounced=s.filter(r=>arrLen(r.discovered)<=STARTS.length).length;
+
+  const html=[
+    {label:'Total Sessions',value:s.length,sub:'All time'},
+    {label:'Active (24h)',value:active24h,sub:active7d+' in last 7 days'},
+    {label:'Avg Discovery',value:pct(mean(discArr),TOTAL_ELEMENTS)+'%',sub:Math.round(mean(discArr))+' / '+TOTAL_ELEMENTS+' avg'},
+    {label:'Avg Business Coverage',value:pct(mean(ownArr),TOTAL_ELEMENTS)+'%',sub:Math.round(mean(ownArr))+' / '+TOTAL_ELEMENTS+' avg'},
+    {label:'Avg Achievements',value:Math.round(mean(achArr)*10)/10,sub:'of '+TOTAL_ACHIEVEMENTS+' total'},
+    {label:'100% Discovery',value:complete,sub:s.length?pct(complete,s.length)+'% of sessions':''},
+    {label:'Avg Recipes Tried',value:Math.round(mean(triedArr)),sub:'of '+TOTAL_RECIPES+' total'},
+    {label:'Bounce Rate',value:s.length?pct(bounced,s.length)+'%':'0%',sub:bounced+' sessions never played'},
+  ];
+  document.getElementById('summary').innerHTML=html.map(c=>`<div class="card"><div class="label">${c.label}</div><div class="value">${c.value}</div><div class="sub">${c.sub}</div></div>`).join('');
+}
+
+function renderDistribution(){
+  const buckets=Array(10).fill(0);
+  allSessions.forEach(r=>{
+    const p=arrLen(r.discovered)/TOTAL_ELEMENTS;
+    const idx=Math.min(Math.floor(p*10),9);
+    buckets[idx]++;
+  });
+  const max=Math.max(...buckets,1);
+  document.getElementById('dist-count').textContent=allSessions.length+' sessions';
+  document.getElementById('dist-row').innerHTML=buckets.map((c,i)=>{
+    const h=Math.max((c/max)*100,2);
+    return `<div class="dist-bar" style="height:${h}%" title="${i*10}%-${(i+1)*10}%: ${c} sessions"></div>`;
+  }).join('');
+  document.getElementById('dist-labels').innerHTML=
+    ['0%','10%','20%','30%','40%','50%','60%','70%','80%','90%'].map(l=>`<span>${l}</span>`).join('');
+}
+
+function renderInsights(){
+  const s=allSessions.filter(r=>arrLen(r.discovered)>STARTS.length);
+
+  // Most owned items
+  const ownCount={};
+  s.forEach(r=>{
+    (r.owned||[]).forEach(n=>{ownCount[n]=(ownCount[n]||0)+1;});
+    (r.partial||[]).forEach(n=>{ownCount[n]=(ownCount[n]||0)+0.5;});
+  });
+  const topOwned=Object.entries(ownCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  // Least discovered items
+  const discCount={};
+  TIERS.forEach(t=>t.items.forEach(n=>{discCount[n]=0;}));
+  s.forEach(r=>{(r.discovered||[]).forEach(n=>{if(n in discCount)discCount[n]++;});});
+  const leastDisc=Object.entries(discCount).sort((a,b)=>a[1]-b[1]).slice(0,5);
+
+  // Achievement popularity
+  const achCount={};
+  s.forEach(r=>{(r.achievements||[]).forEach(a=>{achCount[a]=(achCount[a]||0)+1;});});
+  const topAch=Object.entries(achCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const rareAch=Object.entries(achCount).sort((a,b)=>a[1]-b[1]).slice(0,5);
+
+  // Drop-off tier
+  const tierReach=[0,0,0,0,0,0,0];
+  s.forEach(r=>{
+    const disc=new Set(r.discovered||[]);
+    TIERS.forEach((t,i)=>{
+      if(t.items.some(n=>disc.has(n)))tierReach[i]++;
+    });
+  });
+
+  const active=s.length||1;
+  document.getElementById('insights').innerHTML=`
+    <div class="insight">
+      <div class="label">Most Owned Concepts</div>
+      <ul class="insight-list">${topOwned.map(([n,c])=>`<li><span>${n}</span><span class="ct">${Math.round(c)}</span></li>`).join('')}</ul>
+    </div>
+    <div class="insight">
+      <div class="label">Hardest to Discover</div>
+      <ul class="insight-list">${leastDisc.map(([n,c])=>`<li><span>${n}</span><span class="ct">${c}/${active}</span></li>`).join('')}</ul>
+    </div>
+    <div class="insight">
+      <div class="label">Most Popular Achievements</div>
+      <ul class="insight-list">${topAch.map(([a,c])=>`<li><span>${a.replace(/_/g,' ')}</span><span class="ct">${c}</span></li>`).join('')}</ul>
+    </div>
+    <div class="insight">
+      <div class="label">Rarest Achievements</div>
+      <ul class="insight-list">${rareAch.map(([a,c])=>`<li><span>${a.replace(/_/g,' ')}</span><span class="ct">${c}</span></li>`).join('')}</ul>
+    </div>
+    <div class="insight">
+      <div class="label">Tier Reach (Funnel)</div>
+      <ul class="insight-list">${TIERS.map((t,i)=>`<li><span>T${i}: ${t.name}</span><span class="ct">${tierReach[i]}</span></li>`).join('')}</ul>
+    </div>
+  `;
+}
+
+const TABLE_COLS=[
+  {key:'session_id',label:'Session ID'},
+  {key:'discovered',label:'Discovery'},
+  {key:'owned',label:'Owned'},
+  {key:'partial',label:'Partial'},
+  {key:'achievements',label:'Achievements'},
+  {key:'tried',label:'Recipes'},
+  {key:'updated_at',label:'Last Sync'},
+];
+
+function sessionRow(r,tbody,expandable){
+  const tr=document.createElement('tr');
+  const disc=arrLen(r.discovered);
+  const own=arrLen(r.owned);
+  const par=arrLen(r.partial);
+  const ach=arrLen(r.achievements);
+  const tried=arrLen(r.tried);
+  tr.innerHTML=`
+    <td class="mono">${r.session_id}</td>
+    <td>${pbar(disc,TOTAL_ELEMENTS,'clr-green')}</td>
+    <td>${pbar(own,TOTAL_ELEMENTS,'clr-blue')}</td>
+    <td>${pbar(par,TOTAL_ELEMENTS,'clr-orange')}</td>
+    <td>${pbar(ach,TOTAL_ACHIEVEMENTS,'clr-purple')}</td>
+    <td>${tried} / ${TOTAL_RECIPES}</td>
+    <td title="${r.updated_at||''}">${ago(r.updated_at)}</td>
+  `;
+  if(expandable){
+    tr.style.cursor='pointer';
+    tr.addEventListener('click',()=>toggleDetail(tr,r,tbody));
+  }
+  tbody.appendChild(tr);
+}
+
+function toggleDetail(tr,r,tbody){
+  const next=tr.nextElementSibling;
+  if(next&&next.classList.contains('detail-row')){
+    next.classList.toggle('open');
+    return;
+  }
+  const detailTr=document.createElement('tr');
+  detailTr.className='detail-row open';
+  const td=document.createElement('td');
+  td.colSpan=7;td.className='detail-cell';
+
+  const disc=new Set(r.discovered||[]);
+  const own=new Set(r.owned||[]);
+  const par=new Set(r.partial||[]);
+  const achs=new Set(r.achievements||[]);
+
+  let html='<div class="detail-grid">';
+  TIERS.forEach(t=>{
+    const found=t.items.filter(n=>disc.has(n)).length;
+    html+=`<div class="detail-card"><h4>T${t.tier}: ${t.name} (${found}/${t.items.length})</h4><ul>`;
+    t.items.forEach(n=>{
+      let cls='missing';
+      if(own.has(n))cls='owned';
+      else if(par.has(n))cls='partial';
+      else if(disc.has(n))cls='discovered';
+      html+=`<li class="${cls}">${n}</li>`;
+    });
+    html+=`</ul></div>`;
+  });
+  html+=`</div>`;
+
+  // Achievement detail
+  html+=`<div class="detail-card" style="margin-top:12px"><h4>Achievements (${achs.size}/${TOTAL_ACHIEVEMENTS})</h4>`;
+  html+=`<div style="display:flex;flex-wrap:wrap;gap:6px;font-size:12px;margin-top:6px">`;
+  [...achs].forEach(a=>{
+    html+=`<span style="background:#7F77DD22;color:#7F77DD;padding:3px 10px;border-radius:20px">${a.replace(/_/g,' ')}</span>`;
+  });
+  html+=`</div></div>`;
+
+  td.innerHTML=html;
+  detailTr.appendChild(td);
+  tbody.insertBefore(detailTr,tr.nextSibling);
+}
+
+function renderRecent(){
+  const table=document.getElementById('recent-table');
+  const thead=table.querySelector('thead tr');
+  const tbody=table.querySelector('tbody');
+  thead.innerHTML=TABLE_COLS.map(c=>`<th>${c.label}</th>`).join('');
+  tbody.innerHTML='';
+  const recent=allSessions.slice(0,10);
+  if(!recent.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:#aaa">No sessions found</td></tr>';return;}
+  recent.forEach(r=>sessionRow(r,tbody,true));
+}
+
+// --- All sessions table with filtering, sorting, pagination ---
+function getFiltered(){
+  let list=[...allSessions];
+  const search=document.getElementById('search').value.trim().toLowerCase();
+  if(search)list=list.filter(r=>r.session_id.toLowerCase().includes(search));
+  const tf=document.getElementById('time-filter').value;
+  const now=Date.now();
+  if(tf==='24h')list=list.filter(r=>r.updated_at&&now-new Date(r.updated_at).getTime()<86400000);
+  else if(tf==='7d')list=list.filter(r=>r.updated_at&&now-new Date(r.updated_at).getTime()<7*86400000);
+  else if(tf==='30d')list=list.filter(r=>r.updated_at&&now-new Date(r.updated_at).getTime()<30*86400000);
+  const sortKey=document.getElementById('sort-by').value;
+  list.sort((a,b)=>{
+    let va,vb;
+    if(sortKey==='updated_at'){va=new Date(a.updated_at||0).getTime();vb=new Date(b.updated_at||0).getTime();}
+    else{va=arrLen(a[sortKey]);vb=arrLen(b[sortKey]);}
+    return (vb-va)*sortDir;
+  });
+  return list;
+}
+
+function renderAllTable(){
+  const list=getFiltered();
+  document.getElementById('all-count').textContent=list.length+' sessions';
+  const table=document.getElementById('all-table');
+  const thead=table.querySelector('thead tr');
+  const tbody=table.querySelector('tbody');
+  thead.innerHTML=TABLE_COLS.map(c=>`<th>${c.label}</th>`).join('');
+  tbody.innerHTML='';
+  const start=currentPage*PAGE_SIZE;
+  const page=list.slice(start,start+PAGE_SIZE);
+  if(!page.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:#aaa">No sessions match</td></tr>';}
+  page.forEach(r=>sessionRow(r,tbody,true));
+  // Pagination
+  const totalPages=Math.ceil(list.length/PAGE_SIZE);
+  const pg=document.getElementById('pagination');
+  if(totalPages<=1){pg.innerHTML='';return;}
+  pg.innerHTML=`
+    <button id="pg-prev" ${currentPage===0?'disabled':''}>Prev</button>
+    <span class="pg-info">Page ${currentPage+1} of ${totalPages}</span>
+    <button id="pg-next" ${currentPage>=totalPages-1?'disabled':''}>Next</button>
+  `;
+  document.getElementById('pg-prev').addEventListener('click',()=>{if(currentPage>0){currentPage--;renderAllTable();}});
+  document.getElementById('pg-next').addEventListener('click',()=>{if(currentPage<totalPages-1){currentPage++;renderAllTable();}});
+}
+
+document.getElementById('search').addEventListener('input',()=>{currentPage=0;renderAllTable();});
+document.getElementById('time-filter').addEventListener('change',()=>{currentPage=0;renderAllTable();});
+document.getElementById('sort-by').addEventListener('change',()=>{currentPage=0;renderAllTable();});
+</script>
+</body>
+</html>
