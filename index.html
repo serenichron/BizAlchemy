@@ -29,7 +29,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tier-name{display:flex;align-items:center;gap:5px}
 .tier-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .tier-prog{font-size:11px;color:#aaa}
-#dept-tabs{display:flex;gap:4px;padding:6px 10px 4px;overflow-x:auto;flex-shrink:0;border-bottom:1px solid #eee;background:#fafaf8;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#dept-tabs{display:none}
 #dept-tabs::-webkit-scrollbar{display:none}
 .dept-tab{flex-shrink:0;display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;border:1.5px solid #e5e4df;background:#fff;font-size:10.5px;font-weight:500;color:#666;cursor:pointer;transition:all 0.15s;white-space:nowrap}
 .dept-tab:hover{background:#f5f4f0}
@@ -1191,7 +1191,6 @@ function addResult(){
   discovered.add(resultName);markAllRecipes(resultName);saveProgress();const added=resultName;
   slotA=null;slotB=null;resultName=null;resultState=null;
   renderSlot(slotAEl,null);renderSlot(slotBEl,null);renderResult();
-  if(ITEM_DEPT[added]!=null)activeDept=ITEM_DEPT[added];
   buildGrid();
   spawnParticleBurst(resultEl);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -1301,42 +1300,47 @@ function buildDeptTabs(){
 }
 function buildGrid(){
   grid.innerHTML='';domCards.clear();
-  buildDeptTabs();
-  const dept=DEPARTMENTS[activeDept];
-  const dp=DEPT_PAL[activeDept];
-  const row=document.createElement('div');row.className='cards-row';row.setAttribute('role','group');row.setAttribute('aria-label',dept.name+' cards');
-  dept.items.forEach(name=>{
-    const info=ALL[name];if(!info)return;
-    const tier=info.tier;
-    if(discovered.has(name)){
-      const c=dp;
-      const isRarity=tier>=4;
-      const d=document.createElement('div');d.className='ec'+(isRarity?' rarity-high':'');
-      d.setAttribute('role','button');d.setAttribute('aria-label',name+(name===slotA||name===slotB?' (selected)':''));
-      d.style.cssText=`--card-bg:linear-gradient(135deg,${c.bg} 0%,${c.bg}dd 60%,${c.bg}88 100%);--sel-color:${c.b};--card-shadow:${c.b}30`;
-      const rarityHtml=isRarity?'<span class="rarity-ring" aria-hidden="true"></span><span class="rarity-fill" aria-hidden="true"></span>':'';
-      d.innerHTML=`${rarityHtml}<span class="ec-info" data-name="${name.replace(/"/g,'&quot;')}" role="button" aria-label="Info about ${name.replace(/"/g,'&quot;')}">i</span><span class="ec-e" aria-hidden="true">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
-      if(name===slotA||name===slotB)d.classList.add('selected');
-      const isBlocked=slotA&&!slotB&&name!==slotA&&!hasReaction(slotA,name);
-      if(isBlocked){d.classList.add('no-react');d.setAttribute('aria-disabled','true');}
-      else{
-        if(slotA&&slotB&&name!==slotA&&name!==slotB)d.classList.add('dimmed');
-        if(slotA&&!slotB&&name!==slotA){const ind=getIndicator(slotA,name);if(ind)applyIndicator(d,ind);}
+  document.getElementById('dept-tabs').innerHTML='';
+  DEPARTMENTS.forEach((dept,di)=>{
+    const dp=DEPT_PAL[di];
+    const discCount=dept.items.filter(n=>discovered.has(n)).length;
+    const hdr=document.createElement('div');hdr.className='tier-hdr';
+    hdr.innerHTML=`<span class="tier-name"><span class="tier-dot" style="background:${dp.dot}"></span>${dept.icon} ${dept.name}</span><span class="tier-prog">${discCount}/${dept.items.length}</span>`;
+    grid.appendChild(hdr);
+    const row=document.createElement('div');row.className='cards-row';row.setAttribute('role','group');row.setAttribute('aria-label',dept.name+' cards');
+    dept.items.forEach(name=>{
+      const info=ALL[name];if(!info)return;
+      const tier=info.tier;
+      if(discovered.has(name)){
+        const c=dp;
+        const isRarity=tier>=4;
+        const d=document.createElement('div');d.className='ec'+(isRarity?' rarity-high':'');
+        d.setAttribute('role','button');d.setAttribute('aria-label',name+(name===slotA||name===slotB?' (selected)':''));
+        d.style.cssText=`--card-bg:linear-gradient(135deg,${c.bg} 0%,${c.bg}dd 60%,${c.bg}88 100%);--sel-color:${c.b};--card-shadow:${c.b}30`;
+        const rarityHtml=isRarity?'<span class="rarity-ring" aria-hidden="true"></span><span class="rarity-fill" aria-hidden="true"></span>':'';
+        d.innerHTML=`${rarityHtml}<span class="ec-info" data-name="${name.replace(/"/g,'&quot;')}" role="button" aria-label="Info about ${name.replace(/"/g,'&quot;')}">i</span><span class="ec-e" aria-hidden="true">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
+        if(name===slotA||name===slotB)d.classList.add('selected');
+        const isBlocked=slotA&&!slotB&&name!==slotA&&!hasReaction(slotA,name);
+        if(isBlocked){d.classList.add('no-react');d.setAttribute('aria-disabled','true');}
+        else{
+          if(slotA&&slotB&&name!==slotA&&name!==slotB)d.classList.add('dimmed');
+          if(slotA&&!slotB&&name!==slotA){const ind=getIndicator(slotA,name);if(ind)applyIndicator(d,ind);}
+        }
+        d.addEventListener('click',(e)=>{if(e.target.classList.contains('ec-info'))return;tapCard(name);});
+        const infoIcon=d.querySelector('.ec-info');
+        const isTouch='ontouchstart' in window;
+        infoIcon.addEventListener('click',(e)=>{e.stopPropagation();if(isTouch){cancelHide();showTooltip(name,infoIcon);}else{tapCard(name);}});
+        infoIcon.addEventListener('mouseenter',(e)=>{e.stopPropagation();cancelHide();showTooltip(name,infoIcon);});
+        infoIcon.addEventListener('mouseleave',(e)=>{e.stopPropagation();scheduleHide();});
+        row.appendChild(d);domCards.set(name,d);
+      } else {
+        const lock=document.createElement('div');lock.className='ec-lock';lock.setAttribute('aria-label','Undiscovered element');
+        lock.innerHTML='<div class="ec-lock-e">?</div><div class="ec-lock-n">???</div>';
+        row.appendChild(lock);
       }
-      d.addEventListener('click',(e)=>{if(e.target.classList.contains('ec-info'))return;tapCard(name);});
-      const infoIcon=d.querySelector('.ec-info');
-      const isTouch='ontouchstart' in window;
-      infoIcon.addEventListener('click',(e)=>{e.stopPropagation();if(isTouch){cancelHide();showTooltip(name,infoIcon);}else{tapCard(name);}});
-      infoIcon.addEventListener('mouseenter',(e)=>{e.stopPropagation();cancelHide();showTooltip(name,infoIcon);});
-      infoIcon.addEventListener('mouseleave',(e)=>{e.stopPropagation();scheduleHide();});
-      row.appendChild(d);domCards.set(name,d);
-    } else {
-      const lock=document.createElement('div');lock.className='ec-lock';lock.setAttribute('aria-label','Undiscovered element');
-      lock.innerHTML='<div class="ec-lock-e">?</div><div class="ec-lock-n">???</div>';
-      row.appendChild(lock);
-    }
+    });
+    grid.appendChild(row);
   });
-  grid.appendChild(row);
   cntEl.textContent=discovered.size+' / '+TOTAL+' found';
 }
 grid.addEventListener('click',e=>{if(!e.target.closest('.ec'))closeHint();});
