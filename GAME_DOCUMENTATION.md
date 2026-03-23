@@ -171,7 +171,7 @@ The game organizes all 103 elements into 7 tiers, each with a unique color palet
 | Discovery Call | 📞 | Outreach + Lead Generation |
 | Online Course | 🎓 | Video + Offer |
 | Referral Program | 🔗 | Lead Generation + Social Proof |
-| Digital Product | 📦 | Editorial Plan + Offer |
+| Digital Product | 📦 | Workflow + Offer |
 | Partnership | 🤲 | Outreach + Social Proof |
 | Portfolio | 🗂️ | Social Proof + Brand Identity |
 
@@ -223,11 +223,13 @@ The game organizes all 103 elements into 7 tiers, each with a unique color palet
 - "Start discovering →" button to begin
 
 ### 2. Card Grid
-- Scrollable area displaying all elements organized by tier
-- Each tier has a header showing tier name, color dot, and progress (e.g., "2 / 8")
+- Scrollable area displaying all elements **organized by department** (not tier)
+- Seven departments with distinct color palettes: Strategy & Foundations, Content & Media, Brand & Design, Marketing & Traffic, Email & Automation, Sales & Conversion, Products & Revenue
+- Department tab bar at the top for navigation; all departments visible on one scrollable screen
+- Each department has a header showing department name, icon, and progress (e.g., "5 / 14")
 - **Discovered elements** show as colored cards with emoji and name
 - **Undiscovered elements** show as locked placeholders ("?" with dashed border)
-- Cards are arranged in a 3-column grid per tier
+- Cards are arranged in a 3-column grid per department
 
 ### 3. Card Selection & Filtering
 - Tapping a card selects it (highlighted with a colored border and scaled up)
@@ -280,20 +282,21 @@ These indicators only appear when one card is selected, showing the status of th
 - Full-height panel sliding up from the bottom (80% height)
 - Contains:
   - Element emoji, name, and tier
-  - Full multi-paragraph description
+  - Full multi-paragraph description with "Also known as" synonym terms for SEO
   - Recipe(s) that create this element
   - "Read more" link to Serenichron glossary
-  - **"I already have this" checkbox** — marks the element as owned
+  - **3-state ownership toggle** — "Not yet" / "Partially" / "Yes" segmented control
   - **Narration button** — play/pause text-to-speech of the description (with language selector)
   - CTA link to book a consultation call
 - Closeable via ✕ button or tapping the overlay
 
 ### 11. Ownership Tracking
-- Players can mark any element as "owned" in the detail panel
-- Owned status persists in localStorage
-- Owned elements highlighted in the statistics screen
+- **Three ownership states:** "Not yet" (default), "Partially" (counts as 0.5), and "Yes" (fully owned)
+- Owned and partially-owned status persists in localStorage and syncs to cloud
+- Owned elements show a "✓ Owned" badge in tooltips; partial shows "◐ Partially"
 - Ownership tracked separately from discovery (you can discover without owning)
-- Drives the "Business Coverage" achievement category
+- Both owned and partially-owned count toward "Business Coverage" achievements
+- Drives the "Business Coverage" and "Department Badge" achievement categories
 
 ### 12. Hint System
 - "💡 Hint" button in the header
@@ -364,13 +367,22 @@ These indicators only appear when one card is selected, showing the status of th
 - Multiple achievements queue and show one at a time
 - Tapping the overlay also dismisses
 
-### 16. Reset Game
-- "↺ Reset" button in the header
-- Resets all state: discovered elements, tried combinations, owned items, and achievements
+### 16. Hamburger Menu
+- "☰" button in the header opens a dropdown menu
+- **Session ID** — displayed at the top with tap-to-copy functionality
+- **Sync status indicator** — colored dot showing cloud sync state (synced/syncing/failed/offline) with last sync time
+- **Load session** — enter another session ID to restore progress from the cloud
+- **Install app** — manual PWA install button (shown only on mobile/tablet browsers)
+- **Reset** — resets all state with confirmation dialog
+
+### 17. Reset Game
+- Accessed via the hamburger menu (↺ Reset)
+- Shows an in-app confirmation dialog before resetting (not browser `confirm()`)
+- Resets all state: discovered elements, tried combinations, owned items, partial items, and achievements
 - Clears all localStorage data
 - Returns to the intro screen
 
-### 17. Win / Congratulations Screen
+### 18. Win / Congratulations Screen
 - Triggers automatically when all 103 elements are discovered (600ms delay)
 - Animated trophy emoji burst
 - "Achievement unlocked" label
@@ -385,14 +397,32 @@ These indicators only appear when one card is selected, showing the status of th
 - Two buttons: "Back to overview →" (returns to game board) and "↺ Start fresh" (resets)
 - Debug: `showCongrats()` can be called from the browser console to preview
 
-### 18. Sound Effects
+### 19. Cloud Sync (Supabase)
+- All game progress is automatically synced to a **Supabase** cloud database
+- Uses the `game_saves` table with upsert (merge-duplicates) strategy
+- **Sync triggers:** after every state change (discovery, ownership toggle, achievement unlock)
+- **Session-based:** each browser gets a unique 8-character alphanumeric session ID
+- **Data synced:** discovered elements, tried recipes, owned items, partial items, achievements, and `updated_at` timestamp
+- Sync only starts after the player has discovered at least one element beyond the starters
+- Non-blocking: sync failures don't affect gameplay; data is always saved locally first
+- **Load Session:** players can enter another session ID to restore progress from the cloud (via hamburger menu)
+
+### 20. Offline Mode
+- Automatically detects online/offline state changes via `navigator.onLine` and event listeners
+- **Offline bar** appears at top of game: "You are offline — progress saves locally" with last sync time
+- Sync status indicator changes to grey "offline" state
+- **Disabled when offline:** translation and narration features
+- **Automatic re-sync:** when connection restores, queued changes are pushed to Supabase
+- Game remains fully playable offline with all progress saved to localStorage
+
+### 21. Sound Effects
 - Synthesized in real-time via the **Web Audio API** (no audio files)
 - **Discovery chime** — 3-note ascending tone (523, 659, 784 Hz)
 - **Achievement fanfare** — 4-note ascending chord (523, 659, 784, 1047 Hz)
 - **Combo click** — Single sine wave (440 Hz, 0.12s)
 - **Fail tone** — 2-note descending tone (330 → 294 Hz)
 
-### 19. Text-to-Speech Narration
+### 22. Text-to-Speech Narration
 - Available in the slide-in detail panel via a play/pause button
 - Uses the **Web Speech API** (`speechSynthesis`) as primary TTS engine
 - Falls back to **Google Translate TTS** if native voices are unavailable
@@ -401,15 +431,16 @@ These indicators only appear when one card is selected, showing the status of th
 - **Screen wake lock** — prevents the device from sleeping during narration (via `navigator.wakeLock`)
 - Narrate button disabled while translation is in progress
 
-### 20. PWA Support
+### 23. PWA Support
 - **`manifest.json`** — Full Web App manifest with app name, icons, theme color, and screenshots
-- **Service worker** (`sw.js`) — Cache v7 with network-first strategy for own assets, cache-first for CDN resources
+- **Service worker** (`sw.js`) — Cache v11 with network-first strategy for own assets, cache-first for CDN resources
 - Installable as a standalone app on mobile and desktop
+- **Manual install button** in hamburger menu (shown on mobile/tablet browsers only)
 - Portrait orientation enforced
 - Auto-reload when a new service worker activates
 - Body scroll/bounce disabled in standalone PWA mode
 
-### 21. Glossary Integration
+### 24. Glossary Integration
 - Every tooltip includes a "Read more →" link
 - Slide-in detail panel includes a glossary link
 - Links follow the pattern: `https://serenichron.com/glossary/[slug]`
@@ -429,7 +460,7 @@ Seven distinct color palettes, one per tier:
 | 3 | #FAECE7 | #D85A30 | #711B13 | Orange |
 | 4 | #EEEDFE | #7F77DD | #3C3489 | Purple |
 | 5 | #FBEAF0 | #D4537E | #72243E | Pink |
-| 6 | #EAF3DE | #639922 | #27500A | Lime green |
+| 6 | #FDF6E3 | #C8981E | #5C4508 | Gold |
 
 ---
 
@@ -504,12 +535,15 @@ Many elements can be created via multiple recipes (18 elements total):
 All game state is saved to `localStorage` under these keys:
 | Key | Type | Contents |
 |-----|------|----------|
+| `ba_session` | String | 8-character alphanumeric session ID |
 | `ba_discovered` | JSON array | Names of all discovered elements |
 | `ba_tried` | JSON array | Sorted pair keys of all attempted recipes |
-| `ba_owned` | JSON array | Names of elements marked as "owned" |
+| `ba_owned` | JSON array | Names of elements marked as fully "owned" |
+| `ba_partial` | JSON array | Names of elements marked as "partially" owned |
 | `ba_achievements` | JSON array | IDs of unlocked achievements |
+| `ba_last_sync` | ISO string | Timestamp of last successful Supabase sync |
 
-Progress auto-loads on page refresh. If saved progress is found with at least the starter elements, the intro screen is skipped.
+Progress auto-loads on page refresh. If saved progress is found with at least the starter elements, the intro screen is skipped. All local state is also synced to Supabase cloud storage.
 
 ---
 
@@ -519,18 +553,27 @@ Progress auto-loads on page refresh. If saved progress is found with at least th
 - `ALL` — Object mapping element names to `{emoji, tier}`
 - `R` — Object mapping sorted pair keys to result names (recipe lookup)
 - `REV` — Object mapping result names to arrays of `[ingredientA, ingredientB]` (reverse lookup)
-- `INFO` — Object mapping element names to `{description}` for all 103 elements
-- `PAL` — Array of 7 color palette objects
+- `INFO` — Object mapping element names to `{description}` for all 103 elements (includes "Also known as" synonym terms)
+- `PAL` — Array of 7 tier color palette objects `{bg, b, t, dot}`
+- `DEPT_PAL` — Array of 7 department color palette objects
+- `DEPARTMENTS` — Array of 7 department objects with `{name, icon, items[]}`
+- `ITEM_DEPT` — Object mapping each element name to its department index
+- `TIER_NAMES` — Array of 7 tier name strings
 - `ACHIEVEMENTS` — Array of 28 achievement objects with `{id, name, desc, icon, cat, check()}`
 
 ### State Variables
 - `discovered` — `Set` of discovered element names
 - `tried` — `Set` of attempted combination keys (sorted pair joined by `||`)
-- `owned` — `Set` of elements marked as owned
+- `owned` — `Set` of elements marked as fully owned
+- `partial` — `Set` of elements marked as partially owned
 - `unlockedAch` — `Set` of unlocked achievement IDs
+- `sessionId` — 8-character alphanumeric session identifier
+- `syncStatus` — Current cloud sync state (`'synced'`, `'pending'`, `'failed'`, `'offline'`)
+- `lastSyncTime` — `Date` of last successful Supabase sync
 - `slotA`, `slotB` — Currently selected element names (or null)
 - `resultName`, `resultState` — Current result in the tray
 - `domCards` — `Map` from element name to its DOM node
+- `activeDept` — Currently active department index (0–6)
 
 ### Key Functions
 | Function | Purpose |
@@ -549,8 +592,16 @@ Progress auto-loads on page refresh. If saved progress is found with at least th
 | `resetGame()` | Resets all state to initial |
 | `checkWin()` | Checks if all elements are discovered; triggers congrats |
 | `showCongrats()` | Displays the win screen with stats |
-| `saveProgress()` | Saves all state to localStorage |
+| `saveProgress()` | Saves all state to localStorage and triggers cloud sync |
 | `loadProgress()` | Loads state from localStorage |
+| `syncToSupabase()` | Pushes current state to Supabase cloud (async, non-blocking) |
+| `loadFromSupabase(id)` | Fetches a session's data from Supabase by session ID |
+| `loadSession()` | Prompts user for session ID and restores cloud-saved progress |
+| `updateSyncIndicator()` | Updates the sync status dot and label in the UI |
+| `updateOfflineUI()` | Toggles offline-related UI elements based on connectivity |
+| `toggleMenu()` | Opens/closes the hamburger dropdown menu |
+| `copySessionId()` | Copies current session ID to clipboard |
+| `installApp()` | Triggers the PWA install prompt |
 
 ### Audio System
 - `audioCtx` — Shared `AudioContext` instance (lazy-initialized)
@@ -570,6 +621,7 @@ Progress auto-loads on page refresh. If saved progress is found with at least th
 ### External Dependencies
 - **Twemoji** (v15.1.0 via CDN) — Cross-platform emoji rendering
 - **Google Translate API** — Used for element description translation and TTS fallback
+- **Supabase** (REST API) — Cloud database for session sync and persistence
 - No frameworks (React, Vue, etc.)
 - No CSS preprocessors
 - No build tools
@@ -582,7 +634,7 @@ Progress auto-loads on page refresh. If saved progress is found with at least th
 The game includes a dedicated AI/automation discovery path:
 1. **AI Writing** (Tier 3) — Automation + Copywriting
 2. **AI Automation** (Tier 4) — Marketing Stack + AI Writing
-3. **AI Content System** (Tier 5) — AI Writing + Content Machine
+3. **AI Content System** (Tier 5) — AI Automation + Content Machine
 4. **AI Marketing OS** (Tier 6) — AI Content System + Marketing OS
 
 This represents the progression from basic AI-assisted copywriting to a fully autonomous AI-driven marketing operation.
@@ -591,18 +643,17 @@ This represents the progression from basic AI-assisted copywriting to a fully au
 
 ## Business Concept Departments
 
-The 103 elements cover these core business domains:
+The game grid organizes all 103 elements into 7 departments (distinct from tiers, which represent discovery difficulty). Each department has its own color palette:
 
-| Department | Key Elements | Count |
-|-----------|-------------|-------|
-| Content & Publishing | Article, Blog, Content Strategy, Content Calendar, Editorial Plan, Content Machine, AI Content System, Podcast, Video, Video Channel | ~10 |
-| Email Marketing | Newsletter, Email Capture, Email List, Subscriber, Nurture Sequence, Email Funnel, Lead Generation, Lead Magnet | ~8 |
-| Marketing & Ads | Social Media, SEO, Keyword Research, Rank Tracker, Organic Traffic, Ad Copy, Ad Campaign, Analytics, Dashboard, A/B Test, Retargeting, Marketing Stack, Performance Marketing | ~13 |
-| Sales | Offer, Sales Page, Sales Copy, Sales Funnel, Checkout Page, Discovery Call, Tripwire, Inbound Sales, High-Ticket Offer, Upsell, Pitch Deck | ~11 |
-| Branding | Value Proposition, Niche, Persona, Brand Guide, Brand Voice, Brand Identity, Design System, Headline, Social Brand, Premium Brand, Personal Brand, Portfolio | ~12 |
-| Products | Digital Product, Online Course, SaaS Product, Product Design, Product Launch | 5 |
-| Revenue & Growth | Revenue Engine, Automated Sales, Sales Machine, Passive Income, Recurring Revenue, Growth System, Market Leader, Financial Freedom, Digital Empire | ~9 |
-| AI & Automation | AI Writing, AI Automation, AI Content System, AI Marketing OS | 4 |
+| Department | Icon | Items | Count |
+|-----------|------|-------|-------|
+| Strategy & Foundations | 🧭 | Idea, Audience, Niche, Value Proposition, Template, Keyword Research, Persona, Offer, Content Strategy, Analytics, Pitch Deck, Editorial Plan, A/B Test, Dashboard | 14 |
+| Content & Media | ✍️ | Content, Article, Blog, Script, Headline, Copywriting, Content Calendar, Video, Podcast, Webinar, AI Writing, Social Proof, Content Machine, Video Channel, Online Course, AI Content System | 16 |
+| Brand & Design | 🎨 | Website, Web Design, Wireframe, Hosting, Brand Guide, Brand Voice, Design System, Prototype, Brand Identity, Social Brand, Portfolio, Premium Brand, Personal Brand | 13 |
+| Marketing & Traffic | 📣 | Social Media, Landing Page, Lead Magnet, SEO, Rank Tracker, Ad Copy, Organic Traffic, Outreach, Opt-in Page, Lead Generation, Ad Campaign, Retargeting, Referral Program, Performance Marketing, Influence, Viral Growth | 16 |
+| Email & Automation | 📧 | Tool, Newsletter, CRM, Email Capture, Email List, Subscriber, Nurture Sequence, Automation, Workflow, Email Funnel, Marketing Stack, Launch Sequence, Marketing OS, AI Automation, Performance Report, Automated Webinar | 16 |
+| Sales & Conversion | 💰 | Sales Page, Sales Copy, Tripwire, Sales Funnel, Inbound Sales, Webinar Funnel, High-Ticket Offer, Conversion, Checkout Page, Discovery Call, Automated Sales, Sales Machine, Upsell | 13 |
+| Products & Revenue | 📦 | Authority Site, Product Design, Digital Product, Partnership, Thought Leadership, Product Launch, Revenue Engine, SaaS Product, Growth System, Passive Income, Recurring Revenue, Market Leader, Financial Freedom, Digital Empire, AI Marketing OS | 15 |
 
 ---
 
@@ -655,8 +706,21 @@ The 103 elements cover these core business domains:
 
 - `window.unlockAll()` — Discover all 103 elements at once
 - `showCongrats()` — Preview the congratulations screen
-- All state is in global variables: `discovered`, `tried`, `owned`, `unlockedAch`
+- All state is in global variables: `discovered`, `tried`, `owned`, `partial`, `unlockedAch`
 - Console: `discovered.size` to check progress count
+
+## Admin Dashboard
+
+- **`admin.html`** — Password-protected analytics dashboard (not linked from the game)
+- **`<meta name="robots" content="noindex,nofollow">`** — Hidden from search engines
+- Fetches all sessions from the Supabase `game_saves` table
+- **Summary cards:** total sessions, active sessions (24h/7d), avg discovery/business coverage, avg achievements, bounce rate, 100% completion count
+- **Discovery distribution:** histogram showing sessions spread across 0–100%
+- **Engagement insights:** most owned concepts, hardest to discover items, most/rarest achievements, tier funnel
+- **Recent sessions:** last 10 active sessions with progress bars
+- **All sessions:** searchable, filterable (24h/7d/30d), sortable, paginated table
+- **Session detail:** click any row to expand per-tier element breakdown and achievement list
+- Password gate uses SHA-256 hash comparison via Web Crypto API
 
 ---
 
@@ -696,3 +760,19 @@ The 103 elements cover these core business domains:
 - Corrected element count to 103 and recipe count to 117 throughout
 - Updated all achievement descriptions to match new balanced requirements
 - Added changelog entries for recent changes
+
+**7. Comprehensive documentation overhaul (March 2026)**
+- Added missing features: Hamburger menu (section 16), Cloud sync (section 18), Offline mode (section 19), Admin dashboard
+- Updated Card Grid to reflect department-based organization (not tier-based)
+- Updated Ownership Tracking to document 3-state system (Not yet / Partially / Yes)
+- Updated PWA service worker cache version from v7 → v11; added manual install button
+- Updated Tier 6 Endgame color palette from lime green → gold
+- Fixed Digital Product recipe from `Editorial Plan + Offer` → `Workflow + Offer`
+- Fixed AI Content System recipe in AI theme track from `AI Writing + Content Machine` → `AI Automation + Content Machine`
+- Added `ba_partial`, `ba_session`, `ba_last_sync` to persistence keys
+- Added `partial`, `sessionId`, `syncStatus`, `lastSyncTime`, `activeDept` to state variables
+- Added Supabase-related functions, menu functions, and offline handlers to key functions list
+- Added `DEPARTMENTS`, `DEPT_PAL`, `ITEM_DEPT`, `TIER_NAMES` to data structures
+- Added Supabase to external dependencies
+- Rewrote Business Concept Departments to match actual DEPARTMENTS array with exact item lists and counts
+- Added Admin Dashboard documentation section
