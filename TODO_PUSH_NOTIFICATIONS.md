@@ -73,12 +73,13 @@ self.addEventListener('push', e => {
 2. For each subscription, check if user's local time is approximately noon (11:45–12:15)
 3. Join with `game_saves` to get `discovered` array
 4. If `discovered` contains all 103 items → skip (no notification)
-5. Pick next undiscovered item: walk tiers T0→T6, pick first undiscovered in ALL order
-6. Look up hook text for that item (see Section 7)
-7. If `game_saves.updated_at` is older than 7 days → use inactive variant text
-8. Send web-push (VAPID-signed, encrypted payload)
-9. Update `last_notified_at`
-10. On 410 Gone response → set `active = false`
+5. Pick next undiscovered items: walk tiers T0→T6, collect first 7 undiscovered in ALL order
+6. Rotate daily: select item at index `day_of_year % count` (where count ≤ 7) so the user sees a different concept each day even if they don't play
+7. Look up hook text for that item from `push_hook_texts` table (see Section 7)
+8. If `game_saves.updated_at` is older than 7 days → use inactive variant text
+9. Send web-push (VAPID-signed, encrypted payload)
+10. Update `last_notified_at`
+11. On 410 Gone response → set `active = false`
 
 ### Complexity Note
 Web Push in Deno requires manual crypto: ECDH key exchange, HKDF derivation, AES-128-GCM encryption, and VAPID JWT signing. Consider using the `web-push` npm package via Deno's npm compatibility (`npm:web-push`).
