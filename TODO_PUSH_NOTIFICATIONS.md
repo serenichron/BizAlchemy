@@ -20,20 +20,59 @@ Daily push notifications at noon (user's local time) with a curiosity-driven hoo
 - [x] SQL for pg_cron schedule (every 15 minutes)
 
 ### To Do (deployment steps)
-- [ ] Generate VAPID keys — run `npx web-push generate-vapid-keys`
-- [ ] Replace `TO_BE_REPLACED_WITH_ACTUAL_VAPID_PUBLIC_KEY` in `index.html` with the real public key
-- [ ] Store Supabase secrets: `VAPID_PRIVATE_KEY`, `VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`
-  ```bash
-  supabase secrets set VAPID_PRIVATE_KEY="<private-key>"
-  supabase secrets set VAPID_PUBLIC_KEY="<public-key>"
-  supabase secrets set VAPID_SUBJECT="mailto:hello@serenichron.com"
-  ```
-- [ ] Run `supabase/migrations/20260323_push_subscriptions.sql` in Supabase SQL editor
-- [ ] Enable the `pg_net` extension in Supabase dashboard (Database → Extensions)
-- [ ] Deploy the edge function: `supabase functions deploy send-daily-push`
-- [ ] Run `supabase/migrations/20260323_pg_cron_push.sql` in Supabase SQL editor to schedule the cron
-- [ ] Test end-to-end with a single subscription
-- [ ] Deploy updated `index.html` and `sw.js` to production
+
+> The app works fine without these — notifications are fully dormant until step 2 is done.
+
+#### Step 1: Generate VAPID keys
+**Where:** Terminal (your laptop)
+```bash
+npx web-push generate-vapid-keys
+```
+This prints a public key and a private key. Copy both — you'll need them in steps 2 and 3.
+
+#### Step 2: Paste the public key into the code
+**Where:** Code editor — `index.html`
+
+Search for `TO_BE_REPLACED_WITH_ACTUAL_VAPID_PUBLIC_KEY` and replace it with the public key from step 1. Commit the change.
+
+#### Step 3: Store secrets in Supabase
+**Where:** Supabase CLI (terminal) **or** Supabase dashboard → Project Settings → Edge Functions → Secrets
+
+Option A — CLI:
+```bash
+supabase secrets set VAPID_PRIVATE_KEY="<private-key-from-step-1>"
+supabase secrets set VAPID_PUBLIC_KEY="<public-key-from-step-1>"
+supabase secrets set VAPID_SUBJECT="mailto:hello@serenichron.com"
+```
+
+Option B — Dashboard:
+Go to **Project Settings → Edge Functions → Secrets** and add the three key-value pairs manually.
+
+#### Step 4: Create the `push_subscriptions` table
+**Where:** Supabase dashboard → **SQL Editor**
+
+Paste the contents of `supabase/migrations/20260323_push_subscriptions.sql` and click **Run**. This creates the table, index, and RLS policies.
+
+#### Step 5: Deploy the edge function
+**Where:** Terminal (your laptop), from the project root
+```bash
+supabase functions deploy send-daily-push
+```
+This uploads `supabase/functions/send-daily-push/index.ts` to Supabase.
+
+#### Step 6: Enable pg_net and schedule the cron
+**Where:** Supabase dashboard
+
+1. Go to **Database → Extensions**, search for `pg_net`, and enable it.
+2. Go to **SQL Editor**, paste the contents of `supabase/migrations/20260323_pg_cron_push.sql`, and click **Run**. This schedules the edge function to run every 15 minutes.
+
+#### Step 7: Deploy the frontend
+**Where:** However you normally deploy (push to GitHub Pages, etc.)
+
+Deploy the updated `index.html` and `sw.js` to production.
+
+#### Step 8: Test end-to-end
+Open the app on a phone, wait 5 minutes (or trigger the modal via PWA install), accept notifications, and verify a push arrives at noon your time.
 
 ---
 
