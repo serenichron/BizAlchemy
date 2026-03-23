@@ -28,6 +28,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .menu-item:hover{background:#f5f4f0}
 .menu-danger{color:#c0392b}
 .menu-divider{height:1px;background:#e5e4df;margin:4px 10px}
+#menu-session{padding:6px 14px;font-size:11px;color:#999;font-family:monospace;letter-spacing:0.5px}
 #grid{overflow-y:auto;flex:1;padding:8px 10px 120px;position:relative}
 .tier-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 2px 5px;font-size:11.5px;font-weight:600;color:#888;letter-spacing:0.3px;border-top:none;margin-top:4px;position:relative}
 .tier-hdr::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,#ddd 30%,#ddd 70%,transparent)}
@@ -535,6 +536,8 @@ h1,h2{margin:0;padding:0}
     <div id="menu-wrap">
       <button id="menu-btn" class="hdr-btn" onclick="toggleMenu()" aria-label="Menu">☰</button>
       <div id="menu-dropdown">
+        <div id="menu-session"></div>
+        <div class="menu-divider"></div>
         <button class="menu-item" onclick="exportGame()">📥 Export</button>
         <button class="menu-item" onclick="importGame()">📤 Import</button>
         <div class="menu-divider"></div>
@@ -1235,6 +1238,7 @@ function showConfirm(title,msg,onConfirm,confirmLabel){
 }
 function toggleMenu(){
   const dd=document.getElementById('menu-dropdown');
+  document.getElementById('menu-session').textContent='ID: '+sessionId;
   dd.classList.toggle('open');
 }
 document.addEventListener('click',function(e){
