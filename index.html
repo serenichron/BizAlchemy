@@ -21,6 +21,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .hdr-btn{padding:4px 10px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:11px;font-weight:500;color:#333;cursor:pointer;white-space:nowrap;transition:background 0.1s,opacity 0.1s}
 .hdr-btn:disabled{opacity:0.45;cursor:default}
 .hdr-btn:not(:disabled):hover{background:#f5f4f0}
+#offline-bar{display:none;background:#f5eac4;color:#6d5a1a;font-size:11px;text-align:center;padding:5px 12px;font-weight:500;flex-shrink:0}
+#offline-bar.visible{display:block}
 #menu-wrap{position:relative}
 #menu-dropdown{display:none;position:absolute;top:34px;right:0;background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.12);z-index:320;min-width:140px;padding:4px 0}
 #menu-dropdown.open{display:block}
@@ -576,6 +578,7 @@ h1,h2{margin:0;padding:0}
       </div>
     </div>
   </header>
+  <div id="offline-bar">You are offline — progress saves locally, will sync when back online</div>
   <nav id="dept-tabs" aria-label="Department filters"></nav>
   <section id="grid" aria-label="Element cards"></section>
   <nav id="tray" aria-label="Combination tray">
@@ -978,17 +981,26 @@ function updateSyncIndicator(){
   if(lbl){const syncLabels={synced:'synced',pending:'syncing…',failed:'not synced',offline:'offline'};lbl.textContent=syncLabels[syncStatus]||'';}
 }
 window.addEventListener('online',()=>{
-  if(syncStatus==='offline'||syncStatus==='failed'){syncToSupabase();}
+  syncStatus='pending';updateSyncIndicator();
+  syncToSupabase();
   updateOfflineUI();
+  showToast('tok','Back online \u2014 syncing\u2026');
 });
-window.addEventListener('offline',()=>{updateOfflineUI();});
+window.addEventListener('offline',()=>{
+  syncStatus='offline';updateSyncIndicator();
+  updateOfflineUI();
+  showToast('err','You are offline');
+});
 function updateOfflineUI(){
   const offline=!navigator.onLine;
   const nb=document.getElementById('slidein-narrate');
   const tb=document.getElementById('slidein-translate');
   if(nb)nb.classList.toggle('disabled',offline);
   if(tb)tb.classList.toggle('offline-disabled',offline&&!activeLang);
+  const bar=document.getElementById('offline-bar');
+  if(bar)bar.classList.toggle('visible',offline);
 }
+updateOfflineUI();
 
 async function loadFromSupabase(id){
   try{
@@ -1149,14 +1161,14 @@ function updateIntroOfflineState(){
   const wbNote=document.getElementById('wb-sync-note');
   if(newNote){
     if(offline){
-      newNote.innerHTML='<div class="offline-banner"><strong>You\'re offline</strong> — no worries, the game works fully offline.<ul><li>Audio narration is unavailable</li><li>Translation to other languages is unavailable</li></ul>Your progress is saved locally and will sync to the cloud when you\'re back online.</div>';
+      newNote.innerHTML='<div class="offline-banner"><div style="font-size:13px;font-weight:700;color:#6d5a1a;margin-bottom:4px">\u26A0 You are offline</div>No worries \u2014 the game works fully offline! Some features are unavailable:<ul><li>Audio narration</li><li>Translation to other languages</li></ul>Your progress is saved locally and will sync to the cloud when you\u2019re back online.</div>';
     }else{
       newNote.innerHTML='<div style="font-size:12px;color:#999;margin-top:8px;line-height:1.5">Play anytime \u2014 works offline. Your progress syncs to the cloud automatically, so you can pick up where you left off on any device.</div>';
     }
   }
   if(wbNote){
     if(offline){
-      wbNote.innerHTML='<div class="offline-banner" style="margin-top:12px;text-align:left"><strong>You\'re offline</strong> — the game works fully offline.<ul><li>Audio narration is unavailable</li><li>Translation to other languages is unavailable</li></ul>Your progress will sync when you\'re back online.</div>';
+      wbNote.innerHTML='<div class="offline-banner" style="margin-top:12px;text-align:left"><div style="font-size:13px;font-weight:700;color:#6d5a1a;margin-bottom:4px">\u26A0 You are offline</div>The game works fully offline! Unavailable features:<ul><li>Audio narration</li><li>Translation to other languages</li></ul>Your progress will sync when you\u2019re back online.</div>';
     }else{
       wbNote.innerHTML='<div style="font-size:11px;color:#aaa;margin-top:12px;text-align:center;line-height:1.5">Your progress is saved locally and syncs to the cloud \u2014 continue on any device using your session ID from the menu.</div>';
     }
