@@ -128,6 +128,9 @@ tr:hover td{background:#fafafa}
 
   <div class="summary" id="summary"></div>
 
+  <div class="section-hdr">Player Segments</div>
+  <div class="summary" id="segments"></div>
+
   <div class="section-hdr">Discovery Distribution <span class="badge" id="dist-count"></span></div>
   <div class="card" style="margin-bottom:32px">
     <div class="dist-row" id="dist-row"></div>
@@ -136,6 +139,9 @@ tr:hover td{background:#fafafa}
 
   <div class="section-hdr">Engagement Insights</div>
   <div class="insights" id="insights"></div>
+
+  <div class="section-hdr">Business Intelligence</div>
+  <div class="insights" id="biz-insights"></div>
 
   <div class="section-hdr">Recent Sessions <span class="badge">Last 10</span></div>
   <div class="tbl-wrap" id="recent-wrap">
@@ -259,6 +265,7 @@ function ago(iso){
 }
 function pct(n,total){return Math.round(n/total*100);}
 function mean(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;}
+function median(arr){if(!arr.length)return 0;const s=[...arr].sort((a,b)=>a-b);const m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2;}
 
 function pbar(val,total,color){
   const p=pct(val,total);
@@ -274,8 +281,10 @@ function toast(msg){
 // --- Render ---
 function renderAll(){
   renderSummary();
+  renderSegments();
   renderDistribution();
   renderInsights();
+  renderBizInsights();
   renderRecent();
   renderAllTable();
 }
@@ -294,14 +303,23 @@ function renderSummary(){
 
   const bounced=s.filter(r=>arrLen(r.discovered)<=STARTS.length).length;
 
+  const medDisc=median(discArr);
+  const medOwn=median(ownArr);
+  const medAch=median(achArr);
+  const medTried=median(triedArr);
+
+  // Experimentation rate (excluding bounced)
+  const activeTried=s.filter(r=>arrLen(r.discovered)>STARTS.length).map(r=>arrLen(r.tried));
+  const avgExpRate=activeTried.length?Math.round(mean(activeTried)/TOTAL_RECIPES*100):0;
+
   const html=[
     {label:'Total Sessions',value:s.length,sub:'All time'},
     {label:'Active (24h)',value:active24h,sub:active7d+' in last 7 days'},
-    {label:'Avg Discovery',value:pct(mean(discArr),TOTAL_ELEMENTS)+'%',sub:Math.round(mean(discArr))+' / '+TOTAL_ELEMENTS+' avg'},
-    {label:'Avg Business Coverage',value:pct(mean(ownArr),TOTAL_ELEMENTS)+'%',sub:Math.round(mean(ownArr))+' / '+TOTAL_ELEMENTS+' avg'},
-    {label:'Avg Achievements',value:Math.round(mean(achArr)*10)/10,sub:'of '+TOTAL_ACHIEVEMENTS+' total'},
+    {label:'Avg Discovery',value:pct(mean(discArr),TOTAL_ELEMENTS)+'%',sub:'Median: '+Math.round(medDisc)+' / '+TOTAL_ELEMENTS},
+    {label:'Avg Business Coverage',value:pct(mean(ownArr),TOTAL_ELEMENTS)+'%',sub:'Median: '+Math.round(medOwn)+' / '+TOTAL_ELEMENTS},
+    {label:'Avg Achievements',value:Math.round(mean(achArr)*10)/10,sub:'Median: '+Math.round(medAch*10)/10+' of '+TOTAL_ACHIEVEMENTS},
     {label:'100% Discovery',value:complete,sub:s.length?pct(complete,s.length)+'% of sessions':''},
-    {label:'Avg Recipes Tried',value:Math.round(mean(triedArr)),sub:'of '+TOTAL_RECIPES+' total'},
+    {label:'Experimentation Rate',value:avgExpRate+'%',sub:'Median: '+Math.round(median(activeTried))+' / '+TOTAL_RECIPES+' recipes'},
     {label:'Bounce Rate',value:s.length?pct(bounced,s.length)+'%':'0%',sub:bounced+' sessions never played'},
   ];
   document.getElementById('summary').innerHTML=html.map(c=>`<div class="card"><div class="label">${c.label}</div><div class="value">${c.value}</div><div class="sub">${c.sub}</div></div>`).join('');
@@ -377,6 +395,132 @@ function renderInsights(){
     <div class="insight">
       <div class="label">Tier Reach (Funnel)</div>
       <ul class="insight-list">${TIERS.map((t,i)=>`<li><span>T${i}: ${t.name}</span><span class="ct">${tierReach[i]}</span></li>`).join('')}</ul>
+    </div>
+  `;
+}
+
+// Departments for business intelligence
+const DEPTS=[
+  {name:'Strategy & Foundations',items:['Idea','Audience','Niche','Value Proposition','Template','Keyword Research','Persona','Offer','Content Strategy','Analytics','Pitch Deck','Editorial Plan','A/B Test','Dashboard']},
+  {name:'Content & Media',items:['Content','Article','Blog','Script','Headline','Copywriting','Content Calendar','Video','Podcast','Webinar','AI Writing','Social Proof','Content Machine','Video Channel','Online Course','AI Content System']},
+  {name:'Brand & Design',items:['Website','Web Design','Wireframe','Hosting','Brand Guide','Brand Voice','Design System','Prototype','Brand Identity','Social Brand','Portfolio','Premium Brand','Personal Brand']},
+  {name:'Marketing & Traffic',items:['Social Media','Landing Page','Lead Magnet','SEO','Rank Tracker','Ad Copy','Organic Traffic','Outreach','Opt-in Page','Lead Generation','Ad Campaign','Retargeting','Referral Program','Performance Marketing','Influence','Viral Growth']},
+  {name:'Email & Automation',items:['Tool','Newsletter','CRM','Email Capture','Email List','Subscriber','Nurture Sequence','Automation','Workflow','Email Funnel','Marketing Stack','Launch Sequence','Marketing OS','AI Automation','Performance Report','Automated Webinar']},
+  {name:'Sales & Conversion',items:['Sales Page','Sales Copy','Tripwire','Sales Funnel','Inbound Sales','Webinar Funnel','High-Ticket Offer','Conversion','Checkout Page','Discovery Call','Automated Sales','Sales Machine','Upsell']},
+  {name:'Products & Revenue',items:['Authority Site','Product Design','Digital Product','Partnership','Thought Leadership','Product Launch','Revenue Engine','SaaS Product','Growth System','Passive Income','Recurring Revenue','Market Leader','Financial Freedom','Digital Empire','AI Marketing OS']},
+];
+
+function renderSegments(){
+  const s=allSessions;
+  const bounced=s.filter(r=>arrLen(r.discovered)<=STARTS.length).length;
+  const casual=s.filter(r=>{const d=arrLen(r.discovered);return d>STARTS.length&&d<Math.round(TOTAL_ELEMENTS*0.25);}).length;
+  const explorer=s.filter(r=>{const d=arrLen(r.discovered);const o=arrLen(r.owned)+arrLen(r.partial);return d>=Math.round(TOTAL_ELEMENTS*0.25)&&d<Math.round(TOTAL_ELEMENTS*0.5)&&o<10;}).length;
+  const engaged=s.filter(r=>{const d=arrLen(r.discovered);const o=arrLen(r.owned)+arrLen(r.partial);return d>=Math.round(TOTAL_ELEMENTS*0.25)&&d<Math.round(TOTAL_ELEMENTS*0.9)&&o>=10;}).length;
+  const bizUser=s.filter(r=>{const d=arrLen(r.discovered);const o=arrLen(r.owned)+arrLen(r.partial);return d>=Math.round(TOTAL_ELEMENTS*0.5)&&o>=Math.round(d*0.3);}).length;
+  const completionist=s.filter(r=>arrLen(r.discovered)>=Math.round(TOTAL_ELEMENTS*0.9)).length;
+
+  const total=s.length||1;
+  const segs=[
+    {label:'Bounced',value:bounced,sub:pct(bounced,total)+'% — never played beyond starters',color:'#ddd'},
+    {label:'Casual',value:casual,sub:pct(casual,total)+'% — explored <25% of elements',color:'#EF9F27'},
+    {label:'Explorer',value:explorer,sub:pct(explorer,total)+'% — 25-50% discovery, low ownership',color:'#378ADD'},
+    {label:'Engaged',value:engaged,sub:pct(engaged,total)+'% — 25-90% discovery, 10+ owned',color:'#7F77DD'},
+    {label:'Business User',value:bizUser,sub:pct(bizUser,total)+'% — 50%+ discovery, owns 30%+ of found',color:'#1D9E75'},
+    {label:'Completionist',value:completionist,sub:pct(completionist,total)+'% — discovered 90%+ elements',color:'#D85A30'},
+  ];
+  document.getElementById('segments').innerHTML=segs.map(c=>`<div class="card"><div class="label">${c.label}</div><div class="value" style="color:${c.color}">${c.value}</div><div class="sub">${c.sub}</div></div>`).join('');
+}
+
+function renderBizInsights(){
+  const s=allSessions.filter(r=>arrLen(r.discovered)>STARTS.length);
+  const active=s.length||1;
+
+  // Discovery-to-Ownership Gap: discovered but NOT owned (top 8)
+  const gapCount={};
+  s.forEach(r=>{
+    const disc=new Set(r.discovered||[]);
+    const own=new Set([...(r.owned||[]),...(r.partial||[])]);
+    disc.forEach(n=>{
+      if(!STARTS.includes(n)&&!own.has(n)){gapCount[n]=(gapCount[n]||0)+1;}
+    });
+  });
+  const topGap=Object.entries(gapCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  // Least owned concepts (bottom 8, excluding items rarely discovered)
+  const ownCount={};
+  const discCount={};
+  TIERS.forEach(t=>t.items.forEach(n=>{ownCount[n]=0;discCount[n]=0;}));
+  s.forEach(r=>{
+    (r.discovered||[]).forEach(n=>{if(n in discCount)discCount[n]++;});
+    (r.owned||[]).forEach(n=>{if(n in ownCount)ownCount[n]++;});
+    (r.partial||[]).forEach(n=>{if(n in ownCount)ownCount[n]+=0.5;});
+  });
+  // Only include items discovered by at least 20% of active sessions
+  const minDisc=Math.max(Math.round(active*0.2),1);
+  const leastOwned=Object.entries(ownCount)
+    .filter(([n])=>discCount[n]>=minDisc&&!STARTS.includes(n))
+    .map(([n,c])=>[n,c,discCount[n]])
+    .sort((a,b)=>(a[1]/a[2])-(b[1]/b[2]))
+    .slice(0,8);
+
+  // Department coverage: avg ownership % per department
+  const deptOwn=DEPTS.map(dept=>{
+    const rates=s.map(r=>{
+      const own=new Set([...(r.owned||[]),...(r.partial||[])]);
+      const count=dept.items.filter(n=>own.has(n)).length;
+      return count/dept.items.length;
+    });
+    return {name:dept.name,avg:Math.round(mean(rates)*100),count:dept.items.length};
+  }).sort((a,b)=>b.avg-a.avg);
+
+  // Department discovery: avg discovery % per department
+  const deptDisc=DEPTS.map(dept=>{
+    const rates=s.map(r=>{
+      const disc=new Set(r.discovered||[]);
+      const count=dept.items.filter(n=>disc.has(n)).length;
+      return count/dept.items.length;
+    });
+    return {name:dept.name,avg:Math.round(mean(rates)*100)};
+  }).sort((a,b)=>b.avg-a.avg);
+
+  // Discovery-to-ownership conversion per department
+  const deptConv=DEPTS.map(dept=>{
+    let totalDisc=0,totalOwn=0;
+    s.forEach(r=>{
+      const disc=new Set(r.discovered||[]);
+      const own=new Set([...(r.owned||[]),...(r.partial||[])]);
+      dept.items.forEach(n=>{
+        if(disc.has(n)){totalDisc++;if(own.has(n))totalOwn++;}
+      });
+    });
+    return {name:dept.name,rate:totalDisc?Math.round(totalOwn/totalDisc*100):0};
+  }).sort((a,b)=>b.rate-a.rate);
+
+  document.getElementById('biz-insights').innerHTML=`
+    <div class="insight">
+      <div class="label">Biggest Ownership Gaps</div>
+      <div class="sub" style="margin:-4px 0 8px;font-size:11px">Discovered but NOT owned — potential consulting topics</div>
+      <ul class="insight-list">${topGap.map(([n,c])=>`<li><span>${n}</span><span class="ct">${c}/${active}</span></li>`).join('')}</ul>
+    </div>
+    <div class="insight">
+      <div class="label">Least Owned Concepts</div>
+      <div class="sub" style="margin:-4px 0 8px;font-size:11px">Among items discovered by 20%+ of players</div>
+      <ul class="insight-list">${leastOwned.map(([n,c,d])=>`<li><span>${n}</span><span class="ct">${Math.round(c)}/${d}</span></li>`).join('')}</ul>
+    </div>
+    <div class="insight">
+      <div class="label">Dept. Ownership Coverage</div>
+      <div class="sub" style="margin:-4px 0 8px;font-size:11px">Avg % of department items owned per session</div>
+      <ul class="insight-list">${deptOwn.map(d=>`<li><span>${d.name}</span><span class="ct">${d.avg}%</span></li>`).join('')}</ul>
+    </div>
+    <div class="insight">
+      <div class="label">Dept. Discovery Rate</div>
+      <div class="sub" style="margin:-4px 0 8px;font-size:11px">Avg % of department items discovered per session</div>
+      <ul class="insight-list">${deptDisc.map(d=>`<li><span>${d.name}</span><span class="ct">${d.avg}%</span></li>`).join('')}</ul>
+    </div>
+    <div class="insight">
+      <div class="label">Dept. Conversion Rate</div>
+      <div class="sub" style="margin:-4px 0 8px;font-size:11px">Of discovered items, how many are owned?</div>
+      <ul class="insight-list">${deptConv.map(d=>`<li><span>${d.name}</span><span class="ct">${d.rate}%</span></li>`).join('')}</ul>
     </div>
   `;
 }
