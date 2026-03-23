@@ -14,10 +14,10 @@ The game is educational: every element maps to a real digital marketing concept 
 
 - **Genre:** Crafting / Combination puzzle (similar to Little Alchemy, Doodle God)
 - **Theme:** Digital marketing & online business building
-- **Goal:** Discover all 102 elements across 7 tiers by combining pairs of elements
+- **Goal:** Discover all 103 elements across 7 tiers by combining pairs of elements
 - **Secondary goal:** Mark discovered elements as "owned" to track real business coverage
 - **Educational purpose:** Each element represents a real digital marketing concept with descriptions explaining what it is and why it matters
-- **Win condition:** Discover all 102 elements to unlock the "Digital Empire achieved" congratulations screen
+- **Win condition:** Discover all 103 elements to unlock the "Digital Empire achieved" congratulations screen
 
 ---
 
@@ -55,7 +55,7 @@ Result slot states:
 
 ## Tier System
 
-The game organizes all 102 elements into 7 tiers, each with a unique color palette:
+The game organizes all 103 elements into 7 tiers, each with a unique color palette:
 
 | Tier | Name                | Color   | Elements | Description |
 |------|---------------------|---------|----------|-------------|
@@ -67,7 +67,7 @@ The game organizes all 102 elements into 7 tiers, each with a unique color palet
 | 5    | Advanced Systems    | Pink    | 13       | Automated and advanced business systems |
 | 6    | Endgame             | Lime    | 8        | Ultimate business outcomes |
 
-**Total: 102 elements, 115 recipes (some elements have multiple recipes)**
+**Total: 103 elements, 117 recipes (some elements have multiple recipes)**
 
 ---
 
@@ -304,7 +304,7 @@ These indicators only appear when one card is selected, showing the status of th
 - If all elements are found, shows "You found everything!" message
 
 ### 13. Progress Counter
-- Displayed in the header as a pill badge: `X / 102 found`
+- Displayed in the header as a pill badge: `X / 103 found`
 - Updates in real-time as elements are discovered
 
 ### 14. Statistics Screen
@@ -324,10 +324,10 @@ These indicators only appear when one card is selected, showing the status of th
 | 🧭 Explorer | Discover 25 elements |
 | ⚗️ Alchemist | Discover 50 elements |
 | 🔮 Master Alchemist | Discover 75 elements |
-| 👑 Grand Master | Discover all 102 elements |
+| 👑 Grand Master | Discover all 103 elements |
 | 🧪 Experimenter | Try 30 recipes |
 | ⚡ Mad Scientist | Try 75 recipes |
-| 🏆 Completionist | Try all 115 recipes |
+| 🏆 Completionist | Try all 117 recipes |
 
 **Business Coverage (4):**
 | Achievement | Condition |
@@ -335,7 +335,7 @@ These indicators only appear when one card is selected, showing the status of th
 | 🚶 Getting Started | Mark 5 items as owned |
 | 🧱 Foundation | Mark 15 items as owned |
 | ⛰️ Halfway There | Mark 50 items as owned |
-| 🦄 Full Stack Business | Mark all 102 items as owned |
+| 🦄 Full Stack Business | Mark all 103 items as owned |
 
 **Department Badges (16):**
 | Achievement | Department | Condition |
@@ -371,7 +371,7 @@ These indicators only appear when one card is selected, showing the status of th
 - Returns to the intro screen
 
 ### 17. Win / Congratulations Screen
-- Triggers automatically when all 102 elements are discovered (600ms delay)
+- Triggers automatically when all 103 elements are discovered (600ms delay)
 - Animated trophy emoji burst
 - "Achievement unlocked" label
 - Title: "Digital Empire achieved."
@@ -466,7 +466,7 @@ Seven distinct color palettes, one per tier:
 
 ## Recipe Tree Summary
 
-The game contains **115 recipes** producing 98 non-starting elements (many elements have multiple recipes).
+The game contains **117 recipes** producing 99 non-starting elements (many elements have multiple recipes).
 
 ### Recipe Structure
 - **Tier 0 → Tier 1:** All 6 combinations of the 4 starters (4 choose 2) + 2 cross-tier recipes (8 total)
@@ -519,7 +519,7 @@ Progress auto-loads on page refresh. If saved progress is found with at least th
 - `ALL` — Object mapping element names to `{emoji, tier}`
 - `R` — Object mapping sorted pair keys to result names (recipe lookup)
 - `REV` — Object mapping result names to arrays of `[ingredientA, ingredientB]` (reverse lookup)
-- `INFO` — Object mapping element names to `{description}` for all 102 elements
+- `INFO` — Object mapping element names to `{description}` for all 103 elements
 - `PAL` — Array of 7 color palette objects
 - `ACHIEVEMENTS` — Array of 28 achievement objects with `{id, name, desc, icon, cat, check()}`
 
@@ -591,7 +591,7 @@ This represents the progression from basic AI-assisted copywriting to a fully au
 
 ## Business Concept Departments
 
-The 102 elements cover these core business domains:
+The 103 elements cover these core business domains:
 
 | Department | Key Elements | Count |
 |-----------|-------------|-------|
@@ -653,7 +653,7 @@ The 102 elements cover these core business domains:
 
 ## Debug / Developer Tools
 
-- `window.unlockAll()` — Discover all 102 elements at once
+- `window.unlockAll()` — Discover all 103 elements at once
 - `showCongrats()` — Preview the congratulations screen
 - All state is in global variables: `discovered`, `tried`, `owned`, `unlockedAch`
 - Console: `discovered.size` to check progress count
@@ -693,6 +693,6 @@ The 102 elements cover these core business domains:
 - **Financially Free** (Revenue): Increased from 3 → 4 items (added Revenue Engine)
 
 **6. Documentation updated (March 2026)**
-- Corrected element count from 103 → 102 and recipe count from 118 → 115 throughout
+- Corrected element count to 103 and recipe count to 117 throughout
 - Updated all achievement descriptions to match new balanced requirements
 - Added changelog entries for recent changes
