@@ -232,7 +232,8 @@ if(sessionStorage.getItem('ba_admin')==='1'){
 // --- Data ---
 function supaFetch(path){
   return fetch(SUPA_URL+'/rest/v1/'+path,{
-    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY},
+    cache:'no-store'
   });
 }
 
