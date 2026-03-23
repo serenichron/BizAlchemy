@@ -1430,9 +1430,6 @@ function copySessionId(el,e){
 function toggleMenu(){
   const dd=document.getElementById('menu-dropdown');
   document.getElementById('menu-session-id').textContent='ID: '+sessionId;
-  const syncLabels={synced:'synced',pending:'syncing…',failed:'not synced',offline:'offline'};
-  document.getElementById('menu-sync-label').textContent=syncLabels[syncStatus]||'';
-  updateSyncIndicator();
   dd.classList.toggle('open');
 }
 document.addEventListener('click',function(e){
