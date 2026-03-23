@@ -29,6 +29,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tier-name{display:flex;align-items:center;gap:5px}
 .tier-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .tier-prog{font-size:11px;color:#aaa}
+#dept-tabs{display:flex;gap:4px;padding:6px 10px 4px;overflow-x:auto;flex-shrink:0;border-bottom:1px solid #eee;background:#fafaf8;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#dept-tabs::-webkit-scrollbar{display:none}
+.dept-tab{flex-shrink:0;display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;border:1.5px solid #e5e4df;background:#fff;font-size:10.5px;font-weight:500;color:#666;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.dept-tab:hover{background:#f5f4f0}
+.dept-tab.active{border-color:var(--dept-color);background:var(--dept-bg);color:var(--dept-text);font-weight:600}
+.dept-tab-icon{font-size:13px;line-height:1;pointer-events:none}
+.dept-tab-icon img.emoji{height:12px;width:12px;margin:0}
+.dept-tab-count{font-size:9px;opacity:0.6;font-weight:400}
 .cards-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:2px}
 .ec{border-radius:13px;padding:12px 5px 9px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;user-select:none;border:1.5px solid color-mix(in srgb,var(--sel-color) 35%,transparent);transition:transform 0.12s,border-color 0.12s,opacity 0.12s,box-shadow 0.15s;position:relative;background:var(--card-bg)}
 .ec:hover{box-shadow:0 1px 4px var(--card-shadow,rgba(0,0,0,0.06))}
@@ -446,7 +454,7 @@ h1,h2{margin:0;padding:0}
           <div class="step-icon">🗺️</div>
           <div class="step-body">
             <div class="step-label">Discover</div>
-            <div class="step-desc">Unlock concepts across 7 tiers, from Raw Ingredients all the way to Endgame.</div>
+            <div class="step-desc">Unlock concepts across 7 departments, from Strategy & Foundations to Products & Revenue.</div>
           </div>
         </div>
         <div class="intro-step">
@@ -519,6 +527,7 @@ h1,h2{margin:0;padding:0}
     <button id="hint-btn" class="hdr-btn" onclick="showHint()" aria-label="Get a hint">💡 Hint</button>
     <button id="reset-btn" class="hdr-btn" onclick="resetGame()" aria-label="Reset game">↺ Reset</button>
   </header>
+  <nav id="dept-tabs" aria-label="Department filters"></nav>
   <section id="grid" aria-label="Element cards"></section>
   <nav id="tray" aria-label="Combination tray">
     <div class="slot" id="slot-a" role="button" aria-label="Slot A — empty, tap a card to fill"><span class="slot-hint">tap a card</span></div>
@@ -569,6 +578,28 @@ const PAL=[
   {bg:'#FDF6E3',b:'#C8981E',t:'#5C4508',dot:'#C8981E'},
 ];
 const TIER_NAMES=['Raw Ingredients','Core Assets','Digital Foundations','Marketing Channels','Growth Strategy','Advanced Systems','Endgame'];
+const DEPT_PAL=[
+  {bg:'#E8F0FE',b:'#4A6FA5',t:'#1B3A5C',dot:'#4A6FA5'},
+  {bg:'#FFF3E0',b:'#E67E22',t:'#7D4300',dot:'#E67E22'},
+  {bg:'#F3E5F5',b:'#9B59B6',t:'#5B2C6F',dot:'#9B59B6'},
+  {bg:'#E0F7FA',b:'#00ACC1',t:'#004D5A',dot:'#00ACC1'},
+  {bg:'#E8F5E9',b:'#43A047',t:'#1B5E20',dot:'#43A047'},
+  {bg:'#FDE8E8',b:'#C0392B',t:'#6E1A11',dot:'#C0392B'},
+  {bg:'#FFF8E1',b:'#F59F00',t:'#7A5000',dot:'#F59F00'},
+];
+const DEPARTMENTS=[
+  {name:'Strategy & Foundations',icon:'🧭',items:['Idea','Audience','Niche','Value Proposition','Template','Keyword Research','Persona','Offer','Content Strategy','Analytics','Pitch Deck','Editorial Plan','A/B Test','Dashboard']},
+  {name:'Content & Media',icon:'✍️',items:['Content','Article','Blog','Script','Headline','Copywriting','Content Calendar','Video','Podcast','Webinar','AI Writing','Social Proof','Content Machine','Video Channel','Online Course','AI Content System']},
+  {name:'Brand & Design',icon:'🎨',items:['Website','Web Design','Wireframe','Hosting','Brand Guide','Brand Voice','Design System','Prototype','Brand Identity','Social Brand','Portfolio','Premium Brand','Personal Brand']},
+  {name:'Marketing & Traffic',icon:'📣',items:['Social Media','Landing Page','Lead Magnet','SEO','Rank Tracker','Ad Copy','Organic Traffic','Outreach','Opt-in Page','Lead Generation','Ad Campaign','Retargeting','Referral Program','Performance Marketing','Influence','Viral Growth']},
+  {name:'Email & Automation',icon:'📧',items:['Tool','Newsletter','CRM','Email Capture','Email List','Subscriber','Nurture Sequence','Automation','Workflow','Email Funnel','Marketing Stack','Launch Sequence','Marketing OS','AI Automation','Performance Report','Automated Webinar']},
+  {name:'Sales & Conversion',icon:'💰',items:['Sales Page','Sales Copy','Tripwire','Sales Funnel','Inbound Sales','Webinar Funnel','High-Ticket Offer','Conversion','Checkout Page','Discovery Call','Automated Sales','Sales Machine','Upsell']},
+  {name:'Products & Revenue',icon:'📦',items:['Authority Site','Product Design','Digital Product','Partnership','Thought Leadership','Product Launch','Revenue Engine','SaaS Product','Growth System','Passive Income','Recurring Revenue','Market Leader','Financial Freedom','Digital Empire','AI Marketing OS']},
+];
+// Map each item to its department index
+const ITEM_DEPT={};
+DEPARTMENTS.forEach((dept,i)=>dept.items.forEach(n=>{ITEM_DEPT[n]=i;}));
+let activeDept=0;
 const INFO={
   'Idea':{d:"The spark that starts every business — raw potential with no shape yet.\nWithout an idea there is nothing to build, sell, or share with the world."},
   'Audience':{d:"The people you exist to serve. Without them you are just talking to yourself.\nEvery smart business decision starts with understanding who these people are."},
@@ -1018,17 +1049,14 @@ if(saved&&discovered.size>STARTS.length){
   const pct=Math.round(discovered.size/TOTAL*100);
   document.getElementById('wb-bar-fill').style.width=pct+'%';
   document.getElementById('wb-pct').textContent=discovered.size+' / '+TOTAL+' — '+pct+'% complete';
-  // Tier breakdown
+  // Department breakdown
   const tiersEl=document.getElementById('wb-tiers');
-  const tierItems={};
-  Object.entries(ALL).forEach(([n,v])=>{if(!tierItems[v.tier])tierItems[v.tier]=[];tierItems[v.tier].push(n);});
-  for(let t=0;t<TIER_NAMES.length;t++){
-    const items=tierItems[t]||[];
-    const disc=items.filter(n=>discovered.has(n)).length;
+  DEPARTMENTS.forEach((dept,i)=>{
+    const disc=dept.items.filter(n=>discovered.has(n)).length;
     const row=document.createElement('div');row.className='wb-tier';
-    row.innerHTML=`<span class="wb-tier-dot" style="background:${PAL[t%PAL.length].dot}"></span><span class="wb-tier-name">${TIER_NAMES[t]}</span><span class="wb-tier-bar"><span class="wb-tier-bar-fill" style="width:${items.length?Math.round(disc/items.length*100):0}%;background:${PAL[t%PAL.length].dot}"></span></span><span class="wb-tier-count">${disc}/${items.length}</span>`;
+    row.innerHTML=`<span class="wb-tier-dot" style="background:${DEPT_PAL[i].dot}"></span><span class="wb-tier-name">${dept.icon} ${dept.name}</span><span class="wb-tier-bar"><span class="wb-tier-bar-fill" style="width:${dept.items.length?Math.round(disc/dept.items.length*100):0}%;background:${DEPT_PAL[i].dot}"></span></span><span class="wb-tier-count">${disc}/${dept.items.length}</span>`;
     tiersEl.appendChild(row);
-  }
+  });
   // Achievements: show unlocked ones, find next locked
   const achEl=document.getElementById('wb-achievements');
   const unlocked=ACHIEVEMENTS.filter(a=>unlockedAch.has(a.id));
@@ -1109,11 +1137,11 @@ function scrollToCard(name){
 function renderSlot(el,name){
   const label=el.id==='slot-a'?'Slot A':'Slot B';
   if(!name){el.innerHTML='<span class="slot-hint">tap a card</span>';el.classList.remove('filled');el.style.removeProperty('--slot-color');el.style.removeProperty('--slot-bg');el.setAttribute('aria-label',label+' — empty, tap a card to fill');return;}
-  const c=PAL[ALL[name].tier%PAL.length];
+  const c=DEPT_PAL[ITEM_DEPT[name]!=null?ITEM_DEPT[name]:0];
   el.style.setProperty('--slot-color',c.b);el.style.setProperty('--slot-bg',c.bg);el.classList.add('filled');
   el.setAttribute('aria-label',label+': '+name);
   const sid=el.id==='slot-a'?'a':'b';
-  el.innerHTML=`<span class="slot-clear" role="button" aria-label="Remove ${name.replace(/"/g,'&quot;')}" onclick="event.stopPropagation();clearSlot('${sid}')">✕</span><span class="slot-e" aria-hidden="true">${ALL[name].e}</span><span class="slot-n" style="color:${PAL[ALL[name].tier%PAL.length].t}">${name}</span>`;
+  el.innerHTML=`<span class="slot-clear" role="button" aria-label="Remove ${name.replace(/"/g,'&quot;')}" onclick="event.stopPropagation();clearSlot('${sid}')">✕</span><span class="slot-e" aria-hidden="true">${ALL[name].e}</span><span class="slot-n" style="color:${c.t}">${name}</span>`;
 }
 function renderResult(){
   if(!slotA||!slotB){resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';resultEl.onclick=null;resultName=null;resultState=null;return;}
@@ -1124,12 +1152,12 @@ function renderResult(){
     resultEl.setAttribute('aria-label','No match — tap to cancel');
     resultEl.onclick=cancelCombo;resultName=null;resultState='none';sndFail();announce('No match');
   } else if(discovered.has(res)){
-    const rc=PAL[ALL[res].tier%PAL.length];resultEl.style.setProperty('--res-bg',rc.bg);resultEl.style.setProperty('--res-b',rc.b);resultEl.style.setProperty('--res-t',rc.t);resultEl.style.setProperty('--res-badge',rc.b+'30');
+    const rc=DEPT_PAL[ITEM_DEPT[res]!=null?ITEM_DEPT[res]:0];resultEl.style.setProperty('--res-bg',rc.bg);resultEl.style.setProperty('--res-b',rc.b);resultEl.style.setProperty('--res-t',rc.t);resultEl.style.setProperty('--res-badge',rc.b+'30');
     resultEl.className='state-found';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to cancel</span>`;
     resultEl.setAttribute('aria-label',res+' — already found, tap to cancel');
     resultEl.onclick=cancelCombo;resultName=res;resultState='found';announce(res+' — already found');
   } else {
-    const rc=PAL[ALL[res].tier%PAL.length];resultEl.style.setProperty('--res-bg',rc.bg);resultEl.style.setProperty('--res-b',rc.b);resultEl.style.setProperty('--res-t',rc.t);resultEl.style.setProperty('--res-badge',rc.b+'30');
+    const rc=DEPT_PAL[ITEM_DEPT[res]!=null?ITEM_DEPT[res]:0];resultEl.style.setProperty('--res-bg',rc.bg);resultEl.style.setProperty('--res-b',rc.b);resultEl.style.setProperty('--res-t',rc.t);resultEl.style.setProperty('--res-badge',rc.b+'30');
     resultEl.className='state-new';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to add ✦</span>`;
     resultEl.setAttribute('aria-label','New discovery: '+res+' — tap to add');
     resultEl.onclick=addResult;resultName=res;resultState='new';announce('New discovery: '+res+'! Tap result to add.');
@@ -1163,6 +1191,7 @@ function addResult(){
   discovered.add(resultName);markAllRecipes(resultName);saveProgress();const added=resultName;
   slotA=null;slotB=null;resultName=null;resultState=null;
   renderSlot(slotAEl,null);renderSlot(slotBEl,null);renderResult();
+  if(ITEM_DEPT[added]!=null)activeDept=ITEM_DEPT[added];
   buildGrid();
   spawnParticleBurst(resultEl);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -1257,48 +1286,57 @@ document.addEventListener('touchstart',function(e){
   if(tooltip.contains(e.target)||e.target.classList.contains('ec-info'))return;
   forceHideTooltip();
 },{passive:true});
+function buildDeptTabs(){
+  const tabs=document.getElementById('dept-tabs');tabs.innerHTML='';
+  DEPARTMENTS.forEach((dept,i)=>{
+    const dp=DEPT_PAL[i];
+    const discCount=dept.items.filter(n=>discovered.has(n)).length;
+    const tab=document.createElement('button');tab.className='dept-tab'+(i===activeDept?' active':'');
+    tab.style.cssText=`--dept-color:${dp.b};--dept-bg:${dp.bg};--dept-text:${dp.t}`;
+    tab.innerHTML=`<span class="dept-tab-icon">${dept.icon}</span><span>${dept.name}</span><span class="dept-tab-count">${discCount}/${dept.items.length}</span>`;
+    tab.setAttribute('aria-label',dept.name+' — '+discCount+' of '+dept.items.length+' discovered');
+    tab.onclick=()=>{activeDept=i;buildGrid();};
+    tabs.appendChild(tab);
+  });
+}
 function buildGrid(){
   grid.innerHTML='';domCards.clear();
-  const dpTier={};discovered.forEach(n=>{if(ALL[n]){const t=ALL[n].tier;dpTier[t]=(dpTier[t]||0)+1;}});
-  const maxTier=Math.max(...Object.values(ALL).map(v=>v.tier));
-  for(let tier=0;tier<=maxTier;tier++){
-    const items=Object.entries(ALL).filter(([,v])=>v.tier===tier);if(!items.length)continue;
-    const p=PAL[tier%PAL.length];
-    const hdr=document.createElement('h2');hdr.className='tier-hdr';
-    hdr.innerHTML=`<div class="tier-name"><span class="tier-dot" style="background:${p.dot}" aria-hidden="true"></span><span>Tier ${tier} — ${TIER_NAMES[tier]||'Expert'}</span></div><div class="tier-prog">${dpTier[tier]||0} / ${items.length}</div>`;
-    grid.appendChild(hdr);
-    const row=document.createElement('div');row.className='cards-row';row.setAttribute('role','group');row.setAttribute('aria-label','Tier '+tier+' cards');
-    items.forEach(([name,info])=>{
-      if(discovered.has(name)){
-        const c=PAL[tier%PAL.length];
-        const isRarity=tier>=4;
-        const d=document.createElement('div');d.className='ec'+(isRarity?' rarity-high':'');
-        d.setAttribute('role','button');d.setAttribute('aria-label',name+(name===slotA||name===slotB?' (selected)':''));
-        d.style.cssText=`--card-bg:linear-gradient(135deg,${c.bg} 0%,${c.bg}dd 60%,${c.bg}88 100%);--sel-color:${c.b};--card-shadow:${c.b}30`;
-        const rarityHtml=isRarity?'<span class="rarity-ring" aria-hidden="true"></span><span class="rarity-fill" aria-hidden="true"></span>':'';
-        d.innerHTML=`${rarityHtml}<span class="ec-info" data-name="${name.replace(/"/g,'&quot;')}" role="button" aria-label="Info about ${name.replace(/"/g,'&quot;')}">i</span><span class="ec-e" aria-hidden="true">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
-        if(name===slotA||name===slotB)d.classList.add('selected');
-        const isBlocked=slotA&&!slotB&&name!==slotA&&!hasReaction(slotA,name);
-        if(isBlocked){d.classList.add('no-react');d.setAttribute('aria-disabled','true');}
-        else{
-          if(slotA&&slotB&&name!==slotA&&name!==slotB)d.classList.add('dimmed');
-          if(slotA&&!slotB&&name!==slotA){const ind=getIndicator(slotA,name);if(ind)applyIndicator(d,ind);}
-        }
-        d.addEventListener('click',(e)=>{if(e.target.classList.contains('ec-info'))return;tapCard(name);});
-        const infoIcon=d.querySelector('.ec-info');
-        const isTouch='ontouchstart' in window;
-        infoIcon.addEventListener('click',(e)=>{e.stopPropagation();if(isTouch){cancelHide();showTooltip(name,infoIcon);}else{tapCard(name);}});
-        infoIcon.addEventListener('mouseenter',(e)=>{e.stopPropagation();cancelHide();showTooltip(name,infoIcon);});
-        infoIcon.addEventListener('mouseleave',(e)=>{e.stopPropagation();scheduleHide();});
-        row.appendChild(d);domCards.set(name,d);
-      } else {
-        const lock=document.createElement('div');lock.className='ec-lock';lock.setAttribute('aria-label','Undiscovered element');
-        lock.innerHTML='<div class="ec-lock-e">?</div><div class="ec-lock-n">???</div>';
-        row.appendChild(lock);
+  buildDeptTabs();
+  const dept=DEPARTMENTS[activeDept];
+  const dp=DEPT_PAL[activeDept];
+  const row=document.createElement('div');row.className='cards-row';row.setAttribute('role','group');row.setAttribute('aria-label',dept.name+' cards');
+  dept.items.forEach(name=>{
+    const info=ALL[name];if(!info)return;
+    const tier=info.tier;
+    if(discovered.has(name)){
+      const c=dp;
+      const isRarity=tier>=4;
+      const d=document.createElement('div');d.className='ec'+(isRarity?' rarity-high':'');
+      d.setAttribute('role','button');d.setAttribute('aria-label',name+(name===slotA||name===slotB?' (selected)':''));
+      d.style.cssText=`--card-bg:linear-gradient(135deg,${c.bg} 0%,${c.bg}dd 60%,${c.bg}88 100%);--sel-color:${c.b};--card-shadow:${c.b}30`;
+      const rarityHtml=isRarity?'<span class="rarity-ring" aria-hidden="true"></span><span class="rarity-fill" aria-hidden="true"></span>':'';
+      d.innerHTML=`${rarityHtml}<span class="ec-info" data-name="${name.replace(/"/g,'&quot;')}" role="button" aria-label="Info about ${name.replace(/"/g,'&quot;')}">i</span><span class="ec-e" aria-hidden="true">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
+      if(name===slotA||name===slotB)d.classList.add('selected');
+      const isBlocked=slotA&&!slotB&&name!==slotA&&!hasReaction(slotA,name);
+      if(isBlocked){d.classList.add('no-react');d.setAttribute('aria-disabled','true');}
+      else{
+        if(slotA&&slotB&&name!==slotA&&name!==slotB)d.classList.add('dimmed');
+        if(slotA&&!slotB&&name!==slotA){const ind=getIndicator(slotA,name);if(ind)applyIndicator(d,ind);}
       }
-    });
-    grid.appendChild(row);
-  }
+      d.addEventListener('click',(e)=>{if(e.target.classList.contains('ec-info'))return;tapCard(name);});
+      const infoIcon=d.querySelector('.ec-info');
+      const isTouch='ontouchstart' in window;
+      infoIcon.addEventListener('click',(e)=>{e.stopPropagation();if(isTouch){cancelHide();showTooltip(name,infoIcon);}else{tapCard(name);}});
+      infoIcon.addEventListener('mouseenter',(e)=>{e.stopPropagation();cancelHide();showTooltip(name,infoIcon);});
+      infoIcon.addEventListener('mouseleave',(e)=>{e.stopPropagation();scheduleHide();});
+      row.appendChild(d);domCards.set(name,d);
+    } else {
+      const lock=document.createElement('div');lock.className='ec-lock';lock.setAttribute('aria-label','Undiscovered element');
+      lock.innerHTML='<div class="ec-lock-e">?</div><div class="ec-lock-n">???</div>';
+      row.appendChild(lock);
+    }
+  });
+  grid.appendChild(row);
   cntEl.textContent=discovered.size+' / '+TOTAL+' found';
 }
 grid.addEventListener('click',e=>{if(!e.target.closest('.ec'))closeHint();});
@@ -2111,21 +2149,20 @@ function updateVoiceForLang(){
 const statsEl=document.getElementById('stats');
 const statsBody=document.getElementById('stats-body');
 function openStats(){
-  const maxTier=Math.max(...Object.values(ALL).map(v=>v.tier));
   const totalItems=Object.keys(ALL).length;
   const totalRecipes=Object.keys(R).length;
   const ownedCount=owned.size;
   const partialCount=partial.size;
   const discoveredCount=discovered.size;
-  // Build tier data
-  const tiers=[];
-  for(let t=0;t<=maxTier;t++){
-    const items=Object.entries(ALL).filter(([,v])=>v.tier===t);
+  // Build department data
+  const depts=[];
+  DEPARTMENTS.forEach((dept,i)=>{
+    const items=dept.items.map(n=>[n,ALL[n]]).filter(([,v])=>v);
     const disc=items.filter(([n])=>discovered.has(n));
     const own=items.filter(([n])=>owned.has(n));
     const part=items.filter(([n])=>partial.has(n));
-    tiers.push({tier:t,name:TIER_NAMES[t]||'Expert',items,disc,own,part,color:PAL[t%PAL.length]});
-  }
+    depts.push({idx:i,name:dept.name,icon:dept.icon,items,disc,own,part,color:DEPT_PAL[i]});
+  });
   let html='';
   // Achievements
   html+='<div class="stats-ach-section"><div class="stats-ach-title">Achievements — '+unlockedAch.size+' / '+ACHIEVEMENTS.length+'</div>';
@@ -2151,12 +2188,12 @@ function openStats(){
   html+='<div class="stats-legend-item"><div class="stats-legend-dot" style="background:#fff;border:1px dashed #ccc"></div>Not yet found</div>';
   html+='<div class="stats-legend-item" style="color:#bbb;font-style:italic">tap items to update</div>';
   html+='</div>';
-  // Per-tier breakdown
-  tiers.forEach(t=>{
+  // Per-department breakdown
+  depts.forEach(t=>{
     const discPct=t.items.length?Math.round((t.disc.length/t.items.length)*100):0;
     const ownPct=t.items.length?Math.round((t.own.length/t.items.length)*100):0;
     html+=`<div class="stats-biz-tier">`;
-    html+=`<div class="stats-biz-tier-hdr"><span class="tier-dot" style="background:${t.color.dot}"></span>Tier ${t.tier} — ${t.name}<div class="stats-tier-counts"><span>${t.disc.length}/${t.items.length} found</span>${t.part.length?`<span style="color:#c07b2a">${t.part.length} partial</span>`:''}<span style="color:#5a9a3c">${t.own.length} owned</span></div></div>`;
+    html+=`<div class="stats-biz-tier-hdr"><span class="tier-dot" style="background:${t.color.dot}"></span>${t.icon} ${t.name}<div class="stats-tier-counts"><span>${t.disc.length}/${t.items.length} found</span>${t.part.length?`<span style="color:#c07b2a">${t.part.length} partial</span>`:''}<span style="color:#5a9a3c">${t.own.length} owned</span></div></div>`;
     html+=`<div class="stats-bar"><div class="stats-bar-fill" style="width:${discPct}%;background:${t.color.dot}"></div><div class="stats-bar-own" style="width:${ownPct}%"></div></div>`;
     html+=`<div class="stats-biz-items">`;
     t.items.forEach(([n])=>{
