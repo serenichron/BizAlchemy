@@ -914,7 +914,11 @@ function loadProgress(){
 }
 const SUPA_URL='https://srijjrsayrhkdoqjpmjf.supabase.co';
 const SUPA_KEY='sb_publishable_-YZQ80VSkJp-ogAQQQ3P4Q_xVgmeN43';
-function genSessionId(){return crypto.randomUUID();}
+function genSessionId(){
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let id='';for(let i=0;i<8;i++)id+=chars.charAt(Math.floor(Math.random()*chars.length));
+  return id;
+}
 function supaFetch(path,method,body,prefer){
   const h={'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
   if(prefer)h['Prefer']=prefer;
