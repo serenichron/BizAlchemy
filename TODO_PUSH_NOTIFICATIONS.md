@@ -96,11 +96,13 @@ Web Push in Deno requires manual crypto: ECDH key exchange, HKDF derivation, AES
 
 ## 7. Notification Hook Texts (All 103 Items)
 
+**Storage:** These texts live in the `push_hook_texts` Supabase table (columns: `item`, `title`, `body`). The edge function fetches them at runtime — no hardcoded texts in the function code.
+
 Format: `Item` → **Title** / Body
 
 ### Tier 0 — Raw Ingredients (4)
 - **Idea** → "Your next big move starts here" / One raw spark is all it takes. Open BizAlchemy and see what your idea becomes.
-- **Audience** → "Who exactly are you building for?" / A business without a clear audience is shouting into the void. Find yours.
+- **Audience** → "Who exactly are you building for?" / A business without a clear audience is shouting into the void. Come find yours in BizAlchemy.
 - **Content** → "Your silent salesperson is waiting" / Content sells while you sleep — but only if you create it. Come build yours.
 - **Tool** → "The right tool changes everything" / Stop doing things the hard way. One combination could unlock your next level.
 
@@ -118,102 +120,102 @@ Format: `Item` → **Title** / Body
 - **Keyword Research** → "Your customers are Googling this right now" / The exact words they type are gold. Come discover keyword research.
 - **Landing Page** → "One page. One goal. Maximum conversions." / The most focused page on your site is often the most profitable. Build it.
 - **Lead Magnet** → "What would make someone give you their email?" / A lead magnet so good they can't say no. Come discover the strategy.
-- **Persona** → "Do you really know your customer?" / Their fears, goals, habits — when you know them deeply, selling becomes helping.
+- **Persona** → "Do you really know your customer?" / Their fears, goals, habits — when you know them deeply, selling becomes helping. Discover Persona.
 - **Offer** → "Nobody buys confused" / The right offer makes the right person say yes instantly. Come craft yours.
-- **Blog** → "Scattered content is forgotten content" / A blog compounds over time. Give your writing a permanent home.
+- **Blog** → "Scattered content is forgotten content" / A blog compounds over time. Come give your writing a permanent home.
 - **Content Strategy** → "Winging it with content? That shows." / A plan for what you create, for whom, and why. Discover the system.
-- **Content Calendar** → "When was your last consistent week?" / Consistency beats inspiration. A calendar keeps you publishing.
-- **Copywriting** → "Words that make people reach for their wallet" / Not just writing — writing with intent. Every word earns its place.
-- **Email Capture** → "Your visitors are leaving forever" / Without email capture, every visitor is a lost relationship. Fix that today.
+- **Content Calendar** → "When was your last consistent week?" / Consistency beats inspiration. A calendar keeps you publishing. Come discover it.
+- **Copywriting** → "Words that make people reach for their wallet" / Not just writing — writing with intent. Every word earns its place. Come unlock it.
+- **Email Capture** → "Your visitors are leaving forever" / Without email capture, every visitor is a lost relationship. Come discover how to fix that.
 - **Analytics** → "Are you guessing or do you know?" / Stop hoping. Start measuring. Discover what analytics reveals.
-- **Wireframe** → "Beautiful sites that don't convert share one flaw" / They skipped the wireframe. Structure first, beauty later.
-- **Email List** → "Social followers vanish. This doesn't." / Your email list is the one asset no platform can take away.
-- **Nurture Sequence** → "Your new subscribers are forgetting you" / A nurture sequence turns cold signups into warm prospects — on autopilot.
-- **Automation** → "You're doing manually what a machine could do" / Automation is not a shortcut — it's an accelerator for what already works.
-- **Web Design** → "Visitors judge you in 3 seconds" / Design isn't decoration. It's the trust signal that wins or loses the deal.
-- **Headline** → "Nobody reads line two if line one fails" / The headline is the most important copy you'll ever write. Master it.
+- **Wireframe** → "Beautiful sites that don't convert share one flaw" / They skipped the wireframe. Structure first, beauty later. Come discover it.
+- **Email List** → "Social followers vanish. This doesn't." / Your email list is the one asset no platform can take away. Come unlock it.
+- **Nurture Sequence** → "Your new subscribers are forgetting you" / A nurture sequence turns cold signups into warm prospects — on autopilot. Discover it in BizAlchemy.
+- **Automation** → "You're doing manually what a machine could do" / Automation is not a shortcut — it's an accelerator for what already works. Come discover it.
+- **Web Design** → "Visitors judge you in 3 seconds" / Design isn't decoration. It's the trust signal that wins or loses the deal. Come unlock it.
+- **Headline** → "Nobody reads line two if line one fails" / The headline is the most important copy you'll ever write. Come master it in BizAlchemy.
 - **Pitch Deck** → "Can you win the room in 10 minutes?" / A pitch deck opens doors to clients, partners, and investors. Build yours.
-- **Subscriber** → "Someone chose to hear from you. Now what?" / Unlike followers, subscribers gave you real permission. Don't waste it.
-- **Script** → "Why do your presentations feel unrehearsed?" / A great script makes you sound effortless. That's the paradox.
-- **Hosting** → "Your website is only as good as its uptime" / Invisible but essential — without hosting, your site is just a file.
-- **Workflow** → "The third time you do anything manually is a signal" / It's time to build a workflow. Document it once, use it forever.
+- **Subscriber** → "Someone chose to hear from you. Now what?" / Unlike followers, subscribers gave you real permission. Don't waste it. Come discover Subscriber.
+- **Script** → "Why do your presentations feel unrehearsed?" / A great script makes you sound effortless. That's the paradox. Come unlock it.
+- **Hosting** → "Your website is only as good as its uptime" / Invisible but essential — without hosting, your site is just a file. Come discover it.
+- **Workflow** → "The third time you do anything manually is a signal" / It's time to build a workflow. Document it once, use it forever. Come unlock it in BizAlchemy.
 
 ### Tier 3 — Marketing Channels (25)
-- **Brand Guide** → "Your brand looks different on every channel" / Inconsistency erodes trust. A brand guide fixes it in one document.
+- **Brand Guide** → "Your brand looks different on every channel" / Inconsistency erodes trust. A brand guide fixes it in one document. Come discover it.
 - **SEO** → "Your competitors rank. You don't. Why?" / SEO is the compound interest of marketing. Start investing today.
 - **Rank Tracker** → "Are you on page 1 or page 10?" / You can't improve what you don't measure. Track your search rankings.
-- **Sales Page** → "Your best salesperson should work 24/7" / A sales page handles objections and closes deals while you sleep.
+- **Sales Page** → "Your best salesperson should work 24/7" / A sales page handles objections and closes deals while you sleep. Come unlock it.
 - **Lead Generation** → "Where is tomorrow's customer coming from?" / Without a lead gen system, you're relying on luck. Build the engine.
-- **Brand Voice** → "Do your emails sound like a different company wrote them?" / Brand voice is discovered, not invented. You have enough data now.
-- **Design System** → "Every new page shouldn't be built from scratch" / Reusable components keep your brand consistent as you scale.
-- **Prototype** → "Building before testing is the most expensive mistake" / Change a prototype in minutes. Change a product in weeks. Choose wisely.
-- **Editorial Plan** → "What are you publishing next month? No idea?" / An editorial plan means no more last-minute scrambles.
+- **Brand Voice** → "Do your emails sound like a different company wrote them?" / Brand voice is discovered, not invented. You have enough data now. Come unlock it in BizAlchemy.
+- **Design System** → "Every new page shouldn't be built from scratch" / Reusable components keep your brand consistent as you scale. Come discover Design System.
+- **Prototype** → "Building before testing is the most expensive mistake" / Change a prototype in minutes. Change a product in weeks. Come discover Prototype.
+- **Editorial Plan** → "What are you publishing next month? No idea?" / An editorial plan means no more last-minute scrambles. Come unlock it.
 - **Email Funnel** → "Your list is growing but sales aren't?" / The problem is almost always a missing email funnel. Fix the sequence.
 - **Marketing Stack** → "Your tools don't talk to each other, do they?" / Connected tools beat disconnected apps. Discover the marketing stack.
-- **Webinar** → "30 minutes of attention beats 30 seconds of scrolling" / Teach live, sell naturally. The highest-converting format exists.
+- **Webinar** → "30 minutes of attention beats 30 seconds of scrolling" / Teach live, sell naturally. The highest-converting format exists. Come discover it.
 - **Video** → "The most engaging format and you're not using it" / Face, voice, story. Recorded once, watched forever. Discover video.
-- **Ad Copy** → "Your ad has 3 seconds to earn the click" / Short, sharp, written for one person in one moment. Master ad copy.
+- **Ad Copy** → "Your ad has 3 seconds to earn the click" / Short, sharp, written for one person in one moment. Come master ad copy in BizAlchemy.
 - **Dashboard** → "Is your business data in 7 different tabs?" / One screen, everything that matters. Discover the dashboard concept.
 - **Brand Identity** → "A logo is not a brand" / The complete visual and verbal expression of who you are. Go deeper.
-- **Opt-in Page** → "Your homepage is not an opt-in page" / One page, one irresistible reason to subscribe. Simple and powerful.
+- **Opt-in Page** → "Your homepage is not an opt-in page" / One page, one irresistible reason to subscribe. Simple and powerful. Come unlock it.
 - **Sales Copy** → "Every sentence should move them closer to yes" / Persuasive writing where each word earns the close. Discover it.
-- **Organic Traffic** → "Paying for every visitor? There's another way." / SEO meets content strategy — the compound interest of digital marketing.
-- **Outreach** → "Waiting to be discovered is not a strategy" / Reach out before they find you. Control your pipeline proactively.
+- **Organic Traffic** → "Paying for every visitor? There's another way." / SEO meets content strategy — the compound interest of digital marketing. Come discover it.
+- **Outreach** → "Waiting to be discovered is not a strategy" / Reach out before they find you. Control your pipeline proactively. Come unlock Outreach.
 - **Podcast** → "Build trust through their earbuds" / Authority-building during commutes and gym sessions. Discover podcasting.
-- **Social Proof** → "They don't believe you. They believe your customers." / Testimonials, reviews, case studies — the most powerful conversion tool.
+- **Social Proof** → "They don't believe you. They believe your customers." / Testimonials, reviews, case studies — the most powerful conversion tool. Come discover it.
 - **Tripwire** → "The tiny offer that separates browsers from buyers" / A low price point that changes the entire relationship. Discover it.
-- **A/B Test** → "You're guessing which version works better" / Two versions, one winner. The highest-leverage marketing habit.
+- **A/B Test** → "You're guessing which version works better" / Two versions, one winner. The highest-leverage marketing habit. Come unlock it in BizAlchemy.
 - **AI Writing** → "Writer's block is now optional" / AI-accelerated content — no slow days, no blank pages. Discover it.
 
 ### Tier 4 — Growth Strategy (23)
-- **Sales Funnel** → "From stranger to customer in how many steps?" / Every step intentionally designed. That's what a sales funnel does.
+- **Sales Funnel** → "From stranger to customer in how many steps?" / Every step intentionally designed. That's what a sales funnel does. Come discover it.
 - **Launch Sequence** → "Opening day with zero anticipation? That's a mistake." / Build desire before the cart opens. Discover the launch sequence.
-- **Inbound Sales** → "What if buyers came to you already warm?" / No cold calls needed. They arrive educated and ready.
+- **Inbound Sales** → "What if buyers came to you already warm?" / No cold calls needed. They arrive educated and ready. Come unlock Inbound Sales.
 - **Webinar Funnel** → "Registration to sale — fully automated" / Education followed by a natural offer. The complete system awaits.
-- **High-Ticket Offer** → "Undercharging is not humility. It's a mistake." / Premium pricing backed by proof and positioning. You're ready.
-- **Authority Site** → "Are you the go-to in your niche, or just another option?" / So comprehensive, people reference you automatically.
-- **Product Design** → "An idea is not a product" / Where function meets form — from concept to something people pay for.
-- **Marketing OS** → "Your marketing still requires you every day?" / All tools connected, all processes flowing. Nothing manual anymore.
-- **Conversion** → "Traffic means nothing without this" / The moment they say yes. The most important metric in your business.
-- **Social Brand** → "A brand people follow like a person" / Not a logo posting occasionally — a living personality on social media.
-- **Content Machine** → "Running out of content ideas every week?" / A system that produces reliably without burning you out.
-- **Performance Report** → "How much of your marketing budget is wasted?" / Raw numbers turned into clear decisions. No more vanity metrics.
-- **Ad Campaign** → "Paid attention, aimed precisely" / Reach new audiences at exactly the right moment and place.
-- **Video Channel** → "A channel that grows more valuable over time" / Compounding audience — the longer it exists, the more it earns.
-- **Checkout Page** → "They added to cart but never paid?" / The final step where intent becomes revenue. Optimize it.
-- **Retargeting** → "97% of visitors leave without buying. Then what?" / A warmer second chance for people who nearly said yes.
-- **AI Automation** → "Your workflows are dumb. They don't have to be." / AI-enhanced marketing stack running intelligently around the clock.
-- **Discovery Call** → "Are you pitching before you understand?" / Understand their situation first. Recommend second. Close naturally.
-- **Online Course** → "Your expertise has a shelf life. Package it." / Your knowledge, available at scale without your daily presence.
-- **Referral Program** → "Your happiest customers aren't recruiting for you?" / Happy customers are your most credible marketers. Systematize it.
-- **Digital Product** → "Build once. Sell forever. Zero fulfilment." / Templates, toolkits, guides — instant value with no shipping costs.
+- **High-Ticket Offer** → "Undercharging is not humility. It's a mistake." / Premium pricing backed by proof and positioning. You're ready. Come discover it in BizAlchemy.
+- **Authority Site** → "Are you the go-to in your niche, or just another option?" / So comprehensive, people reference you automatically. Come unlock Authority Site.
+- **Product Design** → "An idea is not a product" / Where function meets form — from concept to something people pay for. Come discover it.
+- **Marketing OS** → "Your marketing still requires you every day?" / All tools connected, all processes flowing. Nothing manual anymore. Come unlock it.
+- **Conversion** → "Traffic means nothing without this" / The moment they say yes. The most important metric in your business. Come discover it.
+- **Social Brand** → "A brand people follow like a person" / Not a logo posting occasionally — a living personality on social media. Come unlock it.
+- **Content Machine** → "Running out of content ideas every week?" / A system that produces reliably without burning you out. Come discover Content Machine.
+- **Performance Report** → "How much of your marketing budget is wasted?" / Raw numbers turned into clear decisions. No more vanity metrics. Come unlock it in BizAlchemy.
+- **Ad Campaign** → "Paid attention, aimed precisely" / Reach new audiences at exactly the right moment and place. Come discover it.
+- **Video Channel** → "A channel that grows more valuable over time" / Compounding audience — the longer it exists, the more it earns. Come unlock it.
+- **Checkout Page** → "They added to cart but never paid?" / The final step where intent becomes revenue. Come discover Checkout Page in BizAlchemy.
+- **Retargeting** → "97% of visitors leave without buying. Then what?" / A warmer second chance for people who nearly said yes. Come unlock Retargeting.
+- **AI Automation** → "Your workflows are dumb. They don't have to be." / AI-enhanced marketing stack running intelligently around the clock. Come discover it.
+- **Discovery Call** → "Are you pitching before you understand?" / Understand their situation first. Recommend second. Close naturally. Come unlock it.
+- **Online Course** → "Your expertise has a shelf life. Package it." / Your knowledge, available at scale without your daily presence. Come discover it in BizAlchemy.
+- **Referral Program** → "Your happiest customers aren't recruiting for you?" / Happy customers are your most credible marketers. Come discover how to systematize it.
+- **Digital Product** → "Build once. Sell forever. Zero fulfilment." / Templates, toolkits, guides — instant value with no shipping costs. Come unlock it.
 - **Partnership** → "Growing alone is the slow way" / Strategic relationships where both audiences benefit. Discover partnerships.
-- **Portfolio** → "Talking about your work? Show it instead." / Your best work, curated to demonstrate real capability.
+- **Portfolio** → "Talking about your work? Show it instead." / Your best work, curated to demonstrate real capability. Come discover Portfolio.
 
 ### Tier 5 — Advanced Systems (13)
-- **Automated Sales** → "Revenue while you sleep — not a fantasy" / Your sales system generating income without your daily involvement.
-- **Thought Leadership** → "Are people quoting you yet?" / The earned status where others reference and recommend you.
-- **Product Launch** → "Maximum impact on day one — by design" / Every element aligned for the strongest possible opening.
-- **Automated Webinar** → "Your best presentation, running without you" / Teach and sell around the clock. No stage fright required.
-- **Revenue Engine** → "Predictable income or rollercoaster months?" / Revenue that arrives consistently without heroic effort.
-- **Premium Brand** → "Still competing on price? There's a better way." / A brand so strong, no one pushes back on your pricing.
-- **Influence** → "Reach without trust is just noise" / Genuine, lasting influence that shapes what people believe.
-- **Growth System** → "Your growth is accidental. It shouldn't be." / Acquisition and retention — deliberate, documented, repeatable.
+- **Automated Sales** → "Revenue while you sleep — not a fantasy" / Your sales system generating income without your daily involvement. Come unlock it in BizAlchemy.
+- **Thought Leadership** → "Are people quoting you yet?" / The earned status where others reference and recommend you. Come discover it.
+- **Product Launch** → "Maximum impact on day one — by design" / Every element aligned for the strongest possible opening. Come unlock Product Launch.
+- **Automated Webinar** → "Your best presentation, running without you" / Teach and sell around the clock. No stage fright required. Come discover it.
+- **Revenue Engine** → "Predictable income or rollercoaster months?" / Revenue that arrives consistently without heroic effort. Come unlock it in BizAlchemy.
+- **Premium Brand** → "Still competing on price? There's a better way." / A brand so strong, no one pushes back on your pricing. Come discover it.
+- **Influence** → "Reach without trust is just noise" / Genuine, lasting influence that shapes what people believe. Come unlock it.
+- **Growth System** → "Your growth is accidental. It shouldn't be." / Acquisition and retention — deliberate, documented, repeatable. Come discover it in BizAlchemy.
 - **Sales Machine** → "Sales only happen when you're hustling?" / Consistent generation at any hour of any day. Discover the machine.
-- **SaaS Product** → "Monthly recurring revenue from software" / Built once, sold to thousands. The recurring revenue dream.
-- **Performance Marketing** → "Every euro tracked, every cent optimized" / Data-driven growth with nothing left to chance.
-- **AI Content System** → "Content at scale is now a tech question, not a time one" / A self-sustaining engine that makes you the publisher.
+- **SaaS Product** → "Monthly recurring revenue from software" / Built once, sold to thousands. The recurring revenue dream. Come unlock it.
+- **Performance Marketing** → "Every euro tracked, every cent optimized" / Data-driven growth with nothing left to chance. Come discover it in BizAlchemy.
+- **AI Content System** → "Content at scale is now a tech question, not a time one" / A self-sustaining engine that makes you the publisher. Come unlock it.
 - **Upsell** → "Every sale could be worth more" / Each transaction is an opportunity to grow its value. Discover upsells.
 
 ### Tier 6 — Endgame (8)
 - **Passive Income** → "Money that arrives while you rest" / Not a fantasy — a system built step by step. You're almost there.
-- **Recurring Revenue** → "One-time sales are exhausting. This isn't." / Revenue that renews itself. The most stable business model.
-- **Viral Growth** → "What if your customers brought more customers?" / Word-of-mouth engineered into the experience. Growth that multiplies.
-- **Personal Brand** → "Your name should open doors" / You are the brand. Reputation as your superpower.
-- **Market Leader** → "Stop competing. Start leading." / You're not in the race anymore — you own the category.
+- **Recurring Revenue** → "One-time sales are exhausting. This isn't." / Revenue that renews itself. The most stable business model. Come discover it.
+- **Viral Growth** → "What if your customers brought more customers?" / Word-of-mouth engineered into the experience. Growth that multiplies. Come unlock it.
+- **Personal Brand** → "Your name should open doors" / You are the brand. Reputation as your superpower. Come discover it in BizAlchemy.
+- **Market Leader** → "Stop competing. Start leading." / You're not in the race anymore — you own the category. Come unlock it.
 - **Financial Freedom** → "The reason you started all of this" / Income exceeds needs, permanently. Discover the endgame.
 - **Digital Empire** → "Beyond a single business — a legacy" / Influence and income across channels. The final discovery awaits.
-- **AI Marketing OS** → "The future of digital business is here" / Every funnel, email, ad, and content piece orchestrated by intelligence.
+- **AI Marketing OS** → "The future of digital business is here" / Every funnel, email, ad, and content piece orchestrated by intelligence. Come discover it.
 
 ### Inactive User Variant (7+ days)
 Override the title with: **"Your marketing empire misses you"**
