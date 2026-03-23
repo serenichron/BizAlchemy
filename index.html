@@ -5,11 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="referrer" content="no-referrer">
 <title>BizAlchemy</title>
-<meta name="description" content="A learning game for small &amp; medium business entrepreneurs. Combine 102 business concepts — start with 4 raw ideas and build your way to a Digital Empire.">
+<meta name="description" content="A learning game for small &amp; medium business entrepreneurs. Combine 103 business concepts — start with 4 raw ideas and build your way to a Digital Empire.">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1D9E75">
+<meta property="og:image" content="icons/icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:16px 8px}
@@ -449,7 +452,7 @@ h1,h2{margin:0;padding:0}
       </div>
       <!-- New player content (hidden for returning players) -->
       <div id="intro-new">
-        <div id="intro-hook">A game for <strong>small &amp; medium business entrepreneurs</strong> — new or experienced. <strong>102 digital marketing concepts</strong> are hidden inside. Start with 4 raw ideas and combine your way to a <strong>Digital Empire</strong>.</div>
+        <div id="intro-hook">A game for <strong>small &amp; medium business entrepreneurs</strong> — new or experienced. <strong>103 digital marketing concepts</strong> are hidden inside. Start with 4 raw ideas and combine your way to a <strong>Digital Empire</strong>.</div>
         <div id="intro-offline-note"></div>
       </div>
       <!-- Returning player content (hidden for new players) -->
@@ -562,7 +565,7 @@ h1,h2{margin:0;padding:0}
     <div id="menu-wrap">
       <button id="menu-btn" class="hdr-btn" onclick="toggleMenu()" aria-label="Menu">☰</button>
       <div id="menu-dropdown">
-        <div id="menu-session"><span id="menu-session-id" onclick="copySessionId(this,event)"></span><span id="menu-sync"><span class="sync-dot sync-pending" id="menu-sync-dot"></span><span id="menu-sync-label"></span></span></div>
+        <div id="menu-session"><span id="menu-session-id" onclick="copySessionId(this,event)"></span></div>
         <div class="menu-divider"></div>
         <button class="menu-item" onclick="loadSession()">🔄 Load session</button>
         <button class="menu-item" id="menu-install" style="display:none" onclick="installApp()">📲 Install app</button>

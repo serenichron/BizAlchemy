@@ -1,4 +1,4 @@
-const CACHE='bizalchemy-v11';
+const CACHE='bizalchemy-v12';
 const PRECACHE=[
   './',
   './index.html',
@@ -24,6 +24,8 @@ self.addEventListener('activate',e=>{
 self.addEventListener('fetch',e=>{
   const req=e.request;
   if(req.method!=='GET')return;
+  // Skip caching for API requests (Supabase, etc.)
+  if(req.url.includes('supabase.co'))return;
   // For CDN resources: cache-first
   // For own resources: network-first with cache fallback
   if(req.url.startsWith(self.location.origin)){
