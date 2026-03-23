@@ -980,7 +980,7 @@ function updateSyncIndicator(){
   el.className='sync-dot sync-'+syncStatus;
   el.title=syncStatus==='synced'?'Synced to cloud':syncStatus==='failed'?'Sync failed':syncStatus==='offline'?'Offline — will sync later':'Syncing…';
   const lbl=document.getElementById('menu-sync-label');
-  if(lbl){const syncLabels={synced:'synced',pending:'syncing\u2026',failed:'not synced',offline:'offline'};const ls=formatLastSync();lbl.textContent=(syncLabels[syncStatus]||'')+(syncStatus==='offline'&&ls?' \u00B7 '+ls:'');}
+  if(lbl){const syncLabels={synced:'online',pending:'syncing\u2026',failed:'not synced',offline:'offline'};const ls=formatLastSync();lbl.textContent=(syncLabels[syncStatus]||'')+(syncStatus==='offline'&&ls?' \u00B7 '+ls:'');}
 }
 window.addEventListener('online',()=>{
   syncStatus='pending';updateSyncIndicator();
@@ -2428,10 +2428,10 @@ function openStats(){
   });
   let html='';
   // Session info
-  const syncLabels={synced:'Synced',pending:'Syncing…',failed:'Not synced',offline:'Offline'};
+  const syncLabels={synced:'Online',pending:'Syncing…',failed:'Not synced',offline:'Offline'};
   const syncLabel=syncLabels[syncStatus]||'Unknown';
   const syncTime=lastSyncTime?lastSyncTime.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
-  html+=`<div class="stats-session-info"><div>Session <span class="stats-session-id" onclick="copySessionId(this,event)">${sessionId}</span><span class="copy-hint">tap to copy</span></div><div class="stats-sync-badge ${syncStatus}"><span class="sync-dot sync-${syncStatus}"></span>${syncLabel}${syncStatus==='synced'&&syncTime?' · '+syncTime:''}</div></div>`;
+  html+=`<div class="stats-session-info"><div>Session <span class="stats-session-id" onclick="copySessionId(this,event)">${sessionId}</span><span class="copy-hint">tap to copy</span></div><div class="stats-sync-badge ${syncStatus}"><span class="sync-dot sync-${syncStatus}"></span>${syncLabel}${syncStatus==='offline'&&syncTime?' · '+syncTime:''}</div></div>`;
   // Achievements
   html+='<div class="stats-ach-section"><div class="stats-ach-title">Achievements \u2014 '+unlockedAch.size+' / '+ACHIEVEMENTS.length+'</div>';
   html+='<div class="stats-ach-grid">';
