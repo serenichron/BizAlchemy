@@ -1993,7 +1993,7 @@ function buildLangDropdown(){
   let html='<button class="si-lang-opt'+(activeLang===null?' active':'')+'" data-lang="en"><span class="lang-flag">🇬🇧</span>English</button>';
   function addLang(l){
     const cls='si-lang-opt'+(activeLang===l.code?' active':'');
-    html+=`<button class="${cls}" data-lang="${l.code}"><span class="lang-flag">${l.flag}</span>${l.name}</button>`;
+    html+=`<button class="${cls}" data-lang="${l.code}"><span class="lang-flag">${l.flag}</span>${l.name} <span style="opacity:0.45;font-size:11px">(auto)</span></button>`;
   }
   MAIN_LANGS.forEach(addLang);
   html+='<div class="si-lang-divider"></div>';
@@ -2029,7 +2029,7 @@ langDropdown.addEventListener('click',function(e){
   }else{
     const lObj=LANGS.find(l=>l.code===lang);
     activeLang=lang;
-    if(lObj)translateBtn.innerHTML=lObj.flag+' '+lObj.name;
+    if(lObj)translateBtn.innerHTML=lObj.flag+' '+lObj.name+' <span style="opacity:0.55;font-size:10px">(auto)</span>';
     applyTranslation(currentSlideInName,lang);
   }
 });
@@ -2130,7 +2130,7 @@ function updateLangBadge(){
   const badge=slideinBody.querySelector('.si-lang-badge');
   if(!badge)return;
   const langObj=activeLang?LANGS.find(l=>l.code===activeLang):null;
-  badge.innerHTML=langObj?`${langObj.flag} ${langObj.name}`:'🇬🇧 English';
+  badge.innerHTML=langObj?`${langObj.flag} ${langObj.name} (auto)`:'🇬🇧 English';
 }
 function restoreOriginalDesc(){
   if(originalDescHTML===null)return;
