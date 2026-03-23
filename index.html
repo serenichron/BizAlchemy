@@ -1005,7 +1005,7 @@ function updateOfflineUI(){
   const nb=document.getElementById('slidein-narrate');
   const tb=document.getElementById('slidein-translate');
   if(nb)nb.classList.toggle('disabled',offline);
-  const hasLang=typeof activeLang!=='undefined'&&activeLang!==null;
+  let hasLang=false;try{hasLang=!!activeLang;}catch(e){}
   if(tb)tb.classList.toggle('offline-disabled',offline&&!hasLang);
   const bar=document.getElementById('offline-bar');
   if(bar)bar.classList.toggle('visible',offline);
