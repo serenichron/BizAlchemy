@@ -264,6 +264,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .copy-hint.copied{color:#5a9a3c}
 .slot-combos{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:8.5px;color:#999;line-height:1;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
 .slot-combos .cc-found{color:#5a9a3c}.slot-combos .cc-avail{color:#e0a030}.slot-combos .cc-total{color:#bbb}
+.offline-banner{background:#f5f0e0;border:1px solid #e5dbb8;border-radius:10px;padding:10px 14px;margin-top:10px;font-size:12px;color:#8a7530;line-height:1.5}
+.offline-banner strong{color:#6d5a1a}
+.offline-banner ul{margin:5px 0 0;padding-left:18px;list-style:disc}
+.offline-banner li{margin:2px 0}
 .stats-sync-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:500}
 .stats-sync-badge.synced{background:#e8f5e0;color:#3d7a24}
 .stats-sync-badge.failed{background:#fde8e8;color:#c0392b}
@@ -291,9 +295,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .si-lang-opt{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:13px;font-weight:500;color:#333;cursor:pointer;transition:background 0.1s;border:none;background:none;width:100%;text-align:left}
 .si-lang-opt:hover{background:#f5f4f0}
 .si-lang-opt.active{color:#378ADD;font-weight:600}
-#slidein-narrate.disabled{opacity:0.35;cursor:default;pointer-events:none}
+#slidein-narrate.disabled{opacity:0.35;cursor:default}
+#slidein-translate.offline-disabled{opacity:0.35;cursor:default}
 .si-lang-opt .lang-flag{flex-shrink:0}
 .si-lang-opt .lang-flag img.emoji{height:14px;width:14px}
+.si-lang-opt.disabled{opacity:0.35;cursor:default;pointer-events:none}
 .si-lang-divider{height:1px;background:#e5e4df;margin:4px 14px}
 .si-translating{opacity:0.5;transition:opacity 0.2s}
 #slidein-body{flex:1;overflow-y:auto;padding:18px 20px 24px;font-size:14px;color:#333;line-height:1.7}
@@ -449,7 +455,7 @@ h1,h2{margin:0;padding:0}
       <!-- New player content (hidden for returning players) -->
       <div id="intro-new">
         <div id="intro-hook"><strong>102 digital marketing concepts</strong> are hidden inside. Start with 4 raw ideas and combine your way to a <strong>Digital Empire</strong>.</div>
-        <div style="font-size:12px;color:#999;margin-top:8px;line-height:1.5">Play anytime — works offline. Your progress syncs to the cloud automatically, so you can pick up where you left off on any device.</div>
+        <div id="intro-offline-note"></div>
       </div>
       <!-- Returning player content (hidden for new players) -->
       <div id="intro-wb" style="display:none">
@@ -471,7 +477,7 @@ h1,h2{margin:0;padding:0}
         <div id="wb-achievements"></div>
         <!-- Next achievement teaser -->
         <div id="wb-next"></div>
-        <div id="wb-sync-note" style="font-size:11px;color:#aaa;margin-top:12px;text-align:center;line-height:1.5">Your progress is saved locally and syncs to the cloud — continue on any device using your session ID from the menu.</div>
+        <div id="wb-sync-note"></div>
       </div>
       <div class="intro-steps">
         <div class="intro-step">
@@ -502,9 +508,9 @@ h1,h2{margin:0;padding:0}
         <div class="intro-grid-item"><span class="gi-icon">📖</span><span class="gi-text">Full glossary</span></div>
         <div class="intro-grid-item"><span class="gi-icon">✓</span><span class="gi-text">Track your stack</span></div>
         <div class="intro-grid-item"><span class="gi-icon">📡</span><span class="gi-text">Works offline</span></div>
-        <div class="intro-grid-item"><span class="gi-icon">🔊</span><span class="gi-text">Audio narration</span></div>
+        <div class="intro-grid-item" id="gi-audio"><span class="gi-icon">🔊</span><span class="gi-text">Audio narration</span></div>
         <div class="intro-grid-item"><span class="gi-icon">🔄</span><span class="gi-text">Sync across devices</span></div>
-        <div class="intro-grid-item"><span class="gi-icon">🌍</span><span class="gi-text">Multilanguage <span style="font-size:11px;opacity:0.55">(beta)</span></span></div>
+        <div class="intro-grid-item" id="gi-lang"><span class="gi-icon">🌍</span><span class="gi-text">Multilanguage <span style="font-size:11px;opacity:0.55">(beta)</span></span></div>
       </div>
     </div>
     <div id="intro-footer">
@@ -970,7 +976,18 @@ function updateSyncIndicator(){
   const lbl=document.getElementById('menu-sync-label');
   if(lbl){const syncLabels={synced:'synced',pending:'syncing…',failed:'not synced',offline:'offline'};lbl.textContent=syncLabels[syncStatus]||'';}
 }
-window.addEventListener('online',()=>{if(syncStatus==='offline'||syncStatus==='failed'){syncToSupabase();}});
+window.addEventListener('online',()=>{
+  if(syncStatus==='offline'||syncStatus==='failed'){syncToSupabase();}
+  updateOfflineUI();
+});
+window.addEventListener('offline',()=>{updateOfflineUI();});
+function updateOfflineUI(){
+  const offline=!navigator.onLine;
+  const nb=document.getElementById('slidein-narrate');
+  const tb=document.getElementById('slidein-translate');
+  if(nb)nb.classList.toggle('disabled',offline);
+  if(tb)tb.classList.toggle('offline-disabled',offline&&!activeLang);
+}
 
 async function loadFromSupabase(id){
   try{
@@ -1125,6 +1142,39 @@ const hintPopup=document.getElementById('hint-popup');
 const gameEl=document.getElementById('game');
 const introEl=document.getElementById('intro');
 const congratsEl=document.getElementById('congrats');
+function updateIntroOfflineState(){
+  const offline=!navigator.onLine;
+  const newNote=document.getElementById('intro-offline-note');
+  const wbNote=document.getElementById('wb-sync-note');
+  if(newNote){
+    if(offline){
+      newNote.innerHTML='<div class="offline-banner"><strong>You\'re offline</strong> — no worries, the game works fully offline.<ul><li>Audio narration is unavailable</li><li>Translation to other languages is unavailable</li></ul>Your progress is saved locally and will sync to the cloud when you\'re back online.</div>';
+    }else{
+      newNote.innerHTML='<div style="font-size:12px;color:#999;margin-top:8px;line-height:1.5">Play anytime \u2014 works offline. Your progress syncs to the cloud automatically, so you can pick up where you left off on any device.</div>';
+    }
+  }
+  if(wbNote){
+    if(offline){
+      wbNote.innerHTML='<div class="offline-banner" style="margin-top:12px;text-align:left"><strong>You\'re offline</strong> — the game works fully offline.<ul><li>Audio narration is unavailable</li><li>Translation to other languages is unavailable</li></ul>Your progress will sync when you\'re back online.</div>';
+    }else{
+      wbNote.innerHTML='<div style="font-size:11px;color:#aaa;margin-top:12px;text-align:center;line-height:1.5">Your progress is saved locally and syncs to the cloud \u2014 continue on any device using your session ID from the menu.</div>';
+    }
+  }
+  // Update feature grid items
+  const giAudio=document.getElementById('gi-audio');
+  const giLang=document.getElementById('gi-lang');
+  if(giAudio){
+    giAudio.style.opacity=offline?'0.4':'';
+    giAudio.querySelector('.gi-text').innerHTML=offline?'Audio narration <span style="font-size:10px;color:#c0392b">(offline)</span>':'Audio narration';
+  }
+  if(giLang){
+    giLang.style.opacity=offline?'0.4':'';
+    giLang.querySelector('.gi-text').innerHTML=offline?'Multilanguage <span style="font-size:10px;color:#c0392b">(offline)</span>':'Multilanguage <span style="font-size:11px;opacity:0.55">(beta)</span>';
+  }
+}
+updateIntroOfflineState();
+window.addEventListener('online',updateIntroOfflineState);
+window.addEventListener('offline',updateIntroOfflineState);
 function startGame(){introEl.style.display='none';saveProgress();}
 // Returning player: show welcome-back dashboard
 if(saved&&discovered.size>STARTS.length){
@@ -1856,6 +1906,10 @@ function openSlideIn(name){
     renderSegBtns(this,v);
     saveProgress();checkAchievements();updateCardStates();
   });
+  // Update offline state for audio and translation
+  const offline=!navigator.onLine;
+  narrateBtn.classList.toggle('disabled',offline);
+  translateBtn.classList.toggle('offline-disabled',offline&&activeLang===null);
   slideinOverlay.classList.add('active');
   slideinPanel.classList.add('active');
   tooltip.classList.remove('visible');
@@ -2085,6 +2139,7 @@ function startNarration(){
   speakNextSentence();
 }
 narrateBtn.addEventListener('click',function(){
+  if(!navigator.onLine){showToast('err','Audio is unavailable in offline mode');return;}
   if(narrateBtn.classList.contains('disabled'))return;
   if(narrateBtn.classList.contains('playing')){stopNarration();}else{startNarration();}
 });
@@ -2147,14 +2202,17 @@ let originalDescHTML=null;
 const MYMEMORY_MAP={es:'es-ES',fr:'fr-FR',de:'de-DE',it:'it-IT',pt:'pt-PT',nl:'nl-NL',pl:'pl-PL',ru:'ru-RU',ja:'ja-JP',ko:'ko-KR',zh:'zh-CN',ar:'ar-SA',hi:'hi-IN',bn:'bn-BD',ur:'ur-PK',tr:'tr-TR',he:'he-IL',fa:'fa-IR',sv:'sv-SE',no:'nb-NO',da:'da-DK',fi:'fi-FI',el:'el-GR',hu:'hu-HU',cs:'cs-CZ',sk:'sk-SK',ro:'ro-RO',bg:'bg-BG',hr:'hr-HR',sr:'sr-RS',sl:'sl-SI',uk:'uk-UA',lt:'lt-LT',lv:'lv-LV',et:'et-EE',ca:'ca-ES',th:'th-TH',vi:'vi-VN',id:'id-ID',ms:'ms-MY',tl:'tl-PH',sw:'sw-KE'};
 
 function buildLangDropdown(){
+  const offline=!navigator.onLine;
   let html='<button class="si-lang-opt'+(activeLang===null?' active':'')+'" data-lang="en"><span class="lang-flag">🇬🇧</span>English</button>';
   function addLang(l){
-    const cls='si-lang-opt'+(activeLang===l.code?' active':'');
-    html+=`<button class="${cls}" data-lang="${l.code}"><span class="lang-flag">${l.flag}</span>${l.name} <span style="opacity:0.45;font-size:11px">(auto)</span></button>`;
+    const dis=offline&&activeLang!==l.code;
+    const cls='si-lang-opt'+(activeLang===l.code?' active':'')+(dis?' disabled':'');
+    html+=`<button class="${cls}" data-lang="${l.code}"${dis?' disabled':''}><span class="lang-flag">${l.flag}</span>${l.name} <span style="opacity:0.45;font-size:11px">${dis?'(offline)':'(auto)'}</span></button>`;
   }
   MAIN_LANGS.forEach(addLang);
   html+='<div class="si-lang-divider"></div>';
   OTHER_LANGS.forEach(addLang);
+  if(offline)html+='<div style="padding:6px 14px;font-size:10px;color:#999;font-style:italic">Translation unavailable offline</div>';
   langDropdown.innerHTML=html;
   tp(langDropdown);
 }
@@ -2169,6 +2227,7 @@ function toggleLangDropdown(){
 translateBtn.addEventListener('click',function(e){
   e.stopPropagation();
   if(translateBtn.classList.contains('disabled'))return;
+  if(!navigator.onLine&&activeLang===null){showToast('err','Translation is unavailable in offline mode');return;}
   toggleLangDropdown();
 });
 
