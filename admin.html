@@ -57,7 +57,7 @@ tr:hover td{background:#fafafa}
 .pbar-fill{height:100%;border-radius:3px;transition:width 0.3s}
 .pbar-text{font-size:12px;color:#666;min-width:36px}
 .clr-green{background:#1D9E75}
-.clr-blue{background:#378ADD}
+.clr-blue{background:#90CAF9}
 .clr-purple{background:#7F77DD}
 .clr-orange{background:#D85A30}
 /* Detail panel */
@@ -70,8 +70,8 @@ tr:hover td{background:#fafafa}
 .detail-card ul{list-style:none;font-size:12px;color:#555}
 .detail-card li{padding:2px 0}
 .detail-card li::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
-.detail-card li.discovered::before{background:#1D9E75}
-.detail-card li.owned::before{background:#378ADD}
+.detail-card li.discovered::before{background:#90CAF9}
+.detail-card li.owned::before{background:#1D9E75}
 .detail-card li.partial::before{background:#EF9F27}
 .detail-card li.missing::before{background:#ddd}
 /* Insights */
@@ -430,7 +430,7 @@ function toggleDetail(tr,r,tbody){
   const par=new Set(r.partial||[]);
   const achs=new Set(r.achievements||[]);
 
-  let html='<div style="display:flex;gap:16px;font-size:12px;color:#666;margin-bottom:10px"><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#1D9E75;margin-right:4px"></span>Discovered</span><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#378ADD;margin-right:4px"></span>Owned</span><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#EF9F27;margin-right:4px"></span>Partially</span><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ddd;margin-right:4px"></span>Not found</span></div>';
+  let html='<div style="display:flex;gap:16px;font-size:12px;color:#666;margin-bottom:10px"><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#90CAF9;margin-right:4px"></span>Discovered</span><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#1D9E75;margin-right:4px"></span>Owned</span><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#EF9F27;margin-right:4px"></span>Partially</span><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ddd;margin-right:4px"></span>Not found</span></div>';
   html+='<div class="detail-grid">';
   TIERS.forEach(t=>{
     const found=t.items.filter(n=>disc.has(n)).length;
