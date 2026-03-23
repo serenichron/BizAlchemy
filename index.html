@@ -83,13 +83,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* Result slot shimmer */
 #result-slot.state-new::after,#result-slot.state-found::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.5) 50%,transparent 60%);animation:resultShimmer 1s linear forwards;pointer-events:none;border-radius:inherit}
 @keyframes resultShimmer{0%{transform:translateX(-100%);opacity:1}99%{transform:translateX(100%);opacity:1}100%{transform:translateX(100%);opacity:0}}
-/* Tier rarity border shimmer for T4+ */
-.ec.rarity-high{overflow:hidden}
-.rarity-ring{position:absolute;inset:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent 55%,color-mix(in srgb,var(--sel-color) 45%,transparent) 65%,transparent 75%);animation:borderShimmer 4s linear infinite;pointer-events:none;z-index:0}
-.rarity-fill{position:absolute;inset:2px;border-radius:11px;background:var(--card-bg);z-index:0;pointer-events:none}
-.ec.rarity-high .ec-e,.ec.rarity-high .ec-n{position:relative;z-index:1}
-.ec.rarity-high .ec-info{z-index:2}
-@keyframes borderShimmer{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 /* Particle burst */
 .particle-burst{position:absolute;top:50%;left:50%;width:0;height:0;z-index:40;pointer-events:none}
 .particle{position:absolute;width:6px;height:6px;border-radius:50%;animation:particleFly 0.7s cubic-bezier(0.25,0.46,0.45,0.94) forwards}
@@ -376,9 +369,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 h1,h2{margin:0;padding:0}
 @media(prefers-reduced-motion:reduce){
-  .ec,.slot,#result-slot,.pop,.glow,.rarity-ring,.rarity-fill,#ach-popup,#slidein,#slidein-overlay,.particle-burst,.particle{animation:none!important;transition:none!important}
-  .rarity-ring{display:none}
-  @keyframes borderShimmer{0%,100%{transform:none}}
+  .ec,.slot,#result-slot,.pop,.glow,#ach-popup,#slidein,#slidein-overlay,.particle-burst,.particle{animation:none!important;transition:none!important}
   @keyframes resultShimmer{0%,100%{transform:none}}
 }
 @media(max-width:430px){
@@ -1093,25 +1084,25 @@ const ACHIEVEMENTS=[
   {id:'publishing_machine',name:'Publishing Machine',desc:'Own Editorial Plan, Content Calendar, Content Machine, and AI Content System',icon:'🏭',cat:'dept',check:()=>['Editorial Plan','Content Calendar','Content Machine','AI Content System'].every(isOwned)},
   // Department: Email
   {id:'email_marketer',name:'Email Marketer',desc:'Own Newsletter, Email List, and Email Funnel',icon:'📧',cat:'dept',check:()=>['Newsletter','Email List','Email Funnel'].every(isOwned)},
-  {id:'nurture_expert',name:'Nurture Expert',desc:'Own all 8 email items',icon:'💌',cat:'dept',check:()=>['Newsletter','Email Capture','Email List','Subscriber','Nurture Sequence','Email Funnel','Lead Magnet','Lead Generation'].every(isOwned)},
+  {id:'nurture_expert',name:'Nurture Expert',desc:'Own 5 key email items',icon:'💌',cat:'dept',check:()=>['Newsletter','Email List','Nurture Sequence','Email Funnel','Lead Generation'].every(isOwned)},
   // Department: Marketing
   {id:'marketer',name:'Marketer',desc:'Own Social Media, SEO, and Ad Copy',icon:'📣',cat:'dept',check:()=>['Social Media','SEO','Ad Copy'].every(isOwned)},
   {id:'marketing_pro',name:'Marketing Pro',desc:'Own Marketing Stack, Marketing OS, Performance Marketing, and AI Marketing OS',icon:'🚀',cat:'dept',check:()=>['Marketing Stack','Marketing OS','Performance Marketing','AI Marketing OS'].every(isOwned)},
   // Department: Sales
   {id:'closer',name:'Closer',desc:'Own Offer, Sales Page, and Sales Funnel',icon:'💰',cat:'dept',check:()=>['Offer','Sales Page','Sales Funnel'].every(isOwned)},
-  {id:'sales_machine',name:'Sales Machine',desc:'Own all 12 sales items',icon:'⚡',cat:'dept',check:()=>['Offer','Sales Page','Sales Copy','Sales Funnel','Checkout Page','Upsell','Tripwire','Discovery Call','Inbound Sales','High-Ticket Offer','Automated Sales','Sales Machine'].every(isOwned)},
+  {id:'sales_machine',name:'Sales Machine',desc:'Own 6 key sales items',icon:'⚡',cat:'dept',check:()=>['Offer','Sales Page','Sales Funnel','Upsell','High-Ticket Offer','Automated Sales'].every(isOwned)},
   // Department: Brand
   {id:'brand_builder',name:'Brand Builder',desc:'Own Value Proposition, Brand Voice, and Brand Identity',icon:'🎨',cat:'dept',check:()=>['Value Proposition','Brand Voice','Brand Identity'].every(isOwned)},
-  {id:'brand_empire',name:'Brand Empire',desc:'Own all 10 brand items',icon:'👑',cat:'dept',check:()=>['Value Proposition','Niche','Persona','Brand Guide','Brand Voice','Brand Identity','Design System','Headline','Premium Brand','Personal Brand'].every(isOwned)},
+  {id:'brand_empire',name:'Brand Empire',desc:'Own 6 key brand items',icon:'👑',cat:'dept',check:()=>['Value Proposition','Brand Voice','Brand Identity','Brand Guide','Design System','Premium Brand'].every(isOwned)},
   // Department: Tech/Infra
   {id:'tech_ready',name:'Tech Ready',desc:'Own Website, CRM, Analytics, and Automation',icon:'🔧',cat:'dept',check:()=>['Website','CRM','Analytics','Automation'].every(isOwned)},
   {id:'automation_expert',name:'Automation Expert',desc:'Own Automation, AI Automation, Marketing OS, and Workflow',icon:'🤖',cat:'dept',check:()=>['Automation','AI Automation','Marketing OS','Workflow'].every(isOwned)},
   // Department: Products
-  {id:'product_creator',name:'Product Creator',desc:'Own any 2 product items',icon:'🎁',cat:'dept',check:()=>['Digital Product','Online Course','SaaS Product','Product Design','Product Launch'].filter(isOwned).length>=2},
+  {id:'product_creator',name:'Product Creator',desc:'Own any 3 product items',icon:'🎁',cat:'dept',check:()=>['Digital Product','Online Course','SaaS Product','Product Design','Product Launch'].filter(isOwned).length>=3},
   {id:'product_empire',name:'Product Empire',desc:'Own all 5 product items',icon:'📦',cat:'dept',check:()=>['Digital Product','Online Course','SaaS Product','Product Design','Product Launch'].every(isOwned)},
   // Department: Revenue
-  {id:'revenue_stream',name:'Revenue Stream',desc:'Own Revenue Engine and Recurring Revenue',icon:'💹',cat:'dept',check:()=>['Revenue Engine','Recurring Revenue'].every(isOwned)},
-  {id:'financially_free',name:'Financially Free',desc:'Own Passive Income, Recurring Revenue, and Financial Freedom',icon:'🏖️',cat:'dept',check:()=>['Passive Income','Recurring Revenue','Financial Freedom'].every(isOwned)},
+  {id:'revenue_stream',name:'Revenue Stream',desc:'Own Revenue Engine, Recurring Revenue, and Passive Income',icon:'💹',cat:'dept',check:()=>['Revenue Engine','Recurring Revenue','Passive Income'].every(isOwned)},
+  {id:'financially_free',name:'Financially Free',desc:'Own Passive Income, Recurring Revenue, Financial Freedom, and Revenue Engine',icon:'🏖️',cat:'dept',check:()=>['Passive Income','Recurring Revenue','Financial Freedom','Revenue Engine'].every(isOwned)},
 ];
 const achPopup=document.getElementById('ach-popup');
 const achOverlay=document.getElementById('ach-popup-overlay');
@@ -1574,12 +1565,10 @@ function buildGrid(){
       const tier=info.tier;
       if(discovered.has(name)){
         const c=dp;
-        const isRarity=tier>=4;
-        const d=document.createElement('div');d.className='ec'+(isRarity?' rarity-high':'');
+        const d=document.createElement('div');d.className='ec';
         d.setAttribute('role','button');d.setAttribute('aria-label',name+(name===slotA||name===slotB?' (selected)':''));
         d.style.cssText=`--card-bg:linear-gradient(135deg,${c.bg} 0%,${c.bg}dd 60%,${c.bg}88 100%);--sel-color:${c.b};--card-shadow:${c.b}30`;
-        const rarityHtml=isRarity?'<span class="rarity-ring" aria-hidden="true"></span><span class="rarity-fill" aria-hidden="true"></span>':'';
-        d.innerHTML=`${rarityHtml}<span class="ec-info" data-name="${name.replace(/"/g,'&quot;')}" role="button" aria-label="Info about ${name.replace(/"/g,'&quot;')}">i</span><span class="ec-e" aria-hidden="true">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
+        d.innerHTML=`<span class="ec-info" data-name="${name.replace(/"/g,'&quot;')}" role="button" aria-label="Info about ${name.replace(/"/g,'&quot;')}">i</span><span class="ec-e" aria-hidden="true">${info.e}</span><div class="ec-n" style="color:${c.t}">${name}</div>`;
         if(name===slotA||name===slotB)d.classList.add('selected');
         const isBlocked=slotA&&!slotB&&name!==slotA&&!hasReaction(slotA,name);
         if(isBlocked){d.classList.add('no-react');d.setAttribute('aria-disabled','true');}

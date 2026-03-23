@@ -14,10 +14,10 @@ The game is educational: every element maps to a real digital marketing concept 
 
 - **Genre:** Crafting / Combination puzzle (similar to Little Alchemy, Doodle God)
 - **Theme:** Digital marketing & online business building
-- **Goal:** Discover all 103 elements across 7 tiers by combining pairs of elements
+- **Goal:** Discover all 102 elements across 7 tiers by combining pairs of elements
 - **Secondary goal:** Mark discovered elements as "owned" to track real business coverage
 - **Educational purpose:** Each element represents a real digital marketing concept with descriptions explaining what it is and why it matters
-- **Win condition:** Discover all 103 elements to unlock the "Digital Empire achieved" congratulations screen
+- **Win condition:** Discover all 102 elements to unlock the "Digital Empire achieved" congratulations screen
 
 ---
 
@@ -55,7 +55,7 @@ Result slot states:
 
 ## Tier System
 
-The game organizes all 103 elements into 7 tiers, each with a unique color palette:
+The game organizes all 102 elements into 7 tiers, each with a unique color palette:
 
 | Tier | Name                | Color   | Elements | Description |
 |------|---------------------|---------|----------|-------------|
@@ -67,7 +67,7 @@ The game organizes all 103 elements into 7 tiers, each with a unique color palet
 | 5    | Advanced Systems    | Pink    | 13       | Automated and advanced business systems |
 | 6    | Endgame             | Lime    | 8        | Ultimate business outcomes |
 
-**Total: 103 elements, 118 recipes (some elements have multiple recipes)**
+**Total: 102 elements, 115 recipes (some elements have multiple recipes)**
 
 ---
 
@@ -304,7 +304,7 @@ These indicators only appear when one card is selected, showing the status of th
 - If all elements are found, shows "You found everything!" message
 
 ### 13. Progress Counter
-- Displayed in the header as a pill badge: `X / 103 found`
+- Displayed in the header as a pill badge: `X / 102 found`
 - Updates in real-time as elements are discovered
 
 ### 14. Statistics Screen
@@ -324,10 +324,10 @@ These indicators only appear when one card is selected, showing the status of th
 | 🧭 Explorer | Discover 25 elements |
 | ⚗️ Alchemist | Discover 50 elements |
 | 🔮 Master Alchemist | Discover 75 elements |
-| 👑 Grand Master | Discover all 103 elements |
+| 👑 Grand Master | Discover all 102 elements |
 | 🧪 Experimenter | Try 30 recipes |
 | ⚡ Mad Scientist | Try 75 recipes |
-| 🏆 Completionist | Try all 118 recipes |
+| 🏆 Completionist | Try all 115 recipes |
 
 **Business Coverage (4):**
 | Achievement | Condition |
@@ -335,7 +335,7 @@ These indicators only appear when one card is selected, showing the status of th
 | 🚶 Getting Started | Mark 5 items as owned |
 | 🧱 Foundation | Mark 15 items as owned |
 | ⛰️ Halfway There | Mark 50 items as owned |
-| 🦄 Full Stack Business | Mark all 103 items as owned |
+| 🦄 Full Stack Business | Mark all 102 items as owned |
 
 **Department Badges (16):**
 | Achievement | Department | Condition |
@@ -343,19 +343,19 @@ These indicators only appear when one card is selected, showing the status of th
 | ✍️ Content Creator | Content | Own Article, Blog, Content Strategy |
 | 🏭 Publishing Machine | Content | Own Editorial Plan, Content Calendar, Content Machine, AI Content System |
 | 📧 Email Marketer | Email | Own Newsletter, Email List, Email Funnel |
-| 💌 Nurture Expert | Email | Own all 8 email items |
+| 💌 Nurture Expert | Email | Own Newsletter, Email List, Nurture Sequence, Email Funnel, Lead Generation |
 | 📣 Marketer | Marketing | Own Social Media, SEO, Ad Copy |
 | 🚀 Marketing Pro | Marketing | Own Marketing Stack, Marketing OS, Performance Marketing, AI Marketing OS |
 | 💰 Closer | Sales | Own Offer, Sales Page, Sales Funnel |
-| ⚡ Sales Machine | Sales | Own all 12 sales items |
+| ⚡ Sales Machine | Sales | Own Offer, Sales Page, Sales Funnel, Upsell, High-Ticket Offer, Automated Sales |
 | 🎨 Brand Builder | Brand | Own Value Proposition, Brand Voice, Brand Identity |
-| 👑 Brand Empire | Brand | Own all 10 brand items |
+| 👑 Brand Empire | Brand | Own Value Proposition, Brand Voice, Brand Identity, Brand Guide, Design System, Premium Brand |
 | 🔧 Tech Ready | Tech | Own Website, CRM, Analytics, Automation |
 | 🤖 Automation Expert | Tech | Own Automation, AI Automation, Marketing OS, Workflow |
-| 🎁 Product Creator | Products | Own any 2 product items |
+| 🎁 Product Creator | Products | Own any 3 product items |
 | 📦 Product Empire | Products | Own all 5 product items |
-| 💹 Revenue Stream | Revenue | Own Revenue Engine and Recurring Revenue |
-| 🏖️ Financially Free | Revenue | Own Passive Income, Recurring Revenue, Financial Freedom |
+| 💹 Revenue Stream | Revenue | Own Revenue Engine, Recurring Revenue, Passive Income |
+| 🏖️ Financially Free | Revenue | Own Passive Income, Recurring Revenue, Financial Freedom, Revenue Engine |
 
 **Achievement popup:**
 - Animated popup with overlay when an achievement unlocks
@@ -371,7 +371,7 @@ These indicators only appear when one card is selected, showing the status of th
 - Returns to the intro screen
 
 ### 17. Win / Congratulations Screen
-- Triggers automatically when all 103 elements are discovered (600ms delay)
+- Triggers automatically when all 102 elements are discovered (600ms delay)
 - Animated trophy emoji burst
 - "Achievement unlocked" label
 - Title: "Digital Empire achieved."
@@ -466,7 +466,7 @@ Seven distinct color palettes, one per tier:
 
 ## Recipe Tree Summary
 
-The game contains **118 recipes** producing 99 non-starting elements (many elements have multiple recipes).
+The game contains **115 recipes** producing 98 non-starting elements (many elements have multiple recipes).
 
 ### Recipe Structure
 - **Tier 0 → Tier 1:** All 6 combinations of the 4 starters (4 choose 2) + 2 cross-tier recipes (8 total)
@@ -653,7 +653,7 @@ The 102 elements cover these core business domains:
 
 ## Debug / Developer Tools
 
-- `window.unlockAll()` — Discover all 103 elements at once
+- `window.unlockAll()` — Discover all 102 elements at once
 - `showCongrats()` — Preview the congratulations screen
 - All state is in global variables: `discovered`, `tried`, `owned`, `unlockedAch`
 - Console: `discovered.size` to check progress count
@@ -676,3 +676,23 @@ The 102 elements cover these core business domains:
 **3. Clarified "Email Capture" vs "Opt-in Page" descriptions**
 - **Email Capture** (Tier 2): The backend system — form, validation, integration that populates CRM/email software with subscriber data
 - **Opt-in Page** (Tier 3): The frontend page — what visitors actually see, designed to convince them to subscribe
+
+**4. Removed rare card animation (border shimmer)**
+- Removed the rotating conic-gradient border shimmer effect that was applied to Tier 4+ cards
+- Removed CSS classes: `rarity-high`, `rarity-ring`, `rarity-fill`, and `@keyframes borderShimmer`
+- Removed JavaScript logic that injected rarity HTML into card elements
+- All cards now render uniformly regardless of tier
+
+**5. Balanced department badge achievement requirements**
+- Previously, advanced department achievements ranged from 2–12 required items — now standardized to 3–6
+- **Nurture Expert** (Email): Reduced from 8 → 5 items (Newsletter, Email List, Nurture Sequence, Email Funnel, Lead Generation)
+- **Sales Machine** (Sales): Reduced from 12 → 6 items (Offer, Sales Page, Sales Funnel, Upsell, High-Ticket Offer, Automated Sales)
+- **Brand Empire** (Brand): Reduced from 10 → 6 items (Value Proposition, Brand Voice, Brand Identity, Brand Guide, Design System, Premium Brand)
+- **Product Creator** (Products): Increased from 2 → 3 required items
+- **Revenue Stream** (Revenue): Increased from 2 → 3 items (added Passive Income)
+- **Financially Free** (Revenue): Increased from 3 → 4 items (added Revenue Engine)
+
+**6. Documentation updated (March 2026)**
+- Corrected element count from 103 → 102 and recipe count from 118 → 115 throughout
+- Updated all achievement descriptions to match new balanced requirements
+- Added changelog entries for recent changes
