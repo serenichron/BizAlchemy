@@ -356,6 +356,19 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
 .stats-ach-tt-desc{font-size:11.5px;color:#666;line-height:1.45}
 .stats-ach-tt-locked{font-size:10px;color:#bbb;font-style:italic;margin-top:4px}
 /* Confirm dialog */
+#notif-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.25);z-index:500;opacity:0;pointer-events:none;transition:opacity 0.2s;border-radius:20px}
+#notif-overlay.active{opacity:1;pointer-events:auto}
+#notif-box{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.9);background:#fff;border-radius:14px;padding:22px 24px 18px;z-index:510;text-align:center;box-shadow:0 6px 32px rgba(0,0,0,0.15);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),opacity 0.25s;opacity:0;pointer-events:none;width:270px}
+#notif-box.active{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
+#notif-box .notif-icon{font-size:28px;margin-bottom:8px}
+#notif-box .notif-title{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:6px}
+#notif-box .notif-msg{font-size:12.5px;color:#666;line-height:1.5;margin-bottom:16px}
+#notif-box .notif-btns{display:flex;gap:8px}
+#notif-box .notif-btns button{flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;transition:opacity 0.1s}
+#notif-box .notif-dismiss{border:1px solid #ddd;background:#fff;color:#333}
+#notif-box .notif-dismiss:hover{background:#f5f4f0}
+#notif-box .notif-accept{border:none;background:#1D9E75;color:#fff}
+#notif-box .notif-accept:hover{opacity:0.85}
 #confirm-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.25);z-index:500;opacity:0;pointer-events:none;transition:opacity 0.2s;border-radius:20px}
 #confirm-overlay.active{opacity:1;pointer-events:auto}
 #confirm-box{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.9);background:#fff;border-radius:14px;padding:22px 24px 18px;z-index:510;text-align:center;box-shadow:0 6px 32px rgba(0,0,0,0.15);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),opacity 0.25s;opacity:0;pointer-events:none;width:260px}
@@ -591,6 +604,17 @@ h1,h2{margin:0;padding:0}
     <div class="hp-close" onclick="closeHint()">✕</div>
   </div>
   <div id="toast"></div>
+  <!-- Push notification modal -->
+  <div id="notif-overlay" aria-hidden="true"></div>
+  <div id="notif-box" role="dialog" aria-modal="true" aria-label="Enable notifications">
+    <div class="notif-icon">💡</div>
+    <div class="notif-title">Daily marketing tip?</div>
+    <div class="notif-msg">Get one business concept at noon each day.</div>
+    <div class="notif-btns">
+      <button class="notif-dismiss" id="notif-no">Not now</button>
+      <button class="notif-accept" id="notif-yes">Enable daily tips</button>
+    </div>
+  </div>
   <!-- Confirm dialog -->
   <div id="confirm-overlay" aria-hidden="true"></div>
   <div id="confirm-box" role="dialog" aria-modal="true" aria-label="Confirmation dialog"></div>
@@ -1034,6 +1058,66 @@ function installApp(){
     if(r.outcome==='accepted')deferredInstallPrompt=null;
   });
 }
+
+// --- Push Notification Subscription ---
+const VAPID_PUBLIC_KEY='TO_BE_REPLACED_WITH_ACTUAL_VAPID_PUBLIC_KEY';
+let notifModalShown=false;
+function shouldShowNotifModal(){
+  if(VAPID_PUBLIC_KEY.startsWith('TO_BE_'))return false;
+  if(!('Notification' in window)||!('PushManager' in window))return false;
+  if(Notification.permission==='denied')return false;
+  if(localStorage.getItem('ba_notif_subscribed'))return false;
+  const declined=localStorage.getItem('ba_notif_declined');
+  if(declined&&Date.now()-parseInt(declined,10)<30*24*60*60*1000)return false;
+  if(discovered.size>=TOTAL)return false;
+  return true;
+}
+function showNotifModal(){
+  if(notifModalShown||!shouldShowNotifModal())return;
+  notifModalShown=true;
+  const ov=document.getElementById('notif-overlay');
+  const bx=document.getElementById('notif-box');
+  ov.classList.add('active');bx.classList.add('active');
+  document.getElementById('notif-no').onclick=function(){
+    localStorage.setItem('ba_notif_declined',String(Date.now()));
+    ov.classList.remove('active');bx.classList.remove('active');
+  };
+  ov.onclick=function(){
+    localStorage.setItem('ba_notif_declined',String(Date.now()));
+    ov.classList.remove('active');bx.classList.remove('active');
+  };
+  document.getElementById('notif-yes').onclick=async function(){
+    ov.classList.remove('active');bx.classList.remove('active');
+    try{
+      const perm=await Notification.requestPermission();
+      if(perm!=='granted')return;
+      const reg=await navigator.serviceWorker.ready;
+      const sub=await reg.pushManager.subscribe({
+        userVisibleOnly:true,
+        applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+      const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC';
+      await supaFetch('push_subscriptions','POST',{
+        session_id:sessionId,
+        subscription:sub.toJSON(),
+        timezone:tz
+      },'resolution=merge-duplicates,return=minimal');
+      localStorage.setItem('ba_notif_subscribed','1');
+    }catch(e){console.error('Push subscription failed:',e);}
+  };
+}
+function urlBase64ToUint8Array(base64String){
+  const padding='='.repeat((4-base64String.length%4)%4);
+  const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+  const raw=atob(base64);
+  const arr=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);
+  return arr;
+}
+// Show after 5 minutes of active play
+setTimeout(function(){showNotifModal();},5*60*1000);
+// Show 2 seconds after PWA install
+window.addEventListener('appinstalled',function(){setTimeout(showNotifModal,2000);});
 
 async function loadFromSupabase(id){
   try{

@@ -1,4 +1,4 @@
-const CACHE='bizalchemy-v12';
+const CACHE='bizalchemy-v13';
 const PRECACHE=[
   './',
   './index.html',
@@ -19,6 +19,34 @@ self.addEventListener('activate',e=>{
     )
   );
   self.clients.claim();
+});
+
+// Push notification handler
+self.addEventListener('push',e=>{
+  if(!e.data)return;
+  const data=e.data.json();
+  e.waitUntil(self.registration.showNotification(data.title,{
+    body:data.body,
+    icon:'./icons/icon-192.png',
+    badge:'./icons/icon-192.png',
+    tag:'bizalchemy-daily',
+    renotify:true,
+    data:{url:'./'}
+  }));
+});
+
+// Notification click — focus existing window or open new one
+self.addEventListener('notificationclick',e=>{
+  e.notification.close();
+  const url=e.notification.data&&e.notification.data.url?e.notification.data.url:'./';
+  e.waitUntil(
+    clients.matchAll({type:'window',includeUncontrolled:true}).then(windowClients=>{
+      for(const client of windowClients){
+        if(client.url.includes(self.location.origin)&&'focus' in client)return client.focus();
+      }
+      return clients.openWindow(url);
+    })
+  );
 });
 
 self.addEventListener('fetch',e=>{
