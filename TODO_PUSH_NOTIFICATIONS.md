@@ -5,6 +5,38 @@ Daily push notifications at noon (user's local time) with a curiosity-driven hoo
 
 ---
 
+## Status
+
+### Done (code ready, not yet live)
+- [x] Notification hook texts for all 103 items → stored in `push_hook_texts` Supabase table
+- [x] Permission modal in `index.html` (CSS, HTML, JS) — shows after 5 min play or 2 s after PWA install
+- [x] Subscription logic in `index.html` — VAPID subscribe, saves to `push_subscriptions` via Supabase REST
+- [x] Client-side guards: `ba_notif_subscribed`, `ba_notif_declined` (30-day cooldown), permission check, all-discovered check
+- [x] Safety guard: modal won't show while VAPID key is the placeholder (`TO_BE_REPLACED…`)
+- [x] Service worker `push` + `notificationclick` handlers in `sw.js`
+- [x] Service worker cache bumped to v13
+- [x] Edge function `supabase/functions/send-daily-push/index.ts` (Deno, uses `npm:web-push`)
+- [x] SQL migration for `push_subscriptions` table + RLS policies
+- [x] SQL for pg_cron schedule (every 15 minutes)
+
+### To Do (deployment steps)
+- [ ] Generate VAPID keys — run `npx web-push generate-vapid-keys`
+- [ ] Replace `TO_BE_REPLACED_WITH_ACTUAL_VAPID_PUBLIC_KEY` in `index.html` with the real public key
+- [ ] Store Supabase secrets: `VAPID_PRIVATE_KEY`, `VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`
+  ```bash
+  supabase secrets set VAPID_PRIVATE_KEY="<private-key>"
+  supabase secrets set VAPID_PUBLIC_KEY="<public-key>"
+  supabase secrets set VAPID_SUBJECT="mailto:hello@serenichron.com"
+  ```
+- [ ] Run `supabase/migrations/20260323_push_subscriptions.sql` in Supabase SQL editor
+- [ ] Enable the `pg_net` extension in Supabase dashboard (Database → Extensions)
+- [ ] Deploy the edge function: `supabase functions deploy send-daily-push`
+- [ ] Run `supabase/migrations/20260323_pg_cron_push.sql` in Supabase SQL editor to schedule the cron
+- [ ] Test end-to-end with a single subscription
+- [ ] Deploy updated `index.html` and `sw.js` to production
+
+---
+
 ## 1. VAPID Key Pair
 - Generate a VAPID key pair (`web-push generate-vapid-keys`)
 - Store the private key as a Supabase secret (`VAPID_PRIVATE_KEY`)
@@ -66,7 +98,7 @@ self.addEventListener('push', e => {
 ## 5. Supabase Edge Function: `send-daily-push`
 
 ### Trigger
-- pg_cron or external cron every 15 minutes
+- pg_cron every 15 minutes
 
 ### Logic
 1. Query `push_subscriptions` where `active = true` and (`last_notified_at` is null or older than 20 hours)
@@ -80,9 +112,6 @@ self.addEventListener('push', e => {
 9. Send web-push (VAPID-signed, encrypted payload)
 10. Update `last_notified_at`
 11. On 410 Gone response → set `active = false`
-
-### Complexity Note
-Web Push in Deno requires manual crypto: ECDH key exchange, HKDF derivation, AES-128-GCM encryption, and VAPID JWT signing. Consider using the `web-push` npm package via Deno's npm compatibility (`npm:web-push`).
 
 ## 6. Edge Cases (Server)
 
@@ -222,13 +251,14 @@ Format: `Item` → **Title** / Body
 Override the title with: **"Your marketing empire misses you"**
 Override the body with: "It's been a while. [original title lowercase] — come back and discover [Item Name]."
 
-## 8. Implementation Order
+## 8. File Locations
 
-1. Generate VAPID keys and store them
-2. Run the SQL migration on Supabase
-3. Add notification modal + subscription logic to `index.html`
-4. Add push + click handlers to `sw.js`
-5. Build and deploy the Edge Function (`send-daily-push`)
-6. Set up pg_cron to call the Edge Function every 15 minutes
-7. Test end-to-end with a single subscription
-8. Bump service worker cache version and deploy
+| What | File |
+|------|------|
+| Permission modal (HTML/CSS/JS) | `index.html` — search for `notif-overlay` |
+| VAPID public key placeholder | `index.html` — search for `VAPID_PUBLIC_KEY` |
+| Push + click handlers | `sw.js` — `push` and `notificationclick` listeners |
+| Edge function | `supabase/functions/send-daily-push/index.ts` |
+| Table migration | `supabase/migrations/20260323_push_subscriptions.sql` |
+| Cron setup | `supabase/migrations/20260323_pg_cron_push.sql` |
+| Hook texts | `push_hook_texts` table in Supabase (already populated) |
