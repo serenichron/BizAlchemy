@@ -964,6 +964,7 @@ function supaFetch(path,method,body,prefer){
   return fetch(SUPA_URL+'/rest/v1/'+path,opts);
 }
 async function syncToSupabase(){
+  if(discovered.size<=STARTS.length){syncStatus='pending';updateSyncIndicator();return;}
   const body={session_id:sessionId,discovered:[...discovered],tried:[...tried],owned:[...owned],partial:[...partial],achievements:[...unlockedAch],updated_at:new Date().toISOString()};
   syncStatus='pending';updateSyncIndicator();
   try{
