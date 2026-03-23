@@ -1070,15 +1070,15 @@ const ACHIEVEMENTS=[
   {id:'explorer',name:'Explorer',desc:'Discover 25 elements',icon:'🧭',cat:'game',check:()=>discovered.size>=25},
   {id:'alchemist',name:'Alchemist',desc:'Discover 50 elements',icon:'⚗️',cat:'game',check:()=>discovered.size>=50},
   {id:'master_alchemist',name:'Master Alchemist',desc:'Discover 75 elements',icon:'🔮',cat:'game',check:()=>discovered.size>=75},
-  {id:'grand_master',name:'Grand Master',desc:'Discover all 102 elements',icon:'👑',cat:'game',check:()=>discovered.size>=TOTAL},
+  {id:'grand_master',name:'Grand Master',desc:'Discover all 103 elements',icon:'👑',cat:'game',check:()=>discovered.size>=TOTAL},
   {id:'experimenter',name:'Experimenter',desc:'Try 30 recipes',icon:'🧪',cat:'game',check:()=>tried.size>=30},
   {id:'mad_scientist',name:'Mad Scientist',desc:'Try 75 recipes',icon:'⚡',cat:'game',check:()=>tried.size>=75},
-  {id:'completionist',name:'Completionist',desc:'Try all 115 recipes',icon:'🏆',cat:'game',check:()=>tried.size>=Object.keys(R).length},
+  {id:'completionist',name:'Completionist',desc:'Try all 117 recipes',icon:'🏆',cat:'game',check:()=>tried.size>=Object.keys(R).length},
   // Business coverage
   {id:'getting_started',name:'Getting Started',desc:'Mark 5 items as owned or partially owned',icon:'🚶',cat:'biz',check:()=>ownedTotal()>=5},
   {id:'foundation',name:'Foundation',desc:'Mark 15 items as owned or partially owned',icon:'🧱',cat:'biz',check:()=>ownedTotal()>=15},
   {id:'halfway',name:'Halfway There',desc:'Mark 50 items as owned or partially owned',icon:'⛰️',cat:'biz',check:()=>ownedTotal()>=50},
-  {id:'full_stack',name:'Full Stack Business',desc:'Mark all 102 items as owned or partially owned',icon:'🦄',cat:'biz',check:()=>ownedTotal()>=TOTAL},
+  {id:'full_stack',name:'Full Stack Business',desc:'Mark all 103 items as owned or partially owned',icon:'🦄',cat:'biz',check:()=>ownedTotal()>=TOTAL},
   // Department: Content
   {id:'content_creator',name:'Content Creator',desc:'Own Article, Blog, and Content Strategy',icon:'✍️',cat:'dept',check:()=>['Article','Blog','Content Strategy'].every(isOwned)},
   {id:'publishing_machine',name:'Publishing Machine',desc:'Own Editorial Plan, Content Calendar, Content Machine, and AI Content System',icon:'🏭',cat:'dept',check:()=>['Editorial Plan','Content Calendar','Content Machine','AI Content System'].every(isOwned)},

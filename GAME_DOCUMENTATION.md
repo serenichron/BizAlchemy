@@ -426,7 +426,7 @@ These indicators only appear when one card is selected, showing the status of th
 - Available in the slide-in detail panel via a play/pause button
 - Uses the **Web Speech API** (`speechSynthesis`) as primary TTS engine
 - Falls back to **Google Translate TTS** if native voices are unavailable
-- **Language selector** with 30+ languages and flag emoji indicators
+- **Language selector** with 42 languages and flag emoji indicators
 - Translates element descriptions via the Google Translate API when a non-English language is selected
 - **Screen wake lock** — prevents the device from sleeping during narration (via `navigator.wakeLock`)
 - Narrate button disabled while translation is in progress
