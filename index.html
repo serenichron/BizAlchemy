@@ -511,7 +511,7 @@ h1,h2{margin:0;padding:0}
         <div class="intro-grid-item"><span class="gi-icon">💡</span><span class="gi-text">Hints when stuck</span></div>
         <div class="intro-grid-item"><span class="gi-icon">📖</span><span class="gi-text">Full glossary</span></div>
         <div class="intro-grid-item"><span class="gi-icon">✓</span><span class="gi-text">Track your stack</span></div>
-        <div class="intro-grid-item"><span class="gi-icon">📡</span><span class="gi-text">Works offline</span></div>
+        <div class="intro-grid-item"><span class="gi-icon">📡</span><span class="gi-text">Works offline <span style="font-size:10px;opacity:0.55">(with the app)</span></span></div>
         <div class="intro-grid-item" id="gi-audio"><span class="gi-icon">🔊</span><span class="gi-text">Audio narration</span></div>
         <div class="intro-grid-item"><span class="gi-icon">🔄</span><span class="gi-text">Sync across devices</span></div>
         <div class="intro-grid-item" id="gi-lang"><span class="gi-icon">🌍</span><span class="gi-text">Multilanguage <span style="font-size:11px;opacity:0.55">(beta)</span></span></div>
@@ -1015,10 +1015,13 @@ function updateOfflineUI(){
 }
 updateOfflineUI();
 
-// PWA install prompt
+// PWA install prompt — only on mobile/tablet in browser mode
+const isStandalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+const isMobileOrTablet=/Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||('ontouchstart' in window&&screen.width<=1280);
 let deferredInstallPrompt=null;
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
+  if(isStandalone||!isMobileOrTablet)return;
   deferredInstallPrompt=e;
   const btn=document.getElementById('menu-install');
   if(btn)btn.style.display='';
