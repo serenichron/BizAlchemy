@@ -430,7 +430,8 @@ function toggleDetail(tr,r,tbody){
   const par=new Set(r.partial||[]);
   const achs=new Set(r.achievements||[]);
 
-  let html='<div class="detail-grid">';
+  let html='<div style="display:flex;gap:16px;font-size:12px;color:#666;margin-bottom:10px"><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#1D9E75;margin-right:4px"></span>Discovered</span><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#378ADD;margin-right:4px"></span>Owned</span><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#EF9F27;margin-right:4px"></span>Partially</span><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ddd;margin-right:4px"></span>Not found</span></div>';
+  html+='<div class="detail-grid">';
   TIERS.forEach(t=>{
     const found=t.items.filter(n=>disc.has(n)).length;
     html+=`<div class="detail-card"><h4>T${t.tier}: ${t.name} (${found}/${t.items.length})</h4><ul>`;
