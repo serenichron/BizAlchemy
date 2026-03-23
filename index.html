@@ -538,8 +538,7 @@ h1,h2{margin:0;padding:0}
       <div id="menu-dropdown">
         <div id="menu-session"></div>
         <div class="menu-divider"></div>
-        <button class="menu-item" onclick="exportGame()">📥 Export</button>
-        <button class="menu-item" onclick="importGame()">📤 Import</button>
+        <button class="menu-item" onclick="loadSession()">🔄 Load session</button>
         <div class="menu-divider"></div>
         <button class="menu-item menu-danger" onclick="resetGame()">↺ Reset</button>
       </div>
@@ -913,21 +912,40 @@ function loadProgress(){
   }catch(e){}
   return null;
 }
-function genSessionId(){
-  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let id='';for(let i=0;i<8;i++)id+=chars.charAt(Math.floor(Math.random()*chars.length));
-  return id;
+const SUPA_URL='https://srijjrsayrhkdoqjpmjf.supabase.co';
+const SUPA_KEY='sb_publishable_-YZQ80VSkJp-ogAQQQ3P4Q_xVgmeN43';
+function genSessionId(){return crypto.randomUUID();}
+function supaFetch(path,method,body,prefer){
+  const h={'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
+  if(prefer)h['Prefer']=prefer;
+  const opts={method:method||'GET',headers:h};
+  if(body)opts.body=JSON.stringify(body);
+  return fetch(SUPA_URL+'/rest/v1/'+path,opts);
 }
-let sessionId=genSessionId();
+async function syncToSupabase(){
+  const body={session_id:sessionId,discovered:[...discovered],tried:[...tried],owned:[...owned],partial:[...partial],achievements:[...unlockedAch],updated_at:new Date().toISOString()};
+  try{await supaFetch('game_saves','POST',body,'resolution=merge-duplicates,return=minimal');}catch(e){}
+}
+async function loadFromSupabase(id){
+  try{
+    const res=await supaFetch('game_saves?session_id=eq.'+id,'GET');
+    if(!res.ok)return null;
+    const rows=await res.json();
+    if(!rows.length)return null;
+    return rows[0];
+  }catch(e){return null;}
+}
+let sessionId=localStorage.getItem('ba_session')||genSessionId();
 function saveProgress(){
   try{
+    localStorage.setItem('ba_session',sessionId);
     localStorage.setItem('ba_discovered',JSON.stringify([...discovered]));
     localStorage.setItem('ba_tried',JSON.stringify([...tried]));
     localStorage.setItem('ba_owned',JSON.stringify([...owned]));
     localStorage.setItem('ba_partial',JSON.stringify([...partial]));
     localStorage.setItem('ba_achievements',JSON.stringify([...unlockedAch]));
-    localStorage.setItem('ba_session',sessionId);
   }catch(e){}
+  syncToSupabase();
 }
 const saved=loadProgress();
 let discovered=saved?saved.discovered:new Set(STARTS);
@@ -1248,56 +1266,29 @@ function resetGame(){
   document.getElementById('menu-dropdown').classList.remove('open');
   showConfirm('Reset progress?','This will erase all discoveries, owned items, and achievements. Item descriptions will be unavailable until you rediscover them.',doReset,'Reset');
 }
-function exportGame(){
+function loadSession(){
   document.getElementById('menu-dropdown').classList.remove('open');
-  const data={
-    session:sessionId,
-    discovered:[...discovered],
-    tried:[...tried],
-    owned:[...owned],
-    partial:[...partial],
-    achievements:[...unlockedAch],
-    exportedAt:new Date().toISOString()
-  };
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='bizalchemy-save-'+sessionId+'.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-  showToast('tok','Progress exported!');
-}
-function importGame(){
-  document.getElementById('menu-dropdown').classList.remove('open');
-  showConfirm('Import save?','This will replace your current progress with the imported data. Your current discoveries, owned items, and achievements will be lost.',doImport,'Import');
-}
-function doImport(){
-  const input=document.createElement('input');
-  input.type='file';input.accept='.json,application/json';
-  input.onchange=function(){
-    const file=input.files[0];if(!file)return;
-    const reader=new FileReader();
-    reader.onload=function(){
-      try{
-        const data=JSON.parse(reader.result);
-        if(!data.discovered||!Array.isArray(data.discovered)){showToast('err','Invalid save file.');return;}
-        discovered=new Set(data.discovered);
-        tried=new Set(data.tried||[]);
-        owned=new Set(data.owned||[]);
-        partial=new Set(data.partial||[]);
-        unlockedAch=new Set(data.achievements||[]);
-        sessionId=genSessionId();
-        discovered.forEach(n=>markAllRecipes(n));
-        saveProgress();buildGrid();
-        slotA=null;slotB=null;resultName=null;resultState=null;
-        renderSlot(slotAEl,null);renderSlot(slotBEl,null);
-        resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';
-        showToast('tok','Progress imported!');
-      }catch(e){showToast('err','Could not read save file.');}
-    };
-    reader.readAsText(file);
-  };
-  input.click();
+  const id=prompt('Enter your session ID:');
+  if(!id||!id.trim())return;
+  const trimmed=id.trim();
+  showToast('tok','Loading session…');
+  loadFromSupabase(trimmed).then(data=>{
+    if(!data){showToast('err','Session not found.');return;}
+    showConfirm('Load session?','This will replace your current progress with the data from session '+trimmed.slice(0,8)+'…',function(){
+      discovered=new Set(data.discovered||STARTS);
+      tried=new Set(data.tried||[]);
+      owned=new Set(data.owned||[]);
+      partial=new Set(data.partial||[]);
+      unlockedAch=new Set(data.achievements||[]);
+      sessionId=trimmed;
+      discovered.forEach(n=>markAllRecipes(n));
+      saveProgress();buildGrid();
+      slotA=null;slotB=null;resultName=null;resultState=null;
+      renderSlot(slotAEl,null);renderSlot(slotBEl,null);
+      resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';
+      showToast('tok','Session loaded!');
+    },'Load');
+  });
 }
 function doReset(){
   discovered=new Set(STARTS);tried=new Set();owned=new Set();partial=new Set();unlockedAch=new Set();
@@ -1309,6 +1300,7 @@ function doReset(){
   congratsEl.style.display='none';
   sessionId=genSessionId();
   try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');localStorage.removeItem('ba_owned');localStorage.removeItem('ba_partial');localStorage.removeItem('ba_achievements');localStorage.removeItem('ba_session');}catch(e){}
+  saveProgress();
   buildGrid();
   introEl.style.display='flex';
   document.getElementById('intro-new').style.display='';
