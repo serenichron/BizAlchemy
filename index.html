@@ -924,7 +924,10 @@ function supaFetch(path,method,body,prefer){
 }
 async function syncToSupabase(){
   const body={session_id:sessionId,discovered:[...discovered],tried:[...tried],owned:[...owned],partial:[...partial],achievements:[...unlockedAch],updated_at:new Date().toISOString()};
-  try{await supaFetch('game_saves','POST',body,'resolution=merge-duplicates,return=minimal');}catch(e){}
+  try{
+    const res=await supaFetch('game_saves','POST',body,'resolution=merge-duplicates,return=minimal');
+    if(!res.ok){const t=await res.text();console.error('Supabase sync error:',res.status,t);}
+  }catch(e){console.error('Supabase sync failed:',e);}
 }
 async function loadFromSupabase(id){
   try{
