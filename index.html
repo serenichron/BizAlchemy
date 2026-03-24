@@ -3004,14 +3004,14 @@ if('serviceWorker' in navigator){
   function spotlight(target){
     if(!target){
       hidePanels();
-      tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all';
+      tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';
       return;
     }
     const r=target.getBoundingClientRect();
     const pad=10;
     const T=Math.max(0,r.top-pad),L=Math.max(0,r.left-pad);
     const R=Math.min(window.innerWidth,r.right+pad),B=Math.min(window.innerHeight,r.bottom+pad);
-    const setP=(el,css)=>{el.style.cssText=css+';position:fixed;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all';};
+    const setP=(el,css)=>{el.style.cssText=css+';position:fixed;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';};
     setP(tutP.top,   `left:0;top:0;right:0;height:${T}px`);
     setP(tutP.bottom,`left:0;top:${B}px;right:0;bottom:0`);
     setP(tutP.left,  `left:0;top:${T}px;width:${L}px;height:${B-T}px`);
