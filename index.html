@@ -1710,7 +1710,7 @@ function doReset(){
   resultEl.className='';resultEl.innerHTML='<span class="res-hint">result</span>';
   congratsEl.style.display='none';
   sessionId=genSessionId();
-  try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');localStorage.removeItem('ba_owned');localStorage.removeItem('ba_partial');localStorage.removeItem('ba_achievements');localStorage.removeItem('ba_session');}catch(e){}
+  try{localStorage.removeItem('ba_discovered');localStorage.removeItem('ba_tried');localStorage.removeItem('ba_owned');localStorage.removeItem('ba_partial');localStorage.removeItem('ba_achievements');localStorage.removeItem('ba_session');localStorage.removeItem('ba_tutorial_done');}catch(e){}
   saveProgress();
   buildGrid();
   introEl.style.display='flex';
