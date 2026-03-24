@@ -434,6 +434,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
 h1,h2{margin:0;padding:0}
 @media(prefers-reduced-motion:reduce){
   .ec,.slot,#result-slot,.pop,.glow,#ach-popup,#slidein,#slidein-overlay,.particle-burst,.particle{animation:none!important;transition:none!important}
+  #tut-ring{animation:none!important}
   @keyframes resultShimmer{0%,100%{transform:none}}
 }
 @media(max-width:430px){
@@ -499,6 +500,21 @@ h1,h2{margin:0;padding:0}
   #plus,#eq{font-size:13px}
   .cards-row{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
+/* #endregion */
+/* #region §CSS-Tutorial */
+.tut-panel{position:fixed;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:none}
+#tut-ring{position:fixed;pointer-events:none;z-index:9001;border-radius:10px;display:none}
+#tut-ring.active{display:block;box-shadow:0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4);animation:tut-pulse 1.6s infinite ease-in-out}
+@keyframes tut-pulse{0%,100%{box-shadow:0 0 0 3px #EF9F27,0 0 8px rgba(239,159,39,0.3)}50%{box-shadow:0 0 0 5px #EF9F27,0 0 22px rgba(239,159,39,0.6)}}
+#tut-box{position:fixed;z-index:9002;background:#fff;border-radius:14px;padding:16px 18px 14px;box-shadow:0 4px 32px rgba(0,0,0,0.18);width:280px;pointer-events:auto;display:none;box-sizing:border-box}
+#tut-box.active{display:block}
+#tut-step-label{font-size:10.5px;color:#bbb;margin-bottom:6px;font-weight:500;letter-spacing:0.2px}
+#tut-box-title{font-size:13.5px;font-weight:700;color:#1a1a1a;margin-bottom:6px;line-height:1.3}
+#tut-box-text{font-size:12.5px;color:#444;line-height:1.55}
+#tut-box-ok{margin-top:12px;width:100%;padding:9px;border-radius:8px;border:none;background:#1a1a1a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;display:none}
+#tut-box-ok:hover{opacity:0.85}
+#tut-skip{margin-top:8px;display:block;font-size:11px;color:#bbb;cursor:pointer;text-align:center;background:none;border:none;width:100%;padding:2px 0;text-decoration:underline}
+#tut-skip:hover{color:#666}
 /* #endregion */
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js" crossorigin="anonymous"></script>
@@ -699,6 +715,8 @@ h1,h2{margin:0;padding:0}
   <!-- #endregion -->
 </main></div>
 <script>
+// Tutorial stubs (real implementations injected by §JS-Tutorial at end)
+let tutHook=()=>{},tutStart=()=>{},tutPinTooltip=false;
 // ┌──────────────────────────────────────────────────────────────────────┐
 // │ INDEX.HTML — TABLE OF CONTENTS                                       │
 // │ Search §SectionName to jump to any section (Ctrl+F / Cmd+F)          │
@@ -1320,7 +1338,7 @@ function checkAchievements(){
   if(newlyUnlocked.length){saveProgress();newlyUnlocked.forEach(a=>achQueue.push(a));if(!achShowing)showNextAch();}
 }
 function showNextAch(){
-  if(!achQueue.length){achShowing=false;return;}
+  if(!achQueue.length){achShowing=false;tutHook('achQueueEmpty');return;}
   achShowing=true;
   const a=achQueue.shift();
   achPopup.innerHTML=`<div class="ach-popup-icon">${a.icon}</div><div class="ach-popup-label">Achievement unlocked</div><div class="ach-popup-name">${a.name}</div><div class="ach-popup-desc">${a.desc}</div><button class="ach-popup-close" onclick="closeAchPopup()">Nice!</button>`;
@@ -1434,7 +1452,7 @@ window.addEventListener('online',updateIntroOfflineState);
 window.addEventListener('offline',updateIntroOfflineState);
 // #endregion
 // #region §JS-GameFlow
-function startGame(){introEl.style.display='none';saveProgress();}
+function startGame(){introEl.style.display='none';saveProgress();setTimeout(tutStart,150);}
 // Returning player: show welcome-back dashboard
 if(saved&&discovered.size>STARTS.length){
   document.getElementById('intro-new').style.display='none';
@@ -1609,6 +1627,7 @@ function tapCard(name){
   if(!slotA)slotA=name;else if(!slotB)slotB=name;
   else{slotA=slotB;slotB=name;renderSlot(slotAEl,slotA);}
   updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();
+  tutHook('tapCard',name);
 }
 function addResult(){
   if(!resultName||resultState!=='new')return;
@@ -1623,6 +1642,7 @@ function addResult(){
   }));
   showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');sndDiscover();
   checkWin();checkAchievements();
+  tutHook('addResult',added);
 }
 // #endregion
 // #region §JS-UIHelpers
@@ -1723,7 +1743,7 @@ function showHint(){
 }
 // #endregion
 // #region §JS-Tooltip
-function scheduleHide(){clearTimeout(hideTimer);hideTimer=setTimeout(()=>tooltip.classList.remove('visible'),120);}
+function scheduleHide(){if(tutPinTooltip)return;clearTimeout(hideTimer);hideTimer=setTimeout(()=>tooltip.classList.remove('visible'),120);}
 function cancelHide(){clearTimeout(hideTimer);}
 tooltip.addEventListener('mouseenter',cancelHide);
 tooltip.addEventListener('mouseleave',scheduleHide);
@@ -2184,12 +2204,14 @@ function openSlideIn(name){
   slideinOverlay.classList.add('active');
   slideinPanel.classList.add('active');
   tooltip.classList.remove('visible');
+  tutHook('openSlideIn',name);
 }
 function closeSlideIn(){
   stopNarration();
   if(langDropdown)langDropdown.classList.remove('open');
   slideinOverlay.classList.remove('active');
   slideinPanel.classList.remove('active');
+  tutHook('closeSlideIn');
 }
 slideinOverlay.addEventListener('click',closeSlideIn);
 
@@ -2751,8 +2773,9 @@ function openStats(){
     }
   };
   statsEl.classList.add('active');
+  tutHook('openStats');
 }
-function closeStats(){statsEl.classList.remove('active');hideAchTT();}
+function closeStats(){statsEl.classList.remove('active');hideAchTT();tutHook('closeStats');}
 // Achievement tooltip in stats
 let achTTTimer;
 function showAchTT(el){
@@ -2861,6 +2884,246 @@ if('serviceWorker' in navigator){
     });
   });
 }
+// #endregion
+// #region §JS-Tutorial
+// ─────────────────────────────────────────────────────────────────────
+// Guided tutorial — fires once for new users after startGame()
+// ─────────────────────────────────────────────────────────────────────
+(function(){
+  // ── Create DOM elements ─────────────────────────────────────────────
+  const mkPanel=k=>{const d=document.createElement('div');d.className='tut-panel';d.id='tut-panel-'+k;document.body.appendChild(d);return d;};
+  const tutP={top:mkPanel('top'),bottom:mkPanel('bottom'),left:mkPanel('left'),right:mkPanel('right')};
+
+  const tutRingEl=document.createElement('div');tutRingEl.id='tut-ring';document.body.appendChild(tutRingEl);
+
+  const tutBoxEl=document.createElement('div');tutBoxEl.id='tut-box';
+  tutBoxEl.innerHTML='<div id="tut-step-label"></div><div id="tut-box-title"></div><div id="tut-box-text"></div><button id="tut-box-ok">OK, got it</button><button id="tut-skip">Skip tutorial</button>';
+  document.body.appendChild(tutBoxEl);
+
+  const tutLblEl=document.getElementById('tut-step-label');
+  const tutTitleEl=document.getElementById('tut-box-title');
+  const tutTextEl=document.getElementById('tut-box-text');
+  const tutOkBtn=document.getElementById('tut-box-ok');
+  const tutSkipBtn=document.getElementById('tut-skip');
+
+  // ── State ────────────────────────────────────────────────────────────
+  let tutStep=-1,tutActive=false;
+
+  // ── Step definitions ─────────────────────────────────────────────────
+  const S=[
+    // 0
+    {type:'info',title:'Welcome to BizAlchemy! 👋',
+     text:"In this quick tour you'll learn how to combine concepts, read full descriptions, and track your business knowledge. Let's go!"},
+    // 1
+    {type:'action',title:'Select a concept',
+     text:'Click the 💡 <strong>Idea</strong> card to place it in the first slot.',
+     targetFn:()=>domCards.get('Idea'),hook:'tapCard',hookData:'Idea'},
+    // 2
+    {type:'action',title:'Select another concept',
+     text:'Now click the 👥 <strong>Audience</strong> card to fill the second slot.',
+     targetFn:()=>domCards.get('Audience'),hook:'tapCard',hookData:'Audience'},
+    // 3
+    {type:'action',title:'Discover the combination!',
+     text:'A result is ready. Click it to discover what Idea + Audience creates together.',
+     targetFn:()=>resultEl,hook:'addResult'},
+    // 4 — hidden wait for achievement popup to close
+    {type:'wait',hook:'achQueueEmpty'},
+    // 5
+    {type:'info',title:'🏆 Achievement unlocked!',
+     text:"You just earned your first achievement — awarded for discovering your first concept beyond the starters. You'll earn more as you explore!"},
+    // 6 — tooltip shown programmatically
+    {type:'info',title:'Concept tooltip',
+     text:'The ⓘ icon on any card shows a quick summary — recipe, short description, and a link to read more.',
+     targetFn:()=>document.getElementById('tooltip'),
+     onEnter:()=>{
+       tutPinTooltip=true;
+       const card=domCards.get('Niche');
+       if(card){const ico=card.querySelector('.ec-info');showTooltip('Niche',ico||card);cancelHide();}
+     }},
+    // 7
+    {type:'action',title:'Open the full description',
+     text:'Click <strong>Read/listen more →</strong> to open the detailed view for this concept.',
+     targetFn:()=>document.querySelector('.tt-cta'),hook:'openSlideIn'},
+    // 8
+    {type:'info',title:'Full description',
+     text:'Here you can read the complete, in-depth description for any concept — written in plain, practical language.',
+     targetFn:()=>document.getElementById('slidein-body')},
+    // 9
+    {type:'info',title:'Listen to narration 🔊',
+     text:'Click this button to have the description read aloud — great for learning on the go.',
+     targetFn:()=>document.getElementById('slidein-narrate')},
+    // 10
+    {type:'info',title:'Translate 🌐',
+     text:'Click here to read the content in another language. Multiple languages are supported.',
+     targetFn:()=>document.getElementById('slidein-translate')},
+    // 11
+    {type:'info',title:'Business ownership tracker',
+     text:'Use <strong>0 / 1 / 2</strong> to mark how well you know this concept: <strong>0</strong> = not yet, <strong>1</strong> = partially, <strong>2</strong> = fully in your toolkit.',
+     targetFn:()=>document.getElementById('si-seg')},
+    // 12 — free: user closes slide-in naturally, hook advances
+    {type:'free',title:'Close the panel',
+     text:'Now close this panel yourself — tap ✕ or tap the dark area outside.',
+     targetFn:()=>document.getElementById('slidein-close'),hook:'closeSlideIn'},
+    // 13
+    {type:'action',title:'Open Statistics 📊',
+     text:'Click the 📊 <strong>Statistics</strong> button in the top bar to see your full progress.',
+     targetFn:()=>document.getElementById('stats-btn'),hook:'openStats'},
+    // 14
+    {type:'info',title:'Your Session ID',
+     text:'This code is your unique Session ID. Save it — you can use it to resume your progress on any device.',
+     targetFn:()=>document.querySelector('.stats-session-id')},
+    // 15
+    {type:'info',title:'Achievements',
+     text:'All your achievements live here — unlocked ones are lit up, locked ones show what\'s coming as you explore more.',
+     targetFn:()=>document.querySelector('.stats-ach-section')},
+    // 16
+    {type:'info',title:'Your business concepts',
+     text:'Concepts are organised by department with progress bars showing how far you\'ve explored each area.',
+     targetFn:()=>document.querySelector('.stats-biz-tier')},
+    // 17
+    {type:'info',title:'Track what you know',
+     text:'Click any concept pill once for <strong>partially understood</strong>, twice for <strong>fully owned</strong>. Syncs automatically.',
+     targetFn:()=>document.querySelector('.stats-biz-items')},
+    // 18
+    {type:'info',title:"You're all set! 🎉",
+     text:'Tour complete. Click ✕ to close Statistics and start exploring — combine concepts, earn achievements, and build your knowledge!',
+     targetFn:()=>document.getElementById('stats-close')},
+  ];
+
+  const TOTAL_VIS=S.filter(s=>s.type!=='wait').length;
+
+  function visIdx(){let v=0;for(let i=0;i<=tutStep;i++){if(S[i]&&S[i].type!=='wait')v++;}return v;}
+
+  // ── Spotlight (4-panel approach) ──────────────────────────────────────
+  function hidePanels(){
+    Object.values(tutP).forEach(p=>{p.style.cssText='display:none';});
+    tutRingEl.classList.remove('active');
+  }
+
+  function spotlight(target){
+    if(!target){
+      hidePanels();
+      tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all';
+      return;
+    }
+    const r=target.getBoundingClientRect();
+    const pad=10;
+    const T=Math.max(0,r.top-pad),L=Math.max(0,r.left-pad);
+    const R=Math.min(window.innerWidth,r.right+pad),B=Math.min(window.innerHeight,r.bottom+pad);
+    const setP=(el,css)=>{el.style.cssText=css+';position:fixed;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all';};
+    setP(tutP.top,   `left:0;top:0;right:0;height:${T}px`);
+    setP(tutP.bottom,`left:0;top:${B}px;right:0;bottom:0`);
+    setP(tutP.left,  `left:0;top:${T}px;width:${L}px;height:${B-T}px`);
+    setP(tutP.right, `left:${R}px;top:${T}px;right:0;height:${B-T}px`);
+    tutRingEl.style.cssText=`left:${r.left-pad+2}px;top:${r.top-pad+2}px;width:${r.width+pad*2-4}px;height:${r.height+pad*2-4}px;border-radius:${Math.min(12,r.height/2+4)}px`;
+    tutRingEl.classList.add('active');
+  }
+
+  // ── Box positioning ───────────────────────────────────────────────────
+  function positionBox(target){
+    tutBoxEl.classList.add('active');
+    const bw=280,margin=14;
+    if(!target){
+      tutBoxEl.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:'+bw+'px;z-index:9002;display:block;box-sizing:border-box';
+      return;
+    }
+    tutBoxEl.style.transform='';
+    const bh=tutBoxEl.offsetHeight||160;
+    const r=target.getBoundingClientRect();
+    let top=(r.bottom+margin+bh<=window.innerHeight)?r.bottom+margin:r.top-bh-margin;
+    let left=r.left+(r.width/2)-(bw/2);
+    left=Math.max(12,Math.min(left,window.innerWidth-bw-12));
+    top=Math.max(8,top);
+    tutBoxEl.style.cssText=`position:fixed;top:${top}px;left:${left}px;width:${bw}px;z-index:9002;display:block;box-sizing:border-box`;
+  }
+
+  // ── Show a step ───────────────────────────────────────────────────────
+  function showStep(i){
+    const step=S[i];
+    if(!step){tutEnd();return;}
+    tutStep=i;
+
+    if(step.type==='wait'){
+      hidePanels();
+      tutBoxEl.classList.remove('active');
+      tutBoxEl.style.display='none';
+      return;
+    }
+
+    if(step.onEnter)step.onEnter();
+
+    tutLblEl.textContent='Step '+visIdx()+' of '+TOTAL_VIS;
+    tutTitleEl.textContent=step.title;
+    tutTextEl.innerHTML=step.text;
+    tutOkBtn.style.display=(step.type==='info')?'block':'none';
+    tutSkipBtn.style.display='block';
+    tutBoxEl.classList.add('active');
+
+    if(step.type==='free'){
+      hidePanels();
+      requestAnimationFrame(()=>{
+        const t=step.targetFn?step.targetFn():null;
+        positionBox(t);
+      });
+      return;
+    }
+
+    requestAnimationFrame(()=>{
+      const t=step.targetFn?step.targetFn():null;
+      spotlight(t);
+      positionBox(t);
+    });
+  }
+
+  // ── OK button (info steps) ────────────────────────────────────────────
+  tutOkBtn.addEventListener('click',()=>{
+    if(S[tutStep]&&S[tutStep].type==='info')showStep(tutStep+1);
+  });
+
+  // ── Skip button ───────────────────────────────────────────────────────
+  tutSkipBtn.addEventListener('click',tutEnd);
+
+  function tutEnd(){
+    tutActive=false;
+    tutPinTooltip=false;
+    hidePanels();
+    tutBoxEl.classList.remove('active');
+    tutBoxEl.style.display='none';
+    try{localStorage.setItem('ba_tutorial_done','1');}catch(e){}
+  }
+
+  // ── Global hook (called from game functions) ──────────────────────────
+  tutHook=function(event,data){
+    if(!tutActive)return;
+    const step=S[tutStep];if(!step)return;
+
+    // Special: addResult during step 3 → jump to wait step silently
+    if(event==='addResult'&&tutStep===3){
+      hidePanels();
+      tutBoxEl.classList.remove('active');
+      tutBoxEl.style.display='none';
+      tutStep=4; // wait step — will advance via achQueueEmpty
+      return;
+    }
+
+    const match=(step.hook===event)&&(!step.hookData||step.hookData===data);
+    if(!match)return;
+
+    if(step.type==='action'||step.type==='wait'||step.type==='free'){
+      if(event==='openSlideIn')tutPinTooltip=false;
+      showStep(tutStep+1);
+    }
+  };
+
+  // ── Start (called after startGame()) ─────────────────────────────────
+  tutStart=function(){
+    if(tutActive)return;
+    try{if(localStorage.getItem('ba_tutorial_done'))return;}catch(e){}
+    if(discovered.size>STARTS.length)return; // skip for returning users
+    tutActive=true;
+    showStep(0);
+  };
+})();
 // #endregion
 </script>
 </body>
