@@ -39,6 +39,7 @@
 <meta property="og:image" content="icons/icon-512.png">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
+<script>(function(){try{var d=localStorage.getItem('ba_discovered');if(d){var a=JSON.parse(d);if(a&&a.length>4)document.documentElement.classList.add('ba-returning');}}catch(e){}}());</script>
 <style>
 /* #region §CSS-Shell */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -196,7 +197,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .gi-icon{font-size:16px;flex-shrink:0;line-height:1;width:20px;text-align:center}
 .gi-text{font-size:11.5px;color:#555;font-weight:500;line-height:1.3}
 /* Welcome back dashboard */
-#intro-wb{display:flex;flex-direction:column;gap:12px;animation:introFadeUp 0.5s ease 0.15s both}
+#intro-wb{display:none;flex-direction:column;gap:12px;animation:introFadeUp 0.5s ease 0.15s both}
+html.ba-returning #intro-wb{display:flex}
+html.ba-returning #intro-new,html.ba-returning .intro-steps,html.ba-returning .intro-grid{display:none}
 #wb-hook{font-size:14px;font-weight:600;color:#1a1a1a;text-align:center}
 #wb-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
 .wb-stat{text-align:center;padding:10px 6px;border-radius:10px;border:1px solid #eee;background:#fafaf8}
@@ -516,7 +519,7 @@ h1,h2{margin:0;padding:0}
         <div id="intro-offline-note"></div>
       </div>
       <!-- Returning player content (hidden for new players) -->
-      <div id="intro-wb" style="display:none">
+      <div id="intro-wb">
         <div id="wb-hook">Welcome back!</div>
         <!-- Progress stats -->
         <div id="wb-stats">
@@ -1690,6 +1693,7 @@ function doReset(){
   saveProgress();
   buildGrid();
   introEl.style.display='flex';
+  document.documentElement.classList.remove('ba-returning');
   document.getElementById('intro-new').style.display='';
   document.getElementById('intro-wb').style.display='none';
   document.querySelector('.intro-steps').style.display='';
