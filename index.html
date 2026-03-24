@@ -759,7 +759,7 @@ let tutHook=()=>{},tutStart=()=>{},tutPinTooltip=false;
 // │      §JS-Init            announce(), buildGrid(), twemoji, SW reg    │
 // │      §JS-Tutorial        19-step guided tour for first-time users    │
 // └──────────────────────────────────────────────────────────────────────┘
-// #region §JS-DataConstants
+// #region §JS-DataConstants  // ← new §-section? also add it to TABLE OF CONTENTS above
 const PAL=[
   {bg:'#FAEEDA',b:'#EF9F27',t:'#633806',dot:'#EF9F27'},
   {bg:'#E6F1FB',b:'#378ADD',t:'#0C447C',dot:'#378ADD'},
@@ -793,7 +793,7 @@ const ITEM_DEPT={};
 DEPARTMENTS.forEach((dept,i)=>dept.items.forEach(n=>{ITEM_DEPT[n]=i;}));
 let activeDept=0;
 // #endregion
-// #region §JS-InfoShort
+// #region §JS-InfoShort  // ← new §-section? also add it to TABLE OF CONTENTS above
 const INFO={
   'Idea':{d:"The spark that starts every business — raw potential with no shape yet.\nWithout an idea there is nothing to build, sell, or share with the world."},
   'Audience':{d:"The people you exist to serve. Without them you are just talking to yourself.\nEvery smart business decision starts with understanding who these people are."},
@@ -900,7 +900,7 @@ const INFO={
   'AI Marketing OS':{d:"The full AI layer over your entire marketing operation — every funnel, email, ad, and content piece orchestrated by intelligence.\nThe future of the digital business, available and buildable today for those willing to commit to it."},
 };
 // #endregion
-// #region §JS-ElementsRegistry
+// #region §JS-ElementsRegistry  // ← new §-section? also add it to TABLE OF CONTENTS above
 function slug(n){return n.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');}
 const ALL={
   // T0
@@ -947,7 +947,7 @@ const ALL={
   'Digital Empire':{e:'🌎',tier:6},'AI Marketing OS':{e:'🌌',tier:6},
 };
 // #endregion
-// #region §JS-Recipes
+// #region §JS-Recipes  // ← new §-section? also add it to TABLE OF CONTENTS above
 const R={};const REV={};
 function add(a,b,n){
   const k=[a,b].sort().join('||');
@@ -1081,7 +1081,7 @@ add('Market Leader','Viral Growth','Digital Empire');
 add('Product Launch','Revenue Engine','Digital Empire');
 add('AI Content System','Marketing OS','AI Marketing OS');
 // #endregion
-// #region §JS-Persistence
+// #region §JS-Persistence  // ← new §-section? also add it to TABLE OF CONTENTS above
 const STARTS=['Idea','Audience','Content','Tool'];
 const TOTAL=Object.keys(ALL).length;
 function loadProgress(){
@@ -1110,7 +1110,7 @@ function supaFetch(path,method,body,prefer){
   return fetch(SUPA_URL+'/rest/v1/'+path,opts);
 }
 // #endregion
-// #region §JS-CloudSync
+// #region §JS-CloudSync  // ← new §-section? also add it to TABLE OF CONTENTS above
 async function syncToSupabase(){
   if(discovered.size<=STARTS.length){syncStatus='pending';updateSyncIndicator();return;}
   const body={session_id:sessionId,discovered:[...discovered],tried:[...tried],owned:[...owned],partial:[...partial],achievements:[...unlockedAch],updated_at:new Date().toISOString()};
@@ -1151,7 +1151,7 @@ window.addEventListener('offline',()=>{
   showToast('err','You are offline');
 });
 // #endregion
-// #region §JS-OfflinePWA
+// #region §JS-OfflinePWA  // ← new §-section? also add it to TABLE OF CONTENTS above
 function updateOfflineUI(){
   const offline=!navigator.onLine;
   const nb=document.getElementById('slidein-narrate');
@@ -1193,7 +1193,7 @@ function installApp(){
 
 // --- Push Notification Subscription ---
 // #endregion
-// #region §JS-PushNotifications
+// #region §JS-PushNotifications  // ← new §-section? also add it to TABLE OF CONTENTS above
 const VAPID_PUBLIC_KEY='TO_BE_REPLACED_WITH_ACTUAL_VAPID_PUBLIC_KEY';
 let notifModalShown=false;
 function shouldShowNotifModal(){
@@ -1263,7 +1263,7 @@ async function loadFromSupabase(id){
   }catch(e){return null;}
 }
 // #endregion
-// #region §JS-StateInit
+// #region §JS-StateInit  // ← new §-section? also add it to TABLE OF CONTENTS above
 let sessionId=localStorage.getItem('ba_session')||genSessionId();
 let syncStatus='pending'; // 'pending' | 'synced' | 'failed' | 'offline'
 function saveProgress(){
@@ -1288,7 +1288,7 @@ discovered.forEach(n=>markAllRecipes(n));
 function isOwned(n){return owned.has(n)||partial.has(n);}
 function ownedTotal(){return owned.size+partial.size;}
 // #endregion
-// #region §JS-Achievements
+// #region §JS-Achievements  // ← new §-section? also add it to TABLE OF CONTENTS above
 const ACHIEVEMENTS=[
   // Game progression
   {id:'first_discovery',name:'First Discovery',desc:'Discover your first element beyond the starters',icon:'🌱',cat:'game',check:()=>discovered.size>STARTS.length},
@@ -1355,7 +1355,7 @@ function closeAchPopup(){
 achOverlay.addEventListener('click',closeAchPopup);
 // Sound system (Web Audio API — calm, soft tones)
 // #endregion
-// #region §JS-Audio
+// #region §JS-Audio  // ← new §-section? also add it to TABLE OF CONTENTS above
 let audioCtx=null;
 function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
 function playTone(freq,duration,type,vol,delay){
@@ -1399,7 +1399,7 @@ function spawnConfetti(container){
   }
 }
 // #endregion
-// #region §JS-DOMRefs
+// #region §JS-DOMRefs  // ← new §-section? also add it to TABLE OF CONTENTS above
 let domCards=new Map();
 let slotA=null,slotB=null,resultName=null,resultState=null;
 let toastTimer=null,hideTimer=null,hintPopupTimer=null,hintCooldownTimer=null,longPressTimer=null;
@@ -1415,7 +1415,7 @@ const gameEl=document.getElementById('game');
 const introEl=document.getElementById('intro');
 const congratsEl=document.getElementById('congrats');
 // #endregion
-// #region §JS-IntroWelcomeBack
+// #region §JS-IntroWelcomeBack  // ← new §-section? also add it to TABLE OF CONTENTS above
 function updateIntroOfflineState(){
   const offline=!navigator.onLine;
   const newNote=document.getElementById('intro-offline-note');
@@ -1452,7 +1452,7 @@ updateIntroOfflineState();
 window.addEventListener('online',updateIntroOfflineState);
 window.addEventListener('offline',updateIntroOfflineState);
 // #endregion
-// #region §JS-GameFlow
+// #region §JS-GameFlow  // ← new §-section? also add it to TABLE OF CONTENTS above
 function startGame(){introEl.style.display='none';saveProgress();setTimeout(tutStart,150);}
 // Returning player: show welcome-back dashboard
 if(saved&&discovered.size>STARTS.length){
@@ -1535,7 +1535,7 @@ function checkWin(){
   }
 }
 // #endregion
-// #region §JS-CombinationLogic
+// #region §JS-CombinationLogic  // ← new §-section? also add it to TABLE OF CONTENTS above
 function ck(a,b){return[a,b].sort().join('||');}
 function markAllRecipes(name){if(REV[name])REV[name].forEach(([a,b])=>tried.add(ck(a,b)));}
 function hasReaction(a,b){return!!R[ck(a,b)];}
@@ -1610,7 +1610,7 @@ function clearSlot(which){
   updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();
 }
 // #endregion
-// #region §JS-CardInteraction
+// #region §JS-CardInteraction  // ← new §-section? also add it to TABLE OF CONTENTS above
 function updateCardStates(){
   const both=slotA&&slotB;
   domCards.forEach((d,name)=>{
@@ -1646,7 +1646,7 @@ function addResult(){
   tutHook('addResult',added);
 }
 // #endregion
-// #region §JS-UIHelpers
+// #region §JS-UIHelpers  // ← new §-section? also add it to TABLE OF CONTENTS above
 function showConfirm(title,msg,onConfirm,confirmLabel){
   const ov=document.getElementById('confirm-overlay');
   const bx=document.getElementById('confirm-box');
@@ -1743,7 +1743,7 @@ function showHint(){
   hintCooldownTimer=setInterval(()=>{cd--;if(cd<=0){clearInterval(hintCooldownTimer);hintBtn.disabled=false;hintBtn.textContent='💡 Hint';}else hintBtn.textContent=`💡 Hint (${cd}s)`;},1000);
 }
 // #endregion
-// #region §JS-Tooltip
+// #region §JS-Tooltip  // ← new §-section? also add it to TABLE OF CONTENTS above
 function scheduleHide(){if(tutPinTooltip)return;clearTimeout(hideTimer);hideTimer=setTimeout(()=>tooltip.classList.remove('visible'),120);}
 function cancelHide(){clearTimeout(hideTimer);}
 tooltip.addEventListener('mouseenter',cancelHide);
@@ -1779,7 +1779,7 @@ document.addEventListener('touchstart',function(e){
   forceHideTooltip();
 },{passive:true});
 // #endregion
-// #region §JS-GridBuilder
+// #region §JS-GridBuilder  // ← new §-section? also add it to TABLE OF CONTENTS above
 function buildDeptTabs(){
   const tabs=document.getElementById('dept-tabs');tabs.innerHTML='';
   DEPARTMENTS.forEach((dept,i)=>{
@@ -1838,7 +1838,7 @@ function buildGrid(){
 }
 grid.addEventListener('click',e=>{if(!e.target.closest('.ec'))closeHint();});
 // #endregion
-// #region §JS-LongDesc
+// #region §JS-LongDesc  // ← new §-section? also add it to TABLE OF CONTENTS above
 const LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula ut dictum pharetra, nisi nunc fringilla magna, in commodo elit erat nec turpis. Ut pharetra augue nec augue.';
 const LONG_DESC={
 'Idea':'Every business that exists today started as <b>a single idea</b> in someone\'s mind. It was not fully formed — it was messy, incomplete, and probably a little naive. That is exactly how it should be. <b>The starting point matters more than the shape</b>, because shape comes later through contact with real people and real problems. A lot of people get stuck here, tweaking their idea alone, waiting for it to feel "ready." But an idea only becomes useful when it meets an audience, a market, and a willingness to test it out loud. <i>Getting it perfect is not the goal at this stage — getting it moving is.</i><br><br>Think of your idea as <b>something you are testing</b>. You believe something is true about the world, about what people need, or about what could exist. Your business journey is basically the process of testing that belief, adjusting it, and turning it into something others will pay for. <span style="color:#c17a2f">The biggest risk at the idea stage is not having a bad idea — it is having one and never doing anything with it.</span> Most successful businesses were not built on brilliant ideas. They were built on <b>decent ideas, done consistently, with a willingness to adapt</b> based on what real people actually said.<br><br>The best ideas <b>solve a real problem for a specific group of people</b>. They do not try to be everything to everyone. They start small, stay focused, and grow through testing rather than guessing. Everything you build in your business — your positioning, your content, your products — goes back to this first spark. <span style="color:#c17a2f">Do not wait until you feel sure. That feeling comes after you start, not before.</span><br><br><i>Also known as: business idea, concept, startup idea, venture concept.</i>',
@@ -2049,7 +2049,7 @@ const LONG_DESC={
 };
 Object.keys(ALL).forEach(k=>{if(!LONG_DESC[k])LONG_DESC[k]=LOREM;});
 // #endregion
-// #region §JS-CTATexts
+// #region §JS-CTATexts  // ← new §-section? also add it to TABLE OF CONTENTS above
 const CTA_TEXT={
   'Idea':'Ready to turn this idea into something real? Book a free call',
   'Audience':'Want help identifying your ideal audience? Grab a free session',
@@ -2156,7 +2156,7 @@ const CTA_TEXT={
   'AI Marketing OS':'Want AI running your marketing? Build the system with us',
 };
 // #endregion
-// #region §JS-SlideIn
+// #region §JS-SlideIn  // ← new §-section? also add it to TABLE OF CONTENTS above
 const OWNED_LABEL='Do you already do this in your business?';
 const slideinOverlay=document.getElementById('slidein-overlay');
 const slideinPanel=document.getElementById('slidein');
@@ -2218,7 +2218,7 @@ slideinOverlay.addEventListener('click',closeSlideIn);
 
 // Narration via SpeechSynthesis
 // #endregion
-// #region §JS-Narration
+// #region §JS-Narration  // ← new §-section? also add it to TABLE OF CONTENTS above
 const narrateBtn=document.getElementById('slidein-narrate');
 let narrationUtterance=null;
 let preferredVoice=null;
@@ -2442,7 +2442,7 @@ narrateBtn.addEventListener('click',function(){
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&narrateBtn.classList.contains('playing'))requestWakeLock();});
 // Translation system
 // #endregion
-// #region §JS-Translation
+// #region §JS-Translation  // ← new §-section? also add it to TABLE OF CONTENTS above
 const translateBtn=document.getElementById('slidein-translate');
 const langDropdown=document.getElementById('si-lang-dropdown');
 const MAIN_LANGS=[
@@ -2665,7 +2665,7 @@ function updateVoiceForLang(){
 }
 
 // #endregion
-// #region §JS-StatsScreen
+// #region §JS-StatsScreen  // ← new §-section? also add it to TABLE OF CONTENTS above
 const statsEl=document.getElementById('stats');
 const statsBody=document.getElementById('stats-body');
 function openStats(){
@@ -2810,7 +2810,7 @@ document.addEventListener('touchstart',function(e){
 },{passive:true});
 // Particle burst on result collection
 // #endregion
-// #region §JS-Effects
+// #region §JS-Effects  // ← new §-section? also add it to TABLE OF CONTENTS above
 function spawnParticleBurst(anchor){
   const rect=anchor.getBoundingClientRect();
   const gameRect=document.getElementById('game').getBoundingClientRect();
@@ -2864,7 +2864,7 @@ function launchConfetti(){
 }
 // Accessibility: aria-live announcements
 // #endregion
-// #region §JS-Init
+// #region §JS-Init  // ← new §-section? also add it to TABLE OF CONTENTS above
 const announceEl=document.getElementById('announcements');
 function announce(msg){announceEl.textContent='';requestAnimationFrame(()=>{announceEl.textContent=msg;});}
 
@@ -2886,7 +2886,7 @@ if('serviceWorker' in navigator){
   });
 }
 // #endregion
-// #region §JS-Tutorial
+// #region §JS-Tutorial  // ← new §-section? also add it to TABLE OF CONTENTS above
 // ─────────────────────────────────────────────────────────────────────
 // Guided tutorial — fires once for new users after startGame()
 // ─────────────────────────────────────────────────────────────────────
