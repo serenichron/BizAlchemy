@@ -14,6 +14,7 @@
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
 <style>
+/* #region §CSS-Shell */
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:16px 8px}
 #wrap{max-width:390px;width:100%}
@@ -43,6 +44,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sync-failed{background:#c0392b}
 .sync-offline{background:#999}
 @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.4}}
+/* #endregion */
+/* #region §CSS-Grid */
 #grid{overflow-y:auto;flex:1;padding:8px 10px 120px;position:relative}
 .tier-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 2px 5px;font-size:11.5px;font-weight:600;color:#888;letter-spacing:0.3px;border-top:none;margin-top:4px;position:relative}
 .tier-hdr::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,#ddd 30%,#ddd 70%,transparent)}
@@ -92,6 +95,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes particleFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx,20px),var(--dy,20px)) scale(0.3);opacity:0}}
 /* Confetti canvas */
 #confetti-canvas{position:absolute;inset:0;pointer-events:none;z-index:99;border-radius:20px}
+/* #endregion */
+/* #region §CSS-Tray */
 #tray{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:10px 12px 14px;display:flex;align-items:center;gap:7px;z-index:30}
 .slot{flex:1;height:68px;border-radius:14px;border:1.5px dashed #ccc;background:#fafaf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:default;position:relative;transition:border-color 0.15s}
 .slot.filled{border-style:solid;border-color:var(--slot-color);background:var(--slot-bg)}
@@ -117,6 +122,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #result-slot.state-none{border-color:#D85A30;background:#fdeae3;cursor:pointer}
 #result-slot.state-none .res-sub{color:#D85A30;font-size:10px}
 #result-slot.state-none::before{content:'NO MATCH';position:absolute;top:5px;left:6px;font-size:8.5px;font-weight:700;letter-spacing:0.5px;color:#D85A30;background:#faddd2;padding:1px 5px;border-radius:8px}
+/* #endregion */
+/* #region §CSS-Tooltip */
 #tooltip{position:absolute;background:#fff;border:1px solid #ddd;border-radius:12px;padding:10px 12px 9px;font-size:12px;z-index:200;pointer-events:auto;visibility:hidden;opacity:0;max-width:190px;width:max-content;transition:opacity 0.12s;cursor:default;box-shadow:0 2px 16px rgba(0,0,0,0.09)}
 #tooltip::before{content:'';position:absolute;left:0;right:0;bottom:-12px;height:12px}
 #tooltip.above::before{bottom:auto;top:-12px}
@@ -138,6 +145,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #toast{position:absolute;top:8px;left:12px;right:12px;padding:9px 16px;font-size:13px;font-weight:500;text-align:center;z-index:90;display:none;border-radius:10px;border:1px solid #eee}
 .tok{display:block!important;background:#e8f5e9;color:#2e7d32}
 .err{display:block!important;background:#fdeaea;color:#c0392b}
+/* #endregion */
+/* #region §CSS-Intro */
 /* Intro */
 #intro{position:absolute;inset:0;background:#fff;z-index:100;display:flex;flex-direction:column;border-radius:20px;overflow:hidden}
 #intro-body{flex:1;overflow-y:auto;padding:24px 22px 14px;display:flex;flex-direction:column;gap:14px}
@@ -192,6 +201,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #intro-footer{padding:12px 22px 18px;flex-shrink:0;border-top:1px solid #eee}
 #start-btn{width:100%;padding:13px;border-radius:12px;border:none;background:#1a1a1a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:opacity 0.1s}
 #start-btn:hover{opacity:0.85}
+/* #endregion */
+/* #region §CSS-Congrats */
 /* Congrats */
 #congrats{position:absolute;inset:0;background:#fff;z-index:100;display:none;flex-direction:column;border-radius:20px;overflow:hidden}
 #congrats-body{flex:1;overflow-y:auto;padding:32px 24px 16px;display:flex;flex-direction:column;align-items:center}
@@ -227,6 +238,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #keep-building-btn:hover{opacity:0.85}
 #play-again-btn{flex:1;padding:12px;border-radius:12px;border:1px solid #ddd;background:#fff;font-size:14px;font-weight:500;color:#1a1a1a;cursor:pointer;transition:background 0.1s}
 #play-again-btn:hover{background:#f5f4f0}
+/* #endregion */
+/* #region §CSS-Stats */
 /* Stats screen */
 #stats{position:absolute;inset:0;background:#fff;z-index:100;display:none;flex-direction:column;border-radius:20px;overflow:hidden}
 #stats.active{display:flex}
@@ -273,6 +286,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stats-sync-badge.failed{background:#fde8e8;color:#c0392b}
 .stats-sync-badge.offline{background:#f0efe9;color:#888}
 .stats-sync-badge.pending{background:#fef9f0;color:#9a6d1a}
+/* #endregion */
+/* #region §CSS-SlideIn */
 /* Slide-in panel */
 #slidein-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s ease;border-radius:20px}
 #slidein-overlay.active{opacity:1;pointer-events:auto}
@@ -326,6 +341,8 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
 .res-e img.emoji{height:22px;width:22px;margin:0;vertical-align:baseline}
 #intro-logo img.emoji{height:36px;width:36px;margin:0}
 #confetti-row img.emoji{height:20px;width:20px}
+/* #endregion */
+/* #region §CSS-Popups */
 /* Achievement popup */
 #ach-popup{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:#fff;border-radius:16px;padding:20px 24px;z-index:400;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.18);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),opacity 0.35s;opacity:0;pointer-events:none;min-width:220px;max-width:280px}
 #ach-popup.active{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
@@ -381,6 +398,8 @@ img.emoji{height:1em;width:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em}
 .confirm-cancel:hover{background:#f5f4f0}
 .confirm-go{border:none;background:#D85A30;color:#fff}
 .confirm-go:hover{opacity:0.85}
+/* #endregion */
+/* #region §CSS-Responsive */
 /* Accessibility */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 h1,h2{margin:0;padding:0}
@@ -451,11 +470,13 @@ h1,h2{margin:0;padding:0}
   #plus,#eq{font-size:13px}
   .cards-row{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
+/* #endregion */
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 <div id="wrap"><main id="game" role="application" aria-label="BizAlchemy combination game">
+  <!-- #region §HTML-Intro -->
   <!-- Intro screen -->
   <div id="intro">
     <div id="intro-body">
@@ -528,6 +549,8 @@ h1,h2{margin:0;padding:0}
       <button id="start-btn" onclick="startGame()">Start discovering →</button>
     </div>
   </div>
+  <!-- #endregion -->
+  <!-- #region §HTML-Congrats -->
   <!-- Congrats screen -->
   <div id="congrats">
     <div id="congrats-body">
@@ -561,6 +584,8 @@ h1,h2{margin:0;padding:0}
       <button id="play-again-btn" onclick="resetFromCongrats()">↺ Start fresh</button>
     </div>
   </div>
+  <!-- #endregion -->
+  <!-- #region §HTML-Stats -->
   <!-- Stats screen -->
   <div id="stats" role="dialog" aria-modal="true" aria-labelledby="stats-title">
     <div id="stats-header">
@@ -569,6 +594,8 @@ h1,h2{margin:0;padding:0}
     </div>
     <div id="stats-body"></div>
   </div>
+  <!-- #endregion -->
+  <!-- #region §HTML-GameBoard -->
   <!-- Game -->
   <header id="hdr">
     <h1 id="ttl">BizAlchemy</h1>
@@ -604,6 +631,8 @@ h1,h2{margin:0;padding:0}
     <div class="hp-close" onclick="closeHint()">✕</div>
   </div>
   <div id="toast"></div>
+  <!-- #endregion -->
+  <!-- #region §HTML-Modals -->
   <!-- Push notification modal -->
   <div id="notif-overlay" aria-hidden="true"></div>
   <div id="notif-box" role="dialog" aria-modal="true" aria-label="Enable notifications">
@@ -638,8 +667,49 @@ h1,h2{margin:0;padding:0}
     <div id="slidein-body"></div>
   </div>
   <div id="announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <!-- #endregion -->
 </main></div>
 <script>
+// ┌──────────────────────────────────────────────────────────────────────┐
+// │ INDEX.HTML — TABLE OF CONTENTS                                       │
+// │ Search §SectionName to jump to any section (Ctrl+F / Cmd+F)          │
+// ├──────────────────────────────────────────────────────────────────────┤
+// │ CSS  §CSS-Shell  §CSS-Grid  §CSS-Tray  §CSS-Tooltip  §CSS-Intro      │
+// │      §CSS-Congrats  §CSS-Stats  §CSS-SlideIn  §CSS-Popups            │
+// │      §CSS-Responsive                                                 │
+// │ HTML §HTML-Intro  §HTML-Congrats  §HTML-Stats  §HTML-GameBoard       │
+// │      §HTML-Modals                                                    │
+// │ JS   §JS-DataConstants   PAL, TIER_NAMES, DEPT_PAL, DEPARTMENTS      │
+// │      §JS-InfoShort       INFO – short card descriptions              │
+// │      §JS-ElementsRegistry ALL – all 103 elements + emoji/tier        │
+// │      §JS-Recipes         R, REV, add() + all 117 recipes             │
+// │      §JS-Persistence     loadProgress, saveProgress, session,        │
+// │                          Supabase URL/key, supaFetch                 │
+// │      §JS-CloudSync       syncToSupabase, loadFromSupabase,           │
+// │                          updateSyncIndicator                         │
+// │      §JS-OfflinePWA      Offline listeners, PWA install prompt       │
+// │      §JS-PushNotifications VAPID key, notification modal            │
+// │      §JS-StateInit       State vars: discovered, tried, owned etc.   │
+// │      §JS-Achievements    ACHIEVEMENTS array + popup queue            │
+// │      §JS-Audio           AudioContext, playTone, snd* effects        │
+// │      §JS-DOMRefs         domCards, slotA/B, timers, DOM refs         │
+// │      §JS-IntroWelcomeBack Offline note, welcome-back dashboard       │
+// │      §JS-GameFlow        startGame, showCongrats, checkWin           │
+// │      §JS-CombinationLogic ck, renderSlot, renderResult, cancelCombo │
+// │      §JS-CardInteraction updateCardStates, tapCard, addResult        │
+// │      §JS-UIHelpers       Menu, reset, session, toast, hint, confirm  │
+// │      §JS-Tooltip         scheduleHide, showTooltip, hideTooltip      │
+// │      §JS-GridBuilder     buildDeptTabs, buildGrid                    │
+// │      §JS-LongDesc        LONG_DESC – rich slide-in descriptions      │
+// │      §JS-CTATexts        CTA_TEXT – glossary links per item          │
+// │      §JS-SlideIn         openSlideIn, closeSlideIn, ownership toggle │
+// │      §JS-Narration       TTS narration, sentence highlight, wakeLock │
+// │      §JS-Translation     Language dropdown, Google Translate         │
+// │      §JS-StatsScreen     openStats, closeStats, achievement tooltips │
+// │      §JS-Effects         spawnParticleBurst, launchConfetti          │
+// │      §JS-Init            announce(), buildGrid(), twemoji, SW reg    │
+// └──────────────────────────────────────────────────────────────────────┘
+// #region §JS-DataConstants
 const PAL=[
   {bg:'#FAEEDA',b:'#EF9F27',t:'#633806',dot:'#EF9F27'},
   {bg:'#E6F1FB',b:'#378ADD',t:'#0C447C',dot:'#378ADD'},
@@ -672,6 +742,8 @@ const DEPARTMENTS=[
 const ITEM_DEPT={};
 DEPARTMENTS.forEach((dept,i)=>dept.items.forEach(n=>{ITEM_DEPT[n]=i;}));
 let activeDept=0;
+// #endregion
+// #region §JS-InfoShort
 const INFO={
   'Idea':{d:"The spark that starts every business — raw potential with no shape yet.\nWithout an idea there is nothing to build, sell, or share with the world."},
   'Audience':{d:"The people you exist to serve. Without them you are just talking to yourself.\nEvery smart business decision starts with understanding who these people are."},
@@ -777,6 +849,8 @@ const INFO={
   'Digital Empire':{d:"A network of digital assets generating influence and income across multiple channels simultaneously.\nMarket leader meets viral growth — beyond a single business, a compounding, lasting legacy."},
   'AI Marketing OS':{d:"The full AI layer over your entire marketing operation — every funnel, email, ad, and content piece orchestrated by intelligence.\nThe future of the digital business, available and buildable today for those willing to commit to it."},
 };
+// #endregion
+// #region §JS-ElementsRegistry
 function slug(n){return n.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');}
 const ALL={
   // T0
@@ -822,6 +896,8 @@ const ALL={
   'Personal Brand':{e:'🦋',tier:6},'Market Leader':{e:'🥇',tier:6},'Financial Freedom':{e:'🏖️',tier:6},
   'Digital Empire':{e:'🌎',tier:6},'AI Marketing OS':{e:'🌌',tier:6},
 };
+// #endregion
+// #region §JS-Recipes
 const R={};const REV={};
 function add(a,b,n){
   const k=[a,b].sort().join('||');
@@ -954,6 +1030,8 @@ add('Upsell','Revenue Engine','Financial Freedom');
 add('Market Leader','Viral Growth','Digital Empire');
 add('Product Launch','Revenue Engine','Digital Empire');
 add('AI Content System','Marketing OS','AI Marketing OS');
+// #endregion
+// #region §JS-Persistence
 const STARTS=['Idea','Audience','Content','Tool'];
 const TOTAL=Object.keys(ALL).length;
 function loadProgress(){
@@ -981,6 +1059,8 @@ function supaFetch(path,method,body,prefer){
   if(body)opts.body=JSON.stringify(body);
   return fetch(SUPA_URL+'/rest/v1/'+path,opts);
 }
+// #endregion
+// #region §JS-CloudSync
 async function syncToSupabase(){
   if(discovered.size<=STARTS.length){syncStatus='pending';updateSyncIndicator();return;}
   const body={session_id:sessionId,discovered:[...discovered],tried:[...tried],owned:[...owned],partial:[...partial],achievements:[...unlockedAch],updated_at:new Date().toISOString()};
@@ -1020,6 +1100,8 @@ window.addEventListener('offline',()=>{
   updateOfflineUI();
   showToast('err','You are offline');
 });
+// #endregion
+// #region §JS-OfflinePWA
 function updateOfflineUI(){
   const offline=!navigator.onLine;
   const nb=document.getElementById('slidein-narrate');
@@ -1060,6 +1142,8 @@ function installApp(){
 }
 
 // --- Push Notification Subscription ---
+// #endregion
+// #region §JS-PushNotifications
 const VAPID_PUBLIC_KEY='TO_BE_REPLACED_WITH_ACTUAL_VAPID_PUBLIC_KEY';
 let notifModalShown=false;
 function shouldShowNotifModal(){
@@ -1128,6 +1212,8 @@ async function loadFromSupabase(id){
     return rows[0];
   }catch(e){return null;}
 }
+// #endregion
+// #region §JS-StateInit
 let sessionId=localStorage.getItem('ba_session')||genSessionId();
 let syncStatus='pending'; // 'pending' | 'synced' | 'failed' | 'offline'
 function saveProgress(){
@@ -1151,6 +1237,8 @@ discovered.forEach(n=>markAllRecipes(n));
 // Achievements
 function isOwned(n){return owned.has(n)||partial.has(n);}
 function ownedTotal(){return owned.size+partial.size;}
+// #endregion
+// #region §JS-Achievements
 const ACHIEVEMENTS=[
   // Game progression
   {id:'first_discovery',name:'First Discovery',desc:'Discover your first element beyond the starters',icon:'🌱',cat:'game',check:()=>discovered.size>STARTS.length},
@@ -1216,6 +1304,8 @@ function closeAchPopup(){
 }
 achOverlay.addEventListener('click',closeAchPopup);
 // Sound system (Web Audio API — calm, soft tones)
+// #endregion
+// #region §JS-Audio
 let audioCtx=null;
 function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
 function playTone(freq,duration,type,vol,delay){
@@ -1258,6 +1348,8 @@ function spawnConfetti(container){
     setTimeout(()=>p.remove(),dur*1000+50);
   }
 }
+// #endregion
+// #region §JS-DOMRefs
 let domCards=new Map();
 let slotA=null,slotB=null,resultName=null,resultState=null;
 let toastTimer=null,hideTimer=null,hintPopupTimer=null,hintCooldownTimer=null,longPressTimer=null;
@@ -1272,6 +1364,8 @@ const hintPopup=document.getElementById('hint-popup');
 const gameEl=document.getElementById('game');
 const introEl=document.getElementById('intro');
 const congratsEl=document.getElementById('congrats');
+// #endregion
+// #region §JS-IntroWelcomeBack
 function updateIntroOfflineState(){
   const offline=!navigator.onLine;
   const newNote=document.getElementById('intro-offline-note');
@@ -1307,6 +1401,8 @@ function updateIntroOfflineState(){
 updateIntroOfflineState();
 window.addEventListener('online',updateIntroOfflineState);
 window.addEventListener('offline',updateIntroOfflineState);
+// #endregion
+// #region §JS-GameFlow
 function startGame(){introEl.style.display='none';saveProgress();}
 // Returning player: show welcome-back dashboard
 if(saved&&discovered.size>STARTS.length){
@@ -1388,6 +1484,8 @@ function checkWin(){
     setTimeout(showCongrats,600);
   }
 }
+// #endregion
+// #region §JS-CombinationLogic
 function ck(a,b){return[a,b].sort().join('||');}
 function markAllRecipes(name){if(REV[name])REV[name].forEach(([a,b])=>tried.add(ck(a,b)));}
 function hasReaction(a,b){return!!R[ck(a,b)];}
@@ -1461,6 +1559,8 @@ function clearSlot(which){
   if(which==='a'){slotA=slotB;slotB=null;}else{slotB=null;}
   updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();
 }
+// #endregion
+// #region §JS-CardInteraction
 function updateCardStates(){
   const both=slotA&&slotB;
   domCards.forEach((d,name)=>{
@@ -1493,6 +1593,8 @@ function addResult(){
   showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');sndDiscover();
   checkWin();checkAchievements();
 }
+// #endregion
+// #region §JS-UIHelpers
 function showConfirm(title,msg,onConfirm,confirmLabel){
   const ov=document.getElementById('confirm-overlay');
   const bx=document.getElementById('confirm-box');
@@ -1587,6 +1689,8 @@ function showHint(){
   hintBtn.disabled=true;let cd=15;hintBtn.textContent=`💡 Hint (${cd}s)`;
   hintCooldownTimer=setInterval(()=>{cd--;if(cd<=0){clearInterval(hintCooldownTimer);hintBtn.disabled=false;hintBtn.textContent='💡 Hint';}else hintBtn.textContent=`💡 Hint (${cd}s)`;},1000);
 }
+// #endregion
+// #region §JS-Tooltip
 function scheduleHide(){clearTimeout(hideTimer);hideTimer=setTimeout(()=>tooltip.classList.remove('visible'),120);}
 function cancelHide(){clearTimeout(hideTimer);}
 tooltip.addEventListener('mouseenter',cancelHide);
@@ -1621,6 +1725,8 @@ document.addEventListener('touchstart',function(e){
   if(tooltip.contains(e.target)||e.target.classList.contains('ec-info'))return;
   forceHideTooltip();
 },{passive:true});
+// #endregion
+// #region §JS-GridBuilder
 function buildDeptTabs(){
   const tabs=document.getElementById('dept-tabs');tabs.innerHTML='';
   DEPARTMENTS.forEach((dept,i)=>{
@@ -1678,6 +1784,8 @@ function buildGrid(){
   cntEl.textContent=discovered.size+' / '+TOTAL+' found';
 }
 grid.addEventListener('click',e=>{if(!e.target.closest('.ec'))closeHint();});
+// #endregion
+// #region §JS-LongDesc
 const LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula ut dictum pharetra, nisi nunc fringilla magna, in commodo elit erat nec turpis. Ut pharetra augue nec augue.';
 const LONG_DESC={
 'Idea':'Every business that exists today started as <b>a single idea</b> in someone\'s mind. It was not fully formed — it was messy, incomplete, and probably a little naive. That is exactly how it should be. <b>The starting point matters more than the shape</b>, because shape comes later through contact with real people and real problems. A lot of people get stuck here, tweaking their idea alone, waiting for it to feel "ready." But an idea only becomes useful when it meets an audience, a market, and a willingness to test it out loud. <i>Getting it perfect is not the goal at this stage — getting it moving is.</i><br><br>Think of your idea as <b>something you are testing</b>. You believe something is true about the world, about what people need, or about what could exist. Your business journey is basically the process of testing that belief, adjusting it, and turning it into something others will pay for. <span style="color:#c17a2f">The biggest risk at the idea stage is not having a bad idea — it is having one and never doing anything with it.</span> Most successful businesses were not built on brilliant ideas. They were built on <b>decent ideas, done consistently, with a willingness to adapt</b> based on what real people actually said.<br><br>The best ideas <b>solve a real problem for a specific group of people</b>. They do not try to be everything to everyone. They start small, stay focused, and grow through testing rather than guessing. Everything you build in your business — your positioning, your content, your products — goes back to this first spark. <span style="color:#c17a2f">Do not wait until you feel sure. That feeling comes after you start, not before.</span><br><br><i>Also known as: business idea, concept, startup idea, venture concept.</i>',
@@ -1887,6 +1995,8 @@ const LONG_DESC={
 'AI Marketing OS':'An AI Marketing OS is <b>the full AI layer over your entire marketing operation — every funnel, email, ad, and content piece guided by intelligence</b>. It is not a collection of AI tools attached to your existing workflow. It is a single system where artificial intelligence handles audience segmentation, content generation, campaign improvement, personalisation, and performance analysis as one connected operation. <span style="color:#c17a2f">It is the operating system your marketing runs on — and it learns, adapts, and gets better with every interaction.</span><br><br><b>An AI Marketing OS connects every marketing function through a shared intelligence layer.</b> Your email sequences adjust their timing and content based on individual subscriber behaviour. Your ad campaigns move budget automatically toward the best-performing audiences. Your content calendar generates and schedules posts based on what is trending in your niche and what has done well before. <i>Instead of managing a dozen disconnected tools, you are managing one system that manages everything else.</i> The human role shifts from doing the work to overseeing the work — setting strategy, defining boundaries, and reviewing results.<br><br>Building an AI Marketing OS is <b>the result of every system, skill, and asset you have built throughout your entire journey</b>. It requires proven funnels to automate, tested content approaches to scale, and reliable data to learn from. You cannot hand AI a blank slate and expect good marketing — you hand it your best practices, your winning templates, and your performance data, and it builds on all of it. <span style="color:#c17a2f">The AI Marketing OS is not the beginning of your marketing journey — it is the final step. The future of digital business, available and buildable today for those who have done the work to get here.</span>'
 };
 Object.keys(ALL).forEach(k=>{if(!LONG_DESC[k])LONG_DESC[k]=LOREM;});
+// #endregion
+// #region §JS-CTATexts
 const CTA_TEXT={
   'Idea':'Ready to turn this idea into something real? Book a free call',
   'Audience':'Want help identifying your ideal audience? Grab a free session',
@@ -1992,6 +2102,8 @@ const CTA_TEXT={
   'Digital Empire':'Ready to scale everything? Architect your empire with us',
   'AI Marketing OS':'Want AI running your marketing? Build the system with us',
 };
+// #endregion
+// #region §JS-SlideIn
 const OWNED_LABEL='Do you already do this in your business?';
 const slideinOverlay=document.getElementById('slidein-overlay');
 const slideinPanel=document.getElementById('slidein');
@@ -2050,6 +2162,8 @@ function closeSlideIn(){
 slideinOverlay.addEventListener('click',closeSlideIn);
 
 // Narration via SpeechSynthesis
+// #endregion
+// #region §JS-Narration
 const narrateBtn=document.getElementById('slidein-narrate');
 let narrationUtterance=null;
 let preferredVoice=null;
@@ -2272,6 +2386,8 @@ narrateBtn.addEventListener('click',function(){
 });
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&narrateBtn.classList.contains('playing'))requestWakeLock();});
 // Translation system
+// #endregion
+// #region §JS-Translation
 const translateBtn=document.getElementById('slidein-translate');
 const langDropdown=document.getElementById('si-lang-dropdown');
 const MAIN_LANGS=[
@@ -2493,6 +2609,8 @@ function updateVoiceForLang(){
   narrateBtn.classList.remove('disabled');
 }
 
+// #endregion
+// #region §JS-StatsScreen
 const statsEl=document.getElementById('stats');
 const statsBody=document.getElementById('stats-body');
 function openStats(){
@@ -2635,6 +2753,8 @@ document.addEventListener('touchstart',function(e){
   else{const tt=document.getElementById('stats-ach-tt');if(tt&&!tt.contains(e.target))hideAchTT();}
 },{passive:true});
 // Particle burst on result collection
+// #endregion
+// #region §JS-Effects
 function spawnParticleBurst(anchor){
   const rect=anchor.getBoundingClientRect();
   const gameRect=document.getElementById('game').getBoundingClientRect();
@@ -2687,6 +2807,8 @@ function launchConfetti(){
   requestAnimationFrame(draw);
 }
 // Accessibility: aria-live announcements
+// #endregion
+// #region §JS-Init
 const announceEl=document.getElementById('announcements');
 function announce(msg){announceEl.textContent='';requestAnimationFrame(()=>{announceEl.textContent=msg;});}
 
@@ -2707,6 +2829,7 @@ if('serviceWorker' in navigator){
     });
   });
 }
+// #endregion
 </script>
 </body>
 </html>
