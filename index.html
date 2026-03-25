@@ -3132,10 +3132,12 @@ if('serviceWorker' in navigator){
       tutRing2El.style.zIndex='9004'; // above tutSlotHighEl (z-9003); set AFTER posRing
     } else {
       // Single-target: transparent blocking overlay + elevate target above it.
-      // If target is inside #tray, also elevate the tray (it has its own stacking context at z-30).
+      // Also elevate any ancestor that creates its own stacking context below z-9000.
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:transparent;z-index:9000;pointer-events:all;display:block';
       const trayEl=document.getElementById('tray');
+      const tooltipEl=document.getElementById('tooltip');
       if(trayEl.contains(target))_elevate(trayEl,'9001');
+      if(tooltipEl&&tooltipEl.contains(target))_elevate(tooltipEl,'9001');
       _elevate(target,'9001');
       tutRingEl.classList.remove('no-overlay');
       posRing(tutRingEl,target);
