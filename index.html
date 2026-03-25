@@ -2958,7 +2958,7 @@ if('serviceWorker' in navigator){
 (function(){
   // ── Create DOM elements ─────────────────────────────────────────────
   const mkPanel=k=>{const d=document.createElement('div');d.className='tut-panel';d.id='tut-panel-'+k;document.body.appendChild(d);return d;};
-  const tutP={top:mkPanel('top'),bottom:mkPanel('bottom'),left:mkPanel('left'),right:mkPanel('right')};
+  const tutP={top:mkPanel('top'),bottom:mkPanel('bottom'),left:mkPanel('left'),right:mkPanel('right'),trayT:mkPanel('tray-t'),trayB:mkPanel('tray-b')};
 
   const tutRingEl=document.createElement('div');tutRingEl.id='tut-ring';document.body.appendChild(tutRingEl);
   const tutRing2El=document.createElement('div');tutRing2El.id='tut-ring2';document.body.appendChild(tutRing2El);
@@ -3098,24 +3098,27 @@ if('serviceWorker' in navigator){
 
     if(target2){
       // Dual-target: full-screen blocking overlay + elevate both targets above it.
-      // tutP.top blocks all clicks; elevated elements are above z-9000 and stay clickable.
       const trayEl=document.getElementById('tray');
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';
       _elevate(target,'9001');
       _elevate(trayEl,'9002');
-      // Re-darken tray sections outside slot-b; pad=2 so white area aligns with ring inner edge
+      // Re-darken all tray area except slot-b using 4 panels (left, right, top padding, bottom padding)
       const tr=trayEl.getBoundingClientRect(),sb=target2.getBoundingClientRect(),pad=2;
       const darken=css=>css+';position:fixed;background:rgba(0,0,0,0.62);z-index:9004;pointer-events:all;display:block';
-      tutP.left.style.cssText=darken(`left:${tr.left}px;top:${tr.top}px;width:${sb.left-tr.left-pad}px;height:${tr.height}px`);
+      tutP.left.style.cssText =darken(`left:${tr.left}px;top:${tr.top}px;width:${sb.left-tr.left-pad}px;height:${tr.height}px`);
       tutP.right.style.cssText=darken(`left:${sb.right+pad}px;top:${tr.top}px;width:${tr.right-sb.right-pad}px;height:${tr.height}px`);
+      tutP.trayT.style.cssText=darken(`left:${sb.left-pad}px;top:${tr.top}px;width:${sb.width+pad*2}px;height:${sb.top-tr.top-pad}px`);
+      tutP.trayB.style.cssText=darken(`left:${sb.left-pad}px;top:${sb.bottom+pad}px;width:${sb.width+pad*2}px;height:${tr.bottom-sb.bottom-pad}px`);
       tutRingEl.classList.add('no-overlay');
       posRing(tutRingEl,target);
       posRing(tutRing2El,target2);
       tutRing2El.style.zIndex='9003'; // must be set AFTER posRing (cssText wipes inline styles)
     } else {
       // Single-target: transparent blocking overlay + elevate target above it.
-      // Ring1's box-shadow provides the visual darkness; tutP.top blocks clicks elsewhere.
+      // If target is inside #tray, also elevate the tray (it has its own stacking context at z-30).
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:transparent;z-index:9000;pointer-events:all;display:block';
+      const trayEl=document.getElementById('tray');
+      if(trayEl.contains(target))_elevate(trayEl,'9001');
       _elevate(target,'9001');
       tutRingEl.classList.remove('no-overlay');
       posRing(tutRingEl,target);
