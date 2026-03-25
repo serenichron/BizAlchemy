@@ -182,7 +182,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #intro-title{font-size:21px;font-weight:600;color:#1a1a1a;letter-spacing:-0.3px;animation:introFadeUp 0.5s ease 0.1s both}
 @keyframes introScale{from{transform:scale(0.4);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes introFadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-#intro-hook{font-size:13.5px;color:#444;text-align:center;line-height:1.6;max-width:300px;margin:4px auto 0}
+#intro-hook{font-size:13.5px;color:#444;text-align:center;line-height:1.4;max-width:420px;margin:4px auto 0}
 #intro-hook strong{font-weight:700;color:#1a1a1a}
 /* Steps */
 .intro-steps{display:flex;flex-direction:column;gap:8px;animation:introFadeUp 0.5s ease 0.3s both}
@@ -505,8 +505,9 @@ h1,h2{margin:0;padding:0}
 .tut-panel{position:fixed;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:none}
 #tut-ring,#tut-ring2{position:fixed;pointer-events:none;z-index:9001;border-radius:10px;display:none}
 #tut-ring.active{display:block;box-shadow:0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4),0 0 0 9999px rgba(0,0,0,0.62);animation:tut-pulse 1.6s infinite ease-in-out}
-#tut-ring2.active{display:block;box-shadow:0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4);animation:tut-pulse 1.6s infinite ease-in-out}
+#tut-ring.active.no-overlay,#tut-ring2.active{display:block;box-shadow:0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4);animation:tut-pulse-glow 1.6s infinite ease-in-out}
 @keyframes tut-pulse{0%,100%{box-shadow:0 0 0 3px #EF9F27,0 0 8px rgba(239,159,39,0.3),0 0 0 9999px rgba(0,0,0,0.62)}50%{box-shadow:0 0 0 5px #EF9F27,0 0 22px rgba(239,159,39,0.6),0 0 0 9999px rgba(0,0,0,0.62)}}
+@keyframes tut-pulse-glow{0%,100%{box-shadow:0 0 0 3px #EF9F27,0 0 8px rgba(239,159,39,0.3)}50%{box-shadow:0 0 0 5px #EF9F27,0 0 22px rgba(239,159,39,0.6)}}
 #tut-box{position:fixed;z-index:9002;background:#fff;border-radius:14px;padding:10px 14px 10px;box-shadow:0 4px 32px rgba(0,0,0,0.18);width:280px;pointer-events:auto;display:none;box-sizing:border-box}
 #tut-box.active{display:block}
 #tut-step-label{font-size:10.5px;color:#bbb;margin-bottom:3px;font-weight:500;letter-spacing:0.2px}
@@ -1633,14 +1634,19 @@ function openSlotBPicker(){
   if(!slotA||slotB)return;
   if(!sbpEl){sbpEl=document.createElement('div');sbpEl.id='slot-b-picker';document.body.appendChild(sbpEl);}
   const avail=[],unknown=[];
-  domCards.forEach((d,name)=>{
-    if(name===slotA||!hasReaction(slotA,name))return;
-    if(discovered.has(name))avail.push(name);else unknown.push(name);
-  });
+  for(const k in R){
+    const parts=k.split('||');
+    const other=parts[0]===slotA?parts[1]:(parts[1]===slotA?parts[0]:null);
+    if(!other)continue;
+    if(discovered.has(other))avail.push(other);else unknown.push(other);
+  }
   const gameRect=gameEl.getBoundingClientRect();
   const trayRect=document.getElementById('tray').getBoundingClientRect();
-  const pickerH=Math.round(gameRect.height*0.63);
-  sbpEl.style.cssText=`left:${gameRect.left}px;width:${gameRect.width}px;bottom:${window.innerHeight-trayRect.top}px;height:${pickerH}px`;
+  const slotBRect=slotBEl.getBoundingClientRect();
+  const pickerW=280,pickerH=Math.round(gameRect.height*0.63);
+  let pickerLeft=slotBRect.left+slotBRect.width/2-pickerW/2;
+  pickerLeft=Math.max(gameRect.left+4,Math.min(pickerLeft,gameRect.right-pickerW-4));
+  sbpEl.style.cssText=`left:${pickerLeft}px;width:${pickerW}px;bottom:${window.innerHeight-trayRect.top}px;height:${pickerH}px`;
   let html=`<div id="sbp-header"><span>${ALL[slotA].e} <strong>${slotA}</strong> combines with…</span><button id="sbp-close">✕</button></div><div id="sbp-list">`;
   avail.forEach(name=>{html+=`<div class="sbp-item" data-pick="${name}"><span class="sbp-item-e">${ALL[name].e}</span><span class="sbp-item-n">${name}</span></div>`;});
   if(avail.length&&unknown.length)html+=`<div class="sbp-sep"></div>`;
@@ -3051,7 +3057,7 @@ if('serviceWorker' in navigator){
   // ── Spotlight (4-panel approach) ──────────────────────────────────────
   function hidePanels(){
     Object.values(tutP).forEach(p=>{p.style.cssText='display:none';});
-    tutRingEl.classList.remove('active');
+    tutRingEl.classList.remove('active','no-overlay');
     tutRing2El.classList.remove('active');
   }
 
@@ -3068,8 +3074,15 @@ if('serviceWorker' in navigator){
       return;
     }
     hidePanels();
-    posRing(tutRingEl,target);
-    if(target2)posRing(tutRing2El,target2);
+    if(target2){
+      // Two targets: full-screen panel overlay + both rings without their own shadow overlay
+      tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:none;display:block';
+      posRing(tutRingEl,target);tutRingEl.classList.add('no-overlay');
+      posRing(tutRing2El,target2);
+    } else {
+      tutRingEl.classList.remove('no-overlay');
+      posRing(tutRingEl,target);
+    }
   }
 
   // ── Box positioning ───────────────────────────────────────────────────
@@ -3176,6 +3189,15 @@ if('serviceWorker' in navigator){
     if(discovered.size>STARTS.length)return; // skip for returning users
     tutActive=true;
     showStep(0);
+  };
+
+  // ── Dev helper: window.resetTutorial() in console ────────────────────
+  window.resetTutorial=function(){
+    tutActive=false;
+    try{localStorage.removeItem('ba_tutorial_done');}catch(e){}
+    hidePanels();tutBoxEl.classList.remove('active');tutBoxEl.style.display='none';
+    tutActive=true;showStep(0);
+    console.log('[BizAlchemy] Tutorial restarted from step 0.');
   };
 })();
 // #endregion
