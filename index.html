@@ -3163,6 +3163,9 @@ if('serviceWorker' in navigator){
       hidePanels();
       tutBoxEl.classList.remove('active');
       tutBoxEl.style.display='none';
+      // If the wait condition is already satisfied (e.g. achQueueEmpty fired before we
+      // arrived here), advance immediately rather than waiting indefinitely.
+      if(step.hook==='achQueueEmpty'&&!achShowing&&!achQueue.length){showStep(i+1);return;}
       return;
     }
 
