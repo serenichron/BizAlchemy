@@ -124,7 +124,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #confetti-canvas{position:absolute;inset:0;pointer-events:none;z-index:99;border-radius:20px}
 /* #endregion */
 /* #region §CSS-Tray */
-#tray{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:10px 12px 14px;display:flex;align-items:center;gap:7px;z-index:30}
+#tray{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:10px 12px 14px;display:flex;align-items:center;gap:7px;z-index:30;border-radius:0 0 20px 20px}
 .slot{flex:1;height:68px;border-radius:14px;border:1.5px dashed #ccc;background:#fafaf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:default;position:relative;transition:border-color 0.15s}
 .slot.pickable{cursor:pointer}
 .slot.filled{border-style:solid;border-color:var(--slot-color);background:var(--slot-bg)}
@@ -2988,10 +2988,10 @@ if('serviceWorker' in navigator){
     // 2
     {type:'action',title:'Select another concept',
      text:'Tap the 👥 <strong>Audience</strong> card directly, or tap the <strong>second slot</strong> to browse all cards that combine with Idea.',
-     targetFn:()=>domCards.get('Audience'),targetFn2:()=>slotBEl,hook:'tapCard',hookData:'Audience'},
+     targetFn:()=>domCards.get('Audience'),targetFn2:()=>slotBEl,hook:'tapCard'},
     // 3
     {type:'action',title:'Discover the combination!',
-     text:'A result is ready. Click it to discover what Idea + Audience creates together.',
+     text:'A result is ready — click it to discover what the two cards create together.',
      targetFn:()=>resultEl,hook:'addResult'},
     // 4 — hidden wait for achievement popup to close
     {type:'wait',hook:'achQueueEmpty'},
@@ -3103,15 +3103,15 @@ if('serviceWorker' in navigator){
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';
       _elevate(target,'9001');
       _elevate(trayEl,'9002');
-      tutRing2El.style.zIndex='9003';
-      // Re-darken tray sections outside slot-b (pointer-events:all to block clicks there too)
-      const tr=trayEl.getBoundingClientRect(),sb=target2.getBoundingClientRect(),pad=6;
+      // Re-darken tray sections outside slot-b; pad=2 so white area aligns with ring inner edge
+      const tr=trayEl.getBoundingClientRect(),sb=target2.getBoundingClientRect(),pad=2;
       const darken=css=>css+';position:fixed;background:rgba(0,0,0,0.62);z-index:9004;pointer-events:all;display:block';
       tutP.left.style.cssText=darken(`left:${tr.left}px;top:${tr.top}px;width:${sb.left-tr.left-pad}px;height:${tr.height}px`);
       tutP.right.style.cssText=darken(`left:${sb.right+pad}px;top:${tr.top}px;width:${tr.right-sb.right-pad}px;height:${tr.height}px`);
       tutRingEl.classList.add('no-overlay');
       posRing(tutRingEl,target);
       posRing(tutRing2El,target2);
+      tutRing2El.style.zIndex='9003'; // must be set AFTER posRing (cssText wipes inline styles)
     } else {
       // Single-target: transparent blocking overlay + elevate target above it.
       // Ring1's box-shadow provides the visual darkness; tutP.top blocks clicks elsewhere.
