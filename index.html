@@ -516,7 +516,7 @@ h1,h2{margin:0;padding:0}
 #tut-box-text{font-size:12.5px;color:#444;line-height:1.5}
 #tut-box-ok{margin-top:8px;width:100%;padding:8px;border-radius:8px;border:none;background:#1a1a1a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;display:none}
 #tut-box-ok:hover{opacity:0.85}
-#tut-skip{margin-top:5px;display:block;font-size:11px;color:#bbb;cursor:pointer;text-align:center;background:none;border:none;width:100%;padding:2px 0;text-decoration:underline}
+#tut-skip{margin-top:5px;display:block;font-size:11px;color:#bbb;cursor:pointer;text-align:left;background:none;border:none;width:100%;padding:2px 0;text-decoration:underline}
 #tut-skip:hover{color:#666}
 /* #endregion */
 /* #region §CSS-SlotBPicker */
@@ -2958,10 +2958,15 @@ if('serviceWorker' in navigator){
 (function(){
   // ── Create DOM elements ─────────────────────────────────────────────
   const mkPanel=k=>{const d=document.createElement('div');d.className='tut-panel';d.id='tut-panel-'+k;document.body.appendChild(d);return d;};
-  const tutP={top:mkPanel('top'),bottom:mkPanel('bottom'),left:mkPanel('left'),right:mkPanel('right'),trayT:mkPanel('tray-t'),trayB:mkPanel('tray-b')};
+  const tutP={top:mkPanel('top'),bottom:mkPanel('bottom'),left:mkPanel('left'),right:mkPanel('right')};
 
   const tutRingEl=document.createElement('div');tutRingEl.id='tut-ring';document.body.appendChild(tutRingEl);
   const tutRing2El=document.createElement('div');tutRing2El.id='tut-ring2';document.body.appendChild(tutRing2El);
+
+  // White rounded "slot reveal" used only in dual-target steps to highlight slot-b with proper radius
+  const tutSlotHighEl=document.createElement('div');
+  tutSlotHighEl.style.cssText='position:fixed;pointer-events:none;display:none;background:#fafaf8;z-index:9003;border-radius:14px';
+  document.body.appendChild(tutSlotHighEl);
 
   const tutBoxEl=document.createElement('div');tutBoxEl.id='tut-box';
   tutBoxEl.innerHTML='<div id="tut-step-label"></div><div id="tut-box-title"></div><div id="tut-box-text"></div><button id="tut-box-ok">OK, got it</button><button id="tut-skip">Skip tutorial</button>';
@@ -3077,6 +3082,7 @@ if('serviceWorker' in navigator){
     Object.values(tutP).forEach(p=>{p.style.cssText='display:none';});
     tutRingEl.classList.remove('active','no-overlay');
     tutRing2El.classList.remove('active');
+    tutSlotHighEl.style.display='none';
     _restoreElevated();
     grid.style.overflowY='';  // restore scroll
   }
@@ -3097,22 +3103,20 @@ if('serviceWorker' in navigator){
     }
 
     if(target2){
-      // Dual-target: full-screen blocking overlay + elevate both targets above it.
+      // Dual-target: ring1's 9999px shadow darkens everything (including the tray).
+      // tutSlotHighEl provides the white rounded highlight for slot-b above the shadow.
+      // Ring2 sits on top with the orange border.
       const trayEl=document.getElementById('tray');
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';
       _elevate(target,'9001');
-      _elevate(trayEl,'9002');
-      // Re-darken all tray area except slot-b using 4 panels (left, right, top padding, bottom padding)
-      const tr=trayEl.getBoundingClientRect(),sb=target2.getBoundingClientRect(),pad=2;
-      const darken=css=>css+';position:fixed;background:rgba(0,0,0,0.62);z-index:9004;pointer-events:all;display:block';
-      tutP.left.style.cssText =darken(`left:${tr.left}px;top:${tr.top}px;width:${sb.left-tr.left-pad}px;height:${tr.height}px`);
-      tutP.right.style.cssText=darken(`left:${sb.right+pad}px;top:${tr.top}px;width:${tr.right-sb.right-pad}px;height:${tr.height}px`);
-      tutP.trayT.style.cssText=darken(`left:${sb.left-pad}px;top:${tr.top}px;width:${sb.width+pad*2}px;height:${sb.top-tr.top-pad}px`);
-      tutP.trayB.style.cssText=darken(`left:${sb.left-pad}px;top:${sb.bottom+pad}px;width:${sb.width+pad*2}px;height:${tr.bottom-sb.bottom-pad}px`);
-      tutRingEl.classList.add('no-overlay');
+      _elevate(trayEl,'9001'); // tray must be above z-9000 overlay to stay clickable
+      // White rounded highlight for slot-b (above ring1 shadow at z-9001, below ring2 at z-9004)
+      const sb=target2.getBoundingClientRect();
+      tutSlotHighEl.style.cssText=`position:fixed;pointer-events:none;display:block;background:#fafaf8;z-index:9003;border-radius:14px;left:${sb.left}px;top:${sb.top}px;width:${sb.width}px;height:${sb.height}px`;
+      tutRingEl.classList.remove('no-overlay'); // ring1 uses full shadow to darken tray
       posRing(tutRingEl,target);
       posRing(tutRing2El,target2);
-      tutRing2El.style.zIndex='9003'; // must be set AFTER posRing (cssText wipes inline styles)
+      tutRing2El.style.zIndex='9004'; // above tutSlotHighEl; set AFTER posRing (cssText wipes styles)
     } else {
       // Single-target: transparent blocking overlay + elevate target above it.
       // If target is inside #tray, also elevate the tray (it has its own stacking context at z-30).
