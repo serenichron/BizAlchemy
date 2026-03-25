@@ -2586,18 +2586,32 @@ function buildLangDropdown(){
   tp(langDropdown);
 }
 
+function _tutLangDropdownClose(){
+  // Restore stacking order elevated for dropdown visibility
+  const slideinEl=document.getElementById('slidein');
+  const boxEl=document.getElementById('tut-box');
+  if(slideinEl)slideinEl.style.zIndex='9001';
+  if(boxEl)boxEl.style.zIndex='9002';
+  if(typeof tutRing2Hide!=='undefined')tutRing2Hide();
+}
 function toggleLangDropdown(){
   const isOpen=langDropdown.classList.contains('open');
   if(isOpen){
     langDropdown.classList.remove('open');langDropdown.style.zIndex='';
-    if(typeof tutRing2Hide!=='undefined')tutRing2Hide();
+    _tutLangDropdownClose();
     return;
   }
   buildLangDropdown();
   langDropdown.classList.add('open');
   if(typeof tutActive!=='undefined'&&tutActive){
     langDropdown.style.zIndex='9003';
-    // Show ring2 around the dropdown after it renders
+    // Elevate #slidein above ring1's 9999px spread shadow (z-9001) so the
+    // dropdown inside #slidein's stacking context is not darkened.
+    // Push tut-box above that so it remains on top.
+    const slideinEl=document.getElementById('slidein');
+    const boxEl=document.getElementById('tut-box');
+    if(slideinEl)slideinEl.style.zIndex='9003';
+    if(boxEl)boxEl.style.zIndex='9004';
     requestAnimationFrame(()=>{if(typeof tutRing2Show!=='undefined')tutRing2Show(langDropdown);});
   }
 }
@@ -2616,7 +2630,7 @@ langDropdown.addEventListener('click',function(e){
   const lang=btn.dataset.lang;
   langDropdown.classList.remove('open');
   langDropdown.style.zIndex='';
-  if(typeof tutRing2Hide!=='undefined')tutRing2Hide();
+  _tutLangDropdownClose();
   if(lang==='en'){
     activeLang=null;
     translateBtn.textContent='English';
@@ -2635,7 +2649,7 @@ langDropdown.addEventListener('click',function(e){
 });
 
 // Close dropdown when clicking outside
-document.addEventListener('click',function(){langDropdown.classList.remove('open');langDropdown.style.zIndex='';if(typeof tutRing2Hide!=='undefined')tutRing2Hide();});
+document.addEventListener('click',function(){langDropdown.classList.remove('open');langDropdown.style.zIndex='';_tutLangDropdownClose();});
 
 // Split text into chunks under maxLen at sentence boundaries
 function splitForTranslation(text,maxLen){
