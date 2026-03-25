@@ -722,7 +722,7 @@ h1,h2{margin:0;padding:0}
       <h2 id="slidein-title"></h2>
       <div style="display:flex;align-items:center;gap:6px">
         <div id="si-lang-wrap">
-          <button id="slidein-translate" aria-label="Translate description">🇬🇧 English</button>
+          <button id="slidein-translate" aria-label="Translate description">English</button>
           <div id="si-lang-dropdown"></div>
         </div>
         <button id="slidein-narrate" aria-label="Narrate description"><span class="narr-icon"></span></button>
@@ -2254,8 +2254,8 @@ function openSlideIn(name){
   const recipes=REV[name]||[];
   const recipeHTML=recipes.length?`<div class="si-recipe">${recipes.map(([a,b])=>`${ALL[a]?ALL[a].e:'?'} ${a} + ${ALL[b]?ALL[b].e:'?'} ${b}`).join('<br>')}</div>`:'';
   // Update the language tag button in the header
-  if(activeLang){const lObj=LANGS.find(l=>l.code===activeLang);if(lObj)translateBtn.innerHTML=lObj.flag+' '+lObj.name;}else{translateBtn.innerHTML='🇬🇧 English';}
-  slideinBody.innerHTML=`<div class="si-owned"><div class="si-owned-label">${ownLabel}</div><div class="si-seg" id="si-seg"><button class="si-seg-btn" data-v="0"></button><button class="si-seg-btn" data-v="1"></button><button class="si-seg-btn" data-v="2"></button></div></div>${recipeHTML}<p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
+  if(activeLang){const lObj=LANGS.find(l=>l.code===activeLang);if(lObj)translateBtn.textContent=lObj.name;}else{translateBtn.textContent='English';}
+  slideinBody.innerHTML=`<div class="si-owned" id="si-owned"><div class="si-owned-label">${ownLabel}</div><div class="si-seg" id="si-seg"><button class="si-seg-btn" data-v="0"></button><button class="si-seg-btn" data-v="1"></button><button class="si-seg-btn" data-v="2"></button></div></div>${recipeHTML}<p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
   const seg=document.getElementById('si-seg');
   renderSegBtns(seg,curState);
   currentSlideInName=name;
@@ -3035,12 +3035,12 @@ if('serviceWorker' in navigator){
     // 8
     {type:'info',title:'Full description',
      text:'Here you can read the complete, in-depth description for any concept — written in plain, practical language.',
-     targetFn:()=>document.getElementById('slidein-body'),
+     targetFn:()=>document.querySelector('#slidein-body .si-desc'),
      delayBox:true, // slide-in animates in over 350ms; wait for it to finish before positioning
      onEnter:()=>{
        tutBoxEl.style.display='none'; // hide until re-spotlighted after animation
        setTimeout(()=>{
-         const t=document.getElementById('slidein-body');
+         const t=document.querySelector('#slidein-body .si-desc');
          if(t&&tutActive){spotlight(t,null);positionBox(t);}
        },400);
      }},
@@ -3055,7 +3055,7 @@ if('serviceWorker' in navigator){
     // 11
     {type:'info',title:'Business ownership tracker',
      text:'Use <strong>0 / 1 / 2</strong> to mark how well you know this concept: <strong>0</strong> = not yet, <strong>1</strong> = partially, <strong>2</strong> = fully in your toolkit.',
-     targetFn:()=>document.getElementById('si-seg')},
+     targetFn:()=>document.getElementById('si-owned')},
     // 12 — free: user closes slide-in naturally, hook advances
     {type:'free',title:'Close the panel',
      text:'Now close this panel yourself — tap ✕ or tap the dark area outside.',
