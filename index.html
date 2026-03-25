@@ -526,7 +526,7 @@ h1,h2{margin:0;padding:0}
 #sbp-close{font-size:16px;color:#bbb;cursor:pointer;padding:0 4px;line-height:1;background:none;border:none}
 #sbp-close:hover{color:#555}
 #sbp-list{overflow-y:auto;flex:1;padding:4px 8px 8px}
-.sbp-item{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:10px;cursor:pointer;font-size:12.5px}
+.sbp-item{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:8px;cursor:pointer;font-size:12.5px}
 .sbp-item:hover{background:#f5f5f3}
 .sbp-item-e{font-size:20px;flex-shrink:0;width:26px;text-align:center}
 .sbp-item-n{font-weight:500;color:#1a1a1a}
@@ -735,49 +735,53 @@ h1,h2{margin:0;padding:0}
 <script>
 // Tutorial stubs (real implementations injected by §JS-Tutorial at end)
 let tutHook=()=>{},tutStart=()=>{},tutPinTooltip=false;
-// ┌──────────────────────────────────────────────────────────────────────┐
-// │ INDEX.HTML — TABLE OF CONTENTS                                       │
-// │ Search §SectionName to jump to any section (Ctrl+F / Cmd+F)          │
-// │ MAINTENANCE: when adding/removing sections, update the markers here   │
-// │ AND in the HTML comment at line 1 of this file.                       │
-// ├──────────────────────────────────────────────────────────────────────┤
-// │ CSS  §CSS-Shell  §CSS-Grid  §CSS-Tray  §CSS-Tooltip  §CSS-Intro      │
-// │      §CSS-Congrats  §CSS-Stats  §CSS-SlideIn  §CSS-Popups            │
-// │      §CSS-Responsive  §CSS-Tutorial  §CSS-SlotBPicker                │
-// │ HTML §HTML-Intro  §HTML-Congrats  §HTML-Stats  §HTML-GameBoard       │
-// │      §HTML-Modals                                                    │
-// │ JS   §JS-DataConstants   PAL, TIER_NAMES, DEPT_PAL, DEPARTMENTS      │
-// │      §JS-InfoShort       INFO – short card descriptions              │
-// │      §JS-ElementsRegistry ALL – all 103 elements + emoji/tier        │
-// │      §JS-Recipes         R, REV, add() + all 117 recipes             │
-// │      §JS-Persistence     loadProgress, saveProgress, session,        │
-// │                          Supabase URL/key, supaFetch                 │
-// │      §JS-CloudSync       syncToSupabase, loadFromSupabase,           │
-// │                          updateSyncIndicator                         │
-// │      §JS-OfflinePWA      Offline listeners, PWA install prompt       │
-// │      §JS-PushNotifications VAPID key, notification modal            │
-// │      §JS-StateInit       State vars: discovered, tried, owned etc.   │
-// │      §JS-Achievements    ACHIEVEMENTS array + popup queue            │
-// │      §JS-Audio           AudioContext, playTone, snd* effects        │
-// │      §JS-DOMRefs         domCards, slotA/B, timers, DOM refs         │
-// │      §JS-IntroWelcomeBack Offline note, welcome-back dashboard       │
-// │      §JS-GameFlow        startGame, showCongrats, checkWin           │
-// │      §JS-CombinationLogic ck, renderSlot, renderResult, cancelCombo, │
-// │                          openSlotBPicker, closeSlotBPicker           │
-// │      §JS-CardInteraction updateCardStates, tapCard, addResult        │
-// │      §JS-UIHelpers       Menu, reset, session, toast, hint, confirm  │
-// │      §JS-Tooltip         scheduleHide, showTooltip, hideTooltip      │
-// │      §JS-GridBuilder     buildDeptTabs, buildGrid                    │
-// │      §JS-LongDesc        LONG_DESC – rich slide-in descriptions      │
-// │      §JS-CTATexts        CTA_TEXT – glossary links per item          │
-// │      §JS-SlideIn         openSlideIn, closeSlideIn, ownership toggle │
-// │      §JS-Narration       TTS narration, sentence highlight, wakeLock │
-// │      §JS-Translation     Language dropdown, Google Translate         │
-// │      §JS-StatsScreen     openStats, closeStats, achievement tooltips │
-// │      §JS-Effects         spawnParticleBurst, launchConfetti          │
-// │      §JS-Init            announce(), buildGrid(), twemoji, SW reg    │
-// │      §JS-Tutorial        19-step guided tour; window.resetTutorial() │
-// └──────────────────────────────────────────────────────────────────────┘
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║  ⚠️  IMPORTANT — AI ASSISTANT INSTRUCTION (do NOT skip this)        ║
+// ║  Whenever you add, rename, or remove a §-section in this file,      ║
+// ║  you MUST update the TABLE OF CONTENTS below before finishing.      ║
+// ║  This is mandatory maintenance — not optional. Check every task.    ║
+// ╠══════════════════════════════════════════════════════════════════════╣
+// ║  INDEX.HTML — TABLE OF CONTENTS                                     ║
+// ║  Search §SectionName to jump to any section (Ctrl+F / Cmd+F)        ║
+// ╠══════════════════════════════════════════════════════════════════════╣
+// ║ CSS  §CSS-Shell  §CSS-Grid  §CSS-Tray  §CSS-Tooltip  §CSS-Intro      ║
+// ║      §CSS-Congrats  §CSS-Stats  §CSS-SlideIn  §CSS-Popups            ║
+// ║      §CSS-Responsive  §CSS-Tutorial  §CSS-SlotBPicker                ║
+// ║ HTML §HTML-Intro  §HTML-Congrats  §HTML-Stats  §HTML-GameBoard       ║
+// ║      §HTML-Modals                                                    ║
+// ║ JS   §JS-DataConstants   PAL, TIER_NAMES, DEPT_PAL, DEPARTMENTS      ║
+// ║      §JS-InfoShort       INFO – short card descriptions              ║
+// ║      §JS-ElementsRegistry ALL – all 103 elements + emoji/tier        ║
+// ║      §JS-Recipes         R, REV, add() + all 117 recipes             ║
+// ║      §JS-Persistence     loadProgress, saveProgress, session,        ║
+// ║                          Supabase URL/key, supaFetch                 ║
+// ║      §JS-CloudSync       syncToSupabase, loadFromSupabase,           ║
+// ║                          updateSyncIndicator                         ║
+// ║      §JS-OfflinePWA      Offline listeners, PWA install prompt       ║
+// ║      §JS-PushNotifications VAPID key, notification modal            ║
+// ║      §JS-StateInit       State vars: discovered, tried, owned etc.   ║
+// ║      §JS-Achievements    ACHIEVEMENTS array + popup queue            ║
+// ║      §JS-Audio           AudioContext, playTone, snd* effects        ║
+// ║      §JS-DOMRefs         domCards, slotA/B, timers, DOM refs         ║
+// ║      §JS-IntroWelcomeBack Offline note, welcome-back dashboard       ║
+// ║      §JS-GameFlow        startGame, showCongrats, checkWin           ║
+// ║      §JS-CombinationLogic ck, renderSlot, renderResult, cancelCombo, ║
+// ║                          openSlotBPicker, closeSlotBPicker           ║
+// ║      §JS-CardInteraction updateCardStates, tapCard, addResult        ║
+// ║      §JS-UIHelpers       Menu, reset, session, toast, hint, confirm  ║
+// ║      §JS-Tooltip         scheduleHide, showTooltip, hideTooltip      ║
+// ║      §JS-GridBuilder     buildDeptTabs, buildGrid                    ║
+// ║      §JS-LongDesc        LONG_DESC – rich slide-in descriptions      ║
+// ║      §JS-CTATexts        CTA_TEXT – glossary links per item          ║
+// ║      §JS-SlideIn         openSlideIn, closeSlideIn, ownership toggle ║
+// ║      §JS-Narration       TTS narration, sentence highlight, wakeLock ║
+// ║      §JS-Translation     Language dropdown, Google Translate         ║
+// ║      §JS-StatsScreen     openStats, closeStats, achievement tooltips ║
+// ║      §JS-Effects         spawnParticleBurst, launchConfetti          ║
+// ║      §JS-Init            announce(), buildGrid(), twemoji, SW reg    ║
+// ║      §JS-Tutorial        19-step guided tour; window.resetTutorial() ║
+// ╚══════════════════════════════════════════════════════════════════════╝
+// ⚠️  AI: Did you update the TOC above? If you added/changed a §-section, do it now.
 // #region §JS-DataConstants  // ← new §-section? also add it to TABLE OF CONTENTS above
 const PAL=[
   {bg:'#FAEEDA',b:'#EF9F27',t:'#633806',dot:'#EF9F27'},
@@ -3055,11 +3059,23 @@ if('serviceWorker' in navigator){
 
   function visIdx(){let v=0;for(let i=0;i<=tutStep;i++){if(S[i]&&S[i].type!=='wait')v++;}return v;}
 
-  // ── Spotlight (4-panel approach) ──────────────────────────────────────
+  // ── Spotlight helpers ─────────────────────────────────────────────────
+  let _elevated=[];
+  function _elevate(el,newZ){
+    _elevated.push({el,pos:el.style.position,z:el.style.zIndex});
+    if(!el.style.position||el.style.position==='static')el.style.position='relative';
+    el.style.zIndex=newZ;
+  }
+  function _restoreElevated(){
+    _elevated.forEach(({el,pos,z})=>{el.style.position=pos;el.style.zIndex=z;});
+    _elevated=[];
+  }
+
   function hidePanels(){
     Object.values(tutP).forEach(p=>{p.style.cssText='display:none';});
     tutRingEl.classList.remove('active','no-overlay');
     tutRing2El.classList.remove('active');
+    _restoreElevated();
   }
 
   function posRing(el,target){
@@ -3076,9 +3092,13 @@ if('serviceWorker' in navigator){
     }
     hidePanels();
     if(target2){
-      // Two targets: full-screen panel overlay + both rings without their own shadow overlay
+      // Full-screen overlay; elevate both targets and their containers above it
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:none;display:block';
-      posRing(tutRingEl,target);tutRingEl.classList.add('no-overlay');
+      _elevate(target,'9001');                              // card above overlay
+      _elevate(document.getElementById('tray'),'9002');    // tray + slot-b above overlay
+      tutRing2El.style.zIndex='9003';                      // ring2 above tray
+      tutRingEl.classList.add('no-overlay');
+      posRing(tutRingEl,target);
       posRing(tutRing2El,target2);
     } else {
       tutRingEl.classList.remove('no-overlay');
