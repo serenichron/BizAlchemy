@@ -1629,7 +1629,12 @@ function renderResult(){
     resultEl.onclick=addResult;resultName=res;resultState='new';announce('New discovery: '+res+'! Tap result to add.');
   }
 }
-function cancelCombo(){closeSlotBPicker();slotA=null;slotB=null;updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();}
+function cancelCombo(){
+  closeSlotBPicker();
+  const hadResult=resultName; // capture before clearing (only set when a valid recipe exists)
+  slotA=null;slotB=null;updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();
+  if(hadResult)tutHook('addResult',hadResult); // advance "click result" tutorial step even if already found
+}
 function clearSlot(which){
   closeSlotBPicker();
   if(which==='a'){slotA=slotB;slotB=null;}else{slotB=null;}
@@ -3166,8 +3171,7 @@ if('serviceWorker' in navigator){
       tutBoxEl.style.display='none';
       // If the wait condition is already satisfied (e.g. achQueueEmpty fired before we
       // arrived here), advance immediately rather than waiting indefinitely.
-      console.log('[TUT-DBG] entering wait step',i,'hook=',step.hook,'achShowing=',achShowing,'achQueue.length=',achQueue.length);
-      if(step.hook==='achQueueEmpty'&&!achShowing&&!achQueue.length){console.log('[TUT-DBG] wait already satisfied, skipping');showStep(i+1);return;}
+      if(step.hook==='achQueueEmpty'&&!achShowing&&!achQueue.length){showStep(i+1);return;}
       return;
     }
 
@@ -3218,7 +3222,6 @@ if('serviceWorker' in navigator){
   tutHook=function(event,data){
     if(!tutActive)return;
     const step=S[tutStep];if(!step)return;
-    console.log('[TUT-DBG] tutHook event=',event,'tutStep=',tutStep,'step.hook=',step.hook,'step.type=',step.type);
     const match=(step.hook===event)&&(!step.hookData||step.hookData===data);
     if(!match)return;
 
