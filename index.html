@@ -126,6 +126,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* #region §CSS-Tray */
 #tray{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:10px 12px 14px;display:flex;align-items:center;gap:7px;z-index:30}
 .slot{flex:1;height:68px;border-radius:14px;border:1.5px dashed #ccc;background:#fafaf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:default;position:relative;transition:border-color 0.15s}
+.slot.pickable{cursor:pointer}
 .slot.filled{border-style:solid;border-color:var(--slot-color);background:var(--slot-bg)}
 .slot-e{font-size:23px;line-height:1}
 .slot-n{font-size:10px;font-weight:500;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
@@ -526,7 +527,7 @@ h1,h2{margin:0;padding:0}
 #sbp-close{font-size:16px;color:#bbb;cursor:pointer;padding:0 4px;line-height:1;background:none;border:none}
 #sbp-close:hover{color:#555}
 #sbp-list{overflow-y:auto;flex:1;padding:4px 8px 8px}
-.sbp-item{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:8px;cursor:pointer;font-size:12.5px}
+.sbp-item{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:8px;cursor:pointer;font-size:11.5px}
 .sbp-item:hover{background:#f5f5f3}
 .sbp-item-e{font-size:20px;flex-shrink:0;width:26px;text-align:center}
 .sbp-item-n{font-weight:500;color:#1a1a1a}
@@ -1670,6 +1671,7 @@ function closeSlotBPicker(){if(sbpEl)sbpEl.classList.remove('open');}
 // #region §JS-CardInteraction  // ← new §-section? also add it to TABLE OF CONTENTS above
 function updateCardStates(){
   const both=slotA&&slotB;
+  slotBEl.classList.toggle('pickable',!!(slotA&&!slotB));
   domCards.forEach((d,name)=>{
     const isSel=name===slotA||name===slotB;
     const isBlocked=slotA&&!slotB&&!isSel&&!hasReaction(slotA,name);
@@ -3092,11 +3094,18 @@ if('serviceWorker' in navigator){
     }
     hidePanels();
     if(target2){
-      // Full-screen overlay; elevate both targets and their containers above it
+      // Full-screen overlay; elevate card and tray above it, then re-darken all
+      // tray areas except slot-b using the spare tutP panels.
+      const trayEl=document.getElementById('tray');
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:none;display:block';
-      _elevate(target,'9001');                              // card above overlay
-      _elevate(document.getElementById('tray'),'9002');    // tray + slot-b above overlay
-      tutRing2El.style.zIndex='9003';                      // ring2 above tray
+      _elevate(target,'9001');
+      _elevate(trayEl,'9002');
+      tutRing2El.style.zIndex='9003';
+      // Re-darken everything in the tray except slot-b
+      const tr=trayEl.getBoundingClientRect(),sb=target2.getBoundingClientRect(),pad=6;
+      const darken=css=>css+';position:fixed;background:rgba(0,0,0,0.62);z-index:9004;pointer-events:none;display:block';
+      tutP.left.style.cssText=darken(`left:${tr.left}px;top:${tr.top}px;width:${sb.left-tr.left-pad}px;height:${tr.height}px`);
+      tutP.right.style.cssText=darken(`left:${sb.right+pad}px;top:${tr.top}px;width:${tr.right-sb.right-pad}px;height:${tr.height}px`);
       tutRingEl.classList.add('no-overlay');
       posRing(tutRingEl,target);
       posRing(tutRing2El,target2);
