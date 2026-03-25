@@ -504,8 +504,8 @@ h1,h2{margin:0;padding:0}
 /* #region §CSS-Tutorial */
 .tut-panel{position:fixed;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:none}
 #tut-ring{position:fixed;pointer-events:none;z-index:9001;border-radius:10px;display:none}
-#tut-ring.active{display:block;box-shadow:0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4);animation:tut-pulse 1.6s infinite ease-in-out}
-@keyframes tut-pulse{0%,100%{box-shadow:0 0 0 3px #EF9F27,0 0 8px rgba(239,159,39,0.3)}50%{box-shadow:0 0 0 5px #EF9F27,0 0 22px rgba(239,159,39,0.6)}}
+#tut-ring.active{display:block;box-shadow:0 0 0 9999px rgba(0,0,0,0.62),0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4);animation:tut-pulse 1.6s infinite ease-in-out}
+@keyframes tut-pulse{0%,100%{box-shadow:0 0 0 9999px rgba(0,0,0,0.62),0 0 0 3px #EF9F27,0 0 8px rgba(239,159,39,0.3)}50%{box-shadow:0 0 0 9999px rgba(0,0,0,0.62),0 0 0 5px #EF9F27,0 0 22px rgba(239,159,39,0.6)}}
 #tut-box{position:fixed;z-index:9002;background:#fff;border-radius:14px;padding:10px 14px 10px;box-shadow:0 4px 32px rgba(0,0,0,0.18);width:280px;pointer-events:auto;display:none;box-sizing:border-box}
 #tut-box.active{display:block}
 #tut-step-label{font-size:10.5px;color:#bbb;margin-bottom:3px;font-weight:500;letter-spacing:0.2px}
@@ -3007,15 +3007,9 @@ if('serviceWorker' in navigator){
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';
       return;
     }
+    hidePanels();
     const r=target.getBoundingClientRect();
     const pad=4;
-    const T=Math.max(0,r.top-pad),L=Math.max(0,r.left-pad);
-    const R=Math.min(window.innerWidth,r.right+pad),B=Math.min(window.innerHeight,r.bottom+pad);
-    const setP=(el,css)=>{el.style.cssText=css+';position:fixed;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';};
-    setP(tutP.top,   `left:0;top:0;right:0;height:${T}px`);
-    setP(tutP.bottom,`left:0;top:${B}px;right:0;bottom:0`);
-    setP(tutP.left,  `left:0;top:${T}px;width:${L}px;height:${B-T}px`);
-    setP(tutP.right, `left:${R}px;top:${T}px;right:0;height:${B-T}px`);
     tutRingEl.style.cssText=`left:${r.left-pad+2}px;top:${r.top-pad+2}px;width:${r.width+pad*2-4}px;height:${r.height+pad*2-4}px;border-radius:${Math.min(12,r.height/2+4)}px`;
     tutRingEl.classList.add('active');
   }
