@@ -3217,15 +3217,6 @@ if('serviceWorker' in navigator){
     if(!tutActive)return;
     const step=S[tutStep];if(!step)return;
 
-    // Special: addResult during step 3 → jump to wait step silently
-    if(event==='addResult'&&tutStep===3){
-      hidePanels();
-      tutBoxEl.classList.remove('active');
-      tutBoxEl.style.display='none';
-      tutStep=4; // wait step — will advance via achQueueEmpty
-      return;
-    }
-
     const match=(step.hook===event)&&(!step.hookData||step.hookData===data);
     if(!match)return;
 
