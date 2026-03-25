@@ -3103,20 +3103,17 @@ if('serviceWorker' in navigator){
     }
 
     if(target2){
-      // Dual-target: ring1's 9999px shadow darkens everything (including the tray).
-      // tutSlotHighEl provides the white rounded highlight for slot-b above the shadow.
-      // Ring2 sits on top with the orange border.
+      // Dual-target: ring1's 9999px shadow darkens the grid.
+      // Tray elevated to z-9002 (above ring1 z-9001) so it renders normally with text visible.
+      // Ring2 at z-9003 (above tray) provides the orange border on slot-b.
       const trayEl=document.getElementById('tray');
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';
       _elevate(target,'9001');
-      _elevate(trayEl,'9001'); // tray must be above z-9000 overlay to stay clickable
-      // White rounded highlight for slot-b (above ring1 shadow at z-9001, below ring2 at z-9004)
-      const sb=target2.getBoundingClientRect();
-      tutSlotHighEl.style.cssText=`position:fixed;pointer-events:none;display:block;background:#fafaf8;z-index:9003;border-radius:14px;left:${sb.left}px;top:${sb.top}px;width:${sb.width}px;height:${sb.height}px`;
-      tutRingEl.classList.remove('no-overlay'); // ring1 uses full shadow to darken tray
+      _elevate(trayEl,'9002'); // above ring1 so tray background+text show normally
+      tutRingEl.classList.remove('no-overlay'); // ring1 uses full shadow to darken grid
       posRing(tutRingEl,target);
       posRing(tutRing2El,target2);
-      tutRing2El.style.zIndex='9004'; // above tutSlotHighEl; set AFTER posRing (cssText wipes styles)
+      tutRing2El.style.zIndex='9003'; // above tray; set AFTER posRing (cssText wipes styles)
     } else {
       // Single-target: transparent blocking overlay + elevate target above it.
       // If target is inside #tray, also elevate the tray (it has its own stacking context at z-30).
