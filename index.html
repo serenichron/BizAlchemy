@@ -1692,7 +1692,8 @@ function tapCard(name){
   tutHook('tapCard',name);
 }
 function addResult(){
-  if(!resultName||resultState!=='new')return;
+  console.log('[TUT-DBG] addResult called, resultName=',resultName,'resultState=',resultState);
+  if(!resultName||resultState!=='new'){console.log('[TUT-DBG] addResult early exit');return;}
   discovered.add(resultName);markAllRecipes(resultName);saveProgress();const added=resultName;
   slotA=null;slotB=null;resultName=null;resultState=null;
   renderSlot(slotAEl,null);renderSlot(slotBEl,null);renderResult();
@@ -1704,6 +1705,7 @@ function addResult(){
   }));
   showToast('tok','Discovered: '+ALL[added].e+' '+added+'!');sndDiscover();
   checkWin();checkAchievements();
+  console.log('[TUT-DBG] before tutHook addResult: tutActive=',tutActive,'tutStep=',tutStep,'achShowing=',achShowing,'achQueue.length=',achQueue.length);
   tutHook('addResult',added);
 }
 // #endregion
@@ -3166,7 +3168,8 @@ if('serviceWorker' in navigator){
       tutBoxEl.style.display='none';
       // If the wait condition is already satisfied (e.g. achQueueEmpty fired before we
       // arrived here), advance immediately rather than waiting indefinitely.
-      if(step.hook==='achQueueEmpty'&&!achShowing&&!achQueue.length){showStep(i+1);return;}
+      console.log('[TUT-DBG] entering wait step',i,'hook=',step.hook,'achShowing=',achShowing,'achQueue.length=',achQueue.length);
+      if(step.hook==='achQueueEmpty'&&!achShowing&&!achQueue.length){console.log('[TUT-DBG] wait already satisfied, skipping');showStep(i+1);return;}
       return;
     }
 
@@ -3217,7 +3220,7 @@ if('serviceWorker' in navigator){
   tutHook=function(event,data){
     if(!tutActive)return;
     const step=S[tutStep];if(!step)return;
-
+    console.log('[TUT-DBG] tutHook event=',event,'tutStep=',tutStep,'step.hook=',step.hook,'step.type=',step.type);
     const match=(step.hook===event)&&(!step.hookData||step.hookData===data);
     if(!match)return;
 
