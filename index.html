@@ -504,8 +504,8 @@ h1,h2{margin:0;padding:0}
 /* #region §CSS-Tutorial */
 .tut-panel{position:fixed;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:none}
 #tut-ring{position:fixed;pointer-events:none;z-index:9001;border-radius:10px;display:none}
-#tut-ring.active{display:block;box-shadow:0 0 0 9999px rgba(0,0,0,0.62),0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4);animation:tut-pulse 1.6s infinite ease-in-out}
-@keyframes tut-pulse{0%,100%{box-shadow:0 0 0 9999px rgba(0,0,0,0.62),0 0 0 3px #EF9F27,0 0 8px rgba(239,159,39,0.3)}50%{box-shadow:0 0 0 9999px rgba(0,0,0,0.62),0 0 0 5px #EF9F27,0 0 22px rgba(239,159,39,0.6)}}
+#tut-ring.active{display:block;box-shadow:0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4),0 0 0 9999px rgba(0,0,0,0.62);animation:tut-pulse 1.6s infinite ease-in-out}
+@keyframes tut-pulse{0%,100%{box-shadow:0 0 0 3px #EF9F27,0 0 8px rgba(239,159,39,0.3),0 0 0 9999px rgba(0,0,0,0.62)}50%{box-shadow:0 0 0 5px #EF9F27,0 0 22px rgba(239,159,39,0.6),0 0 0 9999px rgba(0,0,0,0.62)}}
 #tut-box{position:fixed;z-index:9002;background:#fff;border-radius:14px;padding:10px 14px 10px;box-shadow:0 4px 32px rgba(0,0,0,0.18);width:280px;pointer-events:auto;display:none;box-sizing:border-box}
 #tut-box.active{display:block}
 #tut-step-label{font-size:10.5px;color:#bbb;margin-bottom:3px;font-weight:500;letter-spacing:0.2px}
