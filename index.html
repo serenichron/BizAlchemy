@@ -2631,6 +2631,7 @@ langDropdown.addEventListener('click',function(e){
     translateBtn.textContent='English';
     restoreOriginalDesc();
     updateVoiceForLang();
+    requestAnimationFrame(()=>{if(typeof tutReposRing!=='undefined')tutReposRing(translateBtn);});
   }else{
     const lObj=LANGS.find(l=>l.code===lang);
     activeLang=lang;
