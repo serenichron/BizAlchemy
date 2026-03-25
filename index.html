@@ -3104,16 +3104,25 @@ if('serviceWorker' in navigator){
 
     if(target2){
       // Dual-target: ring1's 9999px shadow darkens the grid.
-      // Tray elevated to z-9002 (above ring1 z-9001) so it renders normally with text visible.
-      // Ring2 at z-9003 (above tray) provides the orange border on slot-b.
+      // Tray elevated to z-9002 (above ring1 z-9001) so its text is visible.
+      // tutSlotHighEl is a dark overlay over the tray with a clip-path evenodd hole at
+      // slot-b, re-darkening the rest of the tray while revealing only slot-b with its text.
+      // Ring2 at z-9004 provides the orange border on slot-b.
       const trayEl=document.getElementById('tray');
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';
       _elevate(target,'9001');
       _elevate(trayEl,'9002'); // above ring1 so tray background+text show normally
+      // Build clip-path: dark rect covering tray with an evenodd rounded-rect hole at slot-b
+      const tr=trayEl.getBoundingClientRect(),sb=target2.getBoundingClientRect();
+      const pad=4,r=12,K=0.5523; // pad=gutter, r=border-radius, K=bezier circle approx
+      const x=sb.left-tr.left-pad,y=sb.top-tr.top-pad,w=sb.width+pad*2,h=sb.height+pad*2;
+      const outerPath=`M0,0 H${Math.ceil(tr.width)} V${Math.ceil(tr.height)} H0 Z`;
+      const hole=`M${x+r},${y} H${x+w-r} C${x+w-r+K*r},${y} ${x+w},${y+r-K*r} ${x+w},${y+r} V${y+h-r} C${x+w},${y+h-r+K*r} ${x+w-r+K*r},${y+h} ${x+w-r},${y+h} H${x+r} C${x+r-K*r},${y+h} ${x},${y+h-r+K*r} ${x},${y+h-r} V${y+r} C${x},${y+r-K*r} ${x+r-K*r},${y} ${x+r},${y} Z`;
+      tutSlotHighEl.style.cssText=`position:fixed;pointer-events:none;display:block;background:rgba(0,0,0,0.62);z-index:9003;left:${tr.left}px;top:${tr.top}px;width:${tr.width}px;height:${tr.height}px;clip-path:path(evenodd,'${outerPath} ${hole}')`;
       tutRingEl.classList.remove('no-overlay'); // ring1 uses full shadow to darken grid
       posRing(tutRingEl,target);
       posRing(tutRing2El,target2);
-      tutRing2El.style.zIndex='9003'; // above tray; set AFTER posRing (cssText wipes styles)
+      tutRing2El.style.zIndex='9004'; // above tutSlotHighEl (z-9003); set AFTER posRing
     } else {
       // Single-target: transparent blocking overlay + elevate target above it.
       // If target is inside #tray, also elevate the tray (it has its own stacking context at z-30).
