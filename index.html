@@ -503,8 +503,9 @@ h1,h2{margin:0;padding:0}
 /* #endregion */
 /* #region §CSS-Tutorial */
 .tut-panel{position:fixed;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:none}
-#tut-ring{position:fixed;pointer-events:none;z-index:9001;border-radius:10px;display:none}
+#tut-ring,#tut-ring2{position:fixed;pointer-events:none;z-index:9001;border-radius:10px;display:none}
 #tut-ring.active{display:block;box-shadow:0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4),0 0 0 9999px rgba(0,0,0,0.62);animation:tut-pulse 1.6s infinite ease-in-out}
+#tut-ring2.active{display:block;box-shadow:0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4);animation:tut-pulse 1.6s infinite ease-in-out}
 @keyframes tut-pulse{0%,100%{box-shadow:0 0 0 3px #EF9F27,0 0 8px rgba(239,159,39,0.3),0 0 0 9999px rgba(0,0,0,0.62)}50%{box-shadow:0 0 0 5px #EF9F27,0 0 22px rgba(239,159,39,0.6),0 0 0 9999px rgba(0,0,0,0.62)}}
 #tut-box{position:fixed;z-index:9002;background:#fff;border-radius:14px;padding:10px 14px 10px;box-shadow:0 4px 32px rgba(0,0,0,0.18);width:280px;pointer-events:auto;display:none;box-sizing:border-box}
 #tut-box.active{display:block}
@@ -515,6 +516,22 @@ h1,h2{margin:0;padding:0}
 #tut-box-ok:hover{opacity:0.85}
 #tut-skip{margin-top:5px;display:block;font-size:11px;color:#bbb;cursor:pointer;text-align:center;background:none;border:none;width:100%;padding:2px 0;text-decoration:underline}
 #tut-skip:hover{color:#666}
+/* #endregion */
+/* #region §CSS-SlotBPicker */
+#slot-b-picker{position:fixed;background:#fff;border-radius:14px 14px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,0.18);z-index:9999;overflow:hidden;display:none;flex-direction:column}
+#slot-b-picker.open{display:flex}
+#sbp-header{padding:10px 14px 8px;border-bottom:1px solid #eee;font-size:11.5px;color:#888;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+#sbp-header strong{color:#1a1a1a}
+#sbp-close{font-size:16px;color:#bbb;cursor:pointer;padding:0 4px;line-height:1;background:none;border:none}
+#sbp-close:hover{color:#555}
+#sbp-list{overflow-y:auto;flex:1;padding:4px 8px 8px}
+.sbp-item{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:10px;cursor:pointer;font-size:12.5px}
+.sbp-item:hover{background:#f5f5f3}
+.sbp-item-e{font-size:20px;flex-shrink:0;width:26px;text-align:center}
+.sbp-item-n{font-weight:500;color:#1a1a1a}
+.sbp-sep{height:1px;background:#eee;margin:4px 8px}
+.sbp-unknown{display:flex;align-items:center;gap:9px;padding:5px 8px;font-size:11.5px;color:#ccc;cursor:default;user-select:none}
+.sbp-unknown-q{font-size:15px;width:26px;text-align:center;flex-shrink:0}
 /* #endregion */
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js" crossorigin="anonymous"></script>
@@ -1604,11 +1621,40 @@ function renderResult(){
     resultEl.onclick=addResult;resultName=res;resultState='new';announce('New discovery: '+res+'! Tap result to add.');
   }
 }
-function cancelCombo(){slotA=null;slotB=null;updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();}
+function cancelCombo(){closeSlotBPicker();slotA=null;slotB=null;updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();}
 function clearSlot(which){
+  closeSlotBPicker();
   if(which==='a'){slotA=slotB;slotB=null;}else{slotB=null;}
   updateCardStates();renderSlot(slotAEl,slotA);renderSlot(slotBEl,slotB);renderResult();
 }
+// ── Slot-B Picker ──────────────────────────────────────────────────────────
+let sbpEl=null;
+function openSlotBPicker(){
+  if(!slotA||slotB)return;
+  if(!sbpEl){sbpEl=document.createElement('div');sbpEl.id='slot-b-picker';document.body.appendChild(sbpEl);}
+  const avail=[],unknown=[];
+  domCards.forEach((d,name)=>{
+    if(name===slotA||!hasReaction(slotA,name))return;
+    if(discovered.has(name))avail.push(name);else unknown.push(name);
+  });
+  const gameRect=gameEl.getBoundingClientRect();
+  const trayRect=document.getElementById('tray').getBoundingClientRect();
+  const pickerH=Math.round(gameRect.height*0.63);
+  sbpEl.style.cssText=`left:${gameRect.left}px;width:${gameRect.width}px;bottom:${window.innerHeight-trayRect.top}px;height:${pickerH}px`;
+  let html=`<div id="sbp-header"><span>${ALL[slotA].e} <strong>${slotA}</strong> combines with…</span><button id="sbp-close">✕</button></div><div id="sbp-list">`;
+  avail.forEach(name=>{html+=`<div class="sbp-item" data-pick="${name}"><span class="sbp-item-e">${ALL[name].e}</span><span class="sbp-item-n">${name}</span></div>`;});
+  if(avail.length&&unknown.length)html+=`<div class="sbp-sep"></div>`;
+  unknown.forEach(()=>{html+=`<div class="sbp-unknown"><span class="sbp-unknown-q">?</span><span>???</span></div>`;});
+  html+=`</div>`;
+  sbpEl.innerHTML=html;
+  sbpEl.classList.add('open');
+  document.getElementById('sbp-close').onclick=closeSlotBPicker;
+  sbpEl.querySelector('#sbp-list').addEventListener('click',e=>{
+    const item=e.target.closest('.sbp-item');if(!item)return;
+    closeSlotBPicker();tapCard(item.dataset.pick);
+  });
+}
+function closeSlotBPicker(){if(sbpEl)sbpEl.classList.remove('open');}
 // #endregion
 // #region §JS-CardInteraction  // ← new §-section? also add it to TABLE OF CONTENTS above
 function updateCardStates(){
@@ -1623,6 +1669,7 @@ function updateCardStates(){
   });
 }
 function tapCard(name){
+  closeSlotBPicker();
   if(name===slotA){clearSlot('a');return;}
   if(name===slotB){clearSlot('b');return;}
   if(!slotA)slotA=name;else if(!slotB)slotB=name;
@@ -1672,6 +1719,7 @@ function toggleMenu(){
 }
 document.addEventListener('click',function(e){
   if(!e.target.closest('#menu-wrap'))document.getElementById('menu-dropdown').classList.remove('open');
+  if(sbpEl&&sbpEl.classList.contains('open')&&!e.target.closest('#slot-b-picker')&&!e.target.closest('#slot-b'))closeSlotBPicker();
 });
 function resetGame(){
   document.getElementById('menu-dropdown').classList.remove('open');
@@ -1837,6 +1885,10 @@ function buildGrid(){
   cntEl.textContent=discovered.size+' / '+TOTAL+' found';
 }
 grid.addEventListener('click',e=>{if(!e.target.closest('.ec'))closeHint();});
+slotBEl.addEventListener('click',e=>{
+  if(e.target.classList.contains('slot-clear'))return;
+  if(slotA&&!slotB)openSlotBPicker();
+});
 // #endregion
 // #region §JS-LongDesc  // ← new §-section? also add it to TABLE OF CONTENTS above
 const LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula ut dictum pharetra, nisi nunc fringilla magna, in commodo elit erat nec turpis. Ut pharetra augue nec augue.';
@@ -2896,6 +2948,7 @@ if('serviceWorker' in navigator){
   const tutP={top:mkPanel('top'),bottom:mkPanel('bottom'),left:mkPanel('left'),right:mkPanel('right')};
 
   const tutRingEl=document.createElement('div');tutRingEl.id='tut-ring';document.body.appendChild(tutRingEl);
+  const tutRing2El=document.createElement('div');tutRing2El.id='tut-ring2';document.body.appendChild(tutRing2El);
 
   const tutBoxEl=document.createElement('div');tutBoxEl.id='tut-box';
   tutBoxEl.innerHTML='<div id="tut-step-label"></div><div id="tut-box-title"></div><div id="tut-box-text"></div><button id="tut-box-ok">OK, got it</button><button id="tut-skip">Skip tutorial</button>';
@@ -2921,8 +2974,8 @@ if('serviceWorker' in navigator){
      targetFn:()=>domCards.get('Idea'),hook:'tapCard',hookData:'Idea'},
     // 2
     {type:'action',title:'Select another concept',
-     text:'Now click the 👥 <strong>Audience</strong> card to fill the second slot.',
-     targetFn:()=>domCards.get('Audience'),hook:'tapCard',hookData:'Audience'},
+     text:'Tap the 👥 <strong>Audience</strong> card directly, or tap the <strong>second slot</strong> to browse all cards that combine with Idea.',
+     targetFn:()=>domCards.get('Audience'),targetFn2:()=>slotBEl,hook:'tapCard',hookData:'Audience'},
     // 3
     {type:'action',title:'Discover the combination!',
      text:'A result is ready. Click it to discover what Idea + Audience creates together.',
@@ -2999,19 +3052,24 @@ if('serviceWorker' in navigator){
   function hidePanels(){
     Object.values(tutP).forEach(p=>{p.style.cssText='display:none';});
     tutRingEl.classList.remove('active');
+    tutRing2El.classList.remove('active');
   }
 
-  function spotlight(target){
+  function posRing(el,target){
+    const r=target.getBoundingClientRect(),pad=4;
+    el.style.cssText=`left:${r.left-pad+2}px;top:${r.top-pad+2}px;width:${r.width+pad*2-4}px;height:${r.height+pad*2-4}px;border-radius:${Math.min(12,r.height/2+4)}px`;
+    el.classList.add('active');
+  }
+
+  function spotlight(target,target2){
     if(!target){
       hidePanels();
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';
       return;
     }
     hidePanels();
-    const r=target.getBoundingClientRect();
-    const pad=4;
-    tutRingEl.style.cssText=`left:${r.left-pad+2}px;top:${r.top-pad+2}px;width:${r.width+pad*2-4}px;height:${r.height+pad*2-4}px;border-radius:${Math.min(12,r.height/2+4)}px`;
-    tutRingEl.classList.add('active');
+    posRing(tutRingEl,target);
+    if(target2)posRing(tutRing2El,target2);
   }
 
   // ── Box positioning ───────────────────────────────────────────────────
@@ -3065,7 +3123,8 @@ if('serviceWorker' in navigator){
 
     requestAnimationFrame(()=>{
       const t=step.targetFn?step.targetFn():null;
-      spotlight(t);
+      const t2=step.targetFn2?step.targetFn2():null;
+      spotlight(t,t2);
       positionBox(t);
     });
   }
