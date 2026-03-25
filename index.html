@@ -743,7 +743,7 @@ let tutHook=()=>{},tutStart=()=>{},tutPinTooltip=false;
 // ├──────────────────────────────────────────────────────────────────────┤
 // │ CSS  §CSS-Shell  §CSS-Grid  §CSS-Tray  §CSS-Tooltip  §CSS-Intro      │
 // │      §CSS-Congrats  §CSS-Stats  §CSS-SlideIn  §CSS-Popups            │
-// │      §CSS-Responsive                                                 │
+// │      §CSS-Responsive  §CSS-Tutorial  §CSS-SlotBPicker                │
 // │ HTML §HTML-Intro  §HTML-Congrats  §HTML-Stats  §HTML-GameBoard       │
 // │      §HTML-Modals                                                    │
 // │ JS   §JS-DataConstants   PAL, TIER_NAMES, DEPT_PAL, DEPARTMENTS      │
@@ -762,7 +762,8 @@ let tutHook=()=>{},tutStart=()=>{},tutPinTooltip=false;
 // │      §JS-DOMRefs         domCards, slotA/B, timers, DOM refs         │
 // │      §JS-IntroWelcomeBack Offline note, welcome-back dashboard       │
 // │      §JS-GameFlow        startGame, showCongrats, checkWin           │
-// │      §JS-CombinationLogic ck, renderSlot, renderResult, cancelCombo │
+// │      §JS-CombinationLogic ck, renderSlot, renderResult, cancelCombo, │
+// │                          openSlotBPicker, closeSlotBPicker           │
 // │      §JS-CardInteraction updateCardStates, tapCard, addResult        │
 // │      §JS-UIHelpers       Menu, reset, session, toast, hint, confirm  │
 // │      §JS-Tooltip         scheduleHide, showTooltip, hideTooltip      │
@@ -775,7 +776,7 @@ let tutHook=()=>{},tutStart=()=>{},tutPinTooltip=false;
 // │      §JS-StatsScreen     openStats, closeStats, achievement tooltips │
 // │      §JS-Effects         spawnParticleBurst, launchConfetti          │
 // │      §JS-Init            announce(), buildGrid(), twemoji, SW reg    │
-// │      §JS-Tutorial        19-step guided tour for first-time users    │
+// │      §JS-Tutorial        19-step guided tour; window.resetTutorial() │
 // └──────────────────────────────────────────────────────────────────────┘
 // #region §JS-DataConstants  // ← new §-section? also add it to TABLE OF CONTENTS above
 const PAL=[
