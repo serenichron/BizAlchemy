@@ -506,14 +506,14 @@ h1,h2{margin:0;padding:0}
 #tut-ring{position:fixed;pointer-events:none;z-index:9001;border-radius:10px;display:none}
 #tut-ring.active{display:block;box-shadow:0 0 0 3px #EF9F27,0 0 14px rgba(239,159,39,0.4);animation:tut-pulse 1.6s infinite ease-in-out}
 @keyframes tut-pulse{0%,100%{box-shadow:0 0 0 3px #EF9F27,0 0 8px rgba(239,159,39,0.3)}50%{box-shadow:0 0 0 5px #EF9F27,0 0 22px rgba(239,159,39,0.6)}}
-#tut-box{position:fixed;z-index:9002;background:#fff;border-radius:14px;padding:16px 18px 14px;box-shadow:0 4px 32px rgba(0,0,0,0.18);width:280px;pointer-events:auto;display:none;box-sizing:border-box}
+#tut-box{position:fixed;z-index:9002;background:#fff;border-radius:14px;padding:10px 14px 10px;box-shadow:0 4px 32px rgba(0,0,0,0.18);width:280px;pointer-events:auto;display:none;box-sizing:border-box}
 #tut-box.active{display:block}
-#tut-step-label{font-size:10.5px;color:#bbb;margin-bottom:6px;font-weight:500;letter-spacing:0.2px}
-#tut-box-title{font-size:13.5px;font-weight:700;color:#1a1a1a;margin-bottom:6px;line-height:1.3}
-#tut-box-text{font-size:12.5px;color:#444;line-height:1.55}
-#tut-box-ok{margin-top:12px;width:100%;padding:9px;border-radius:8px;border:none;background:#1a1a1a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;display:none}
+#tut-step-label{font-size:10.5px;color:#bbb;margin-bottom:3px;font-weight:500;letter-spacing:0.2px}
+#tut-box-title{font-size:13.5px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.3}
+#tut-box-text{font-size:12.5px;color:#444;line-height:1.5}
+#tut-box-ok{margin-top:8px;width:100%;padding:8px;border-radius:8px;border:none;background:#1a1a1a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;display:none}
 #tut-box-ok:hover{opacity:0.85}
-#tut-skip{margin-top:8px;display:block;font-size:11px;color:#bbb;cursor:pointer;text-align:center;background:none;border:none;width:100%;padding:2px 0;text-decoration:underline}
+#tut-skip{margin-top:5px;display:block;font-size:11px;color:#bbb;cursor:pointer;text-align:center;background:none;border:none;width:100%;padding:2px 0;text-decoration:underline}
 #tut-skip:hover{color:#666}
 /* #endregion */
 </style>
@@ -3008,7 +3008,7 @@ if('serviceWorker' in navigator){
       return;
     }
     const r=target.getBoundingClientRect();
-    const pad=10;
+    const pad=4;
     const T=Math.max(0,r.top-pad),L=Math.max(0,r.left-pad);
     const R=Math.min(window.innerWidth,r.right+pad),B=Math.min(window.innerHeight,r.bottom+pad);
     const setP=(el,css)=>{el.style.cssText=css+';position:fixed;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';};
