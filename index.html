@@ -2588,11 +2588,18 @@ function buildLangDropdown(){
 
 function toggleLangDropdown(){
   const isOpen=langDropdown.classList.contains('open');
-  if(isOpen){langDropdown.classList.remove('open');langDropdown.style.zIndex='';return;}
+  if(isOpen){
+    langDropdown.classList.remove('open');langDropdown.style.zIndex='';
+    if(typeof tutRing2Hide!=='undefined')tutRing2Hide();
+    return;
+  }
   buildLangDropdown();
   langDropdown.classList.add('open');
-  // Elevate above tutorial box (z-9002) when tutorial is active
-  if(typeof tutActive!=='undefined'&&tutActive)langDropdown.style.zIndex='9003';
+  if(typeof tutActive!=='undefined'&&tutActive){
+    langDropdown.style.zIndex='9003';
+    // Show ring2 around the dropdown after it renders
+    requestAnimationFrame(()=>{if(typeof tutRing2Show!=='undefined')tutRing2Show(langDropdown);});
+  }
 }
 
 translateBtn.addEventListener('click',function(e){
@@ -2609,6 +2616,7 @@ langDropdown.addEventListener('click',function(e){
   const lang=btn.dataset.lang;
   langDropdown.classList.remove('open');
   langDropdown.style.zIndex='';
+  if(typeof tutRing2Hide!=='undefined')tutRing2Hide();
   if(lang==='en'){
     activeLang=null;
     translateBtn.textContent='English';
@@ -2617,13 +2625,17 @@ langDropdown.addEventListener('click',function(e){
   }else{
     const lObj=LANGS.find(l=>l.code===lang);
     activeLang=lang;
-    if(lObj)translateBtn.innerHTML=lObj.flag+' '+lObj.name+' <span style="opacity:0.55;font-size:10px">(auto)</span>';
+    if(lObj){
+      translateBtn.innerHTML=lObj.name+' <span style="opacity:0.55;font-size:10px">(auto)</span>';
+      // Reposition ring1 after button resizes (new text = different width)
+      requestAnimationFrame(()=>{if(typeof tutReposRing!=='undefined')tutReposRing(translateBtn);});
+    }
     applyTranslation(currentSlideInName,lang);
   }
 });
 
 // Close dropdown when clicking outside
-document.addEventListener('click',function(){langDropdown.classList.remove('open');langDropdown.style.zIndex='';});
+document.addEventListener('click',function(){langDropdown.classList.remove('open');langDropdown.style.zIndex='';if(typeof tutRing2Hide!=='undefined')tutRing2Hide();});
 
 // Split text into chunks under maxLen at sentence boundaries
 function splitForTranslation(text,maxLen){
@@ -3286,6 +3298,19 @@ if('serviceWorker' in navigator){
     tutActive=true;
     showStep(0);
   };
+
+  // ── Helpers exposed for use outside the IIFE ─────────────────────────
+  // Reposition ring1 (call after the highlighted element resizes)
+  window.tutReposRing=function(el){if(tutActive&&el)posRing(tutRingEl,el);};
+  // Show ring2 on an element (e.g. a dropdown that opens during a step)
+  window.tutRing2Show=function(el){
+    if(!tutActive||!el)return;
+    posRing(tutRing2El,el);
+    tutRing2El.style.zIndex='9004';
+    tutRing2El.classList.add('active');
+  };
+  // Hide ring2
+  window.tutRing2Hide=function(){tutRing2El.classList.remove('active');};
 
   // ── Dev helper: window.resetTutorial() in console ────────────────────
   window.resetTutorial=function(){
