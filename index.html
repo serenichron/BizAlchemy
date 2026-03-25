@@ -3332,8 +3332,23 @@ if('serviceWorker' in navigator){
   };
 
   // ── Helpers exposed for use outside the IIFE ─────────────────────────
-  // Reposition ring1 (call after the highlighted element resizes)
-  window.tutReposRing=function(el){if(tutActive&&el)posRing(tutRingEl,el);};
+  // Reposition ring1 (call after the highlighted element resizes).
+  // Also updates the tutSlotHighEl clip-path hole so the "light" matches the new size.
+  window.tutReposRing=function(el){
+    if(!tutActive||!el)return;
+    posRing(tutRingEl,el);
+    if(tutSlotHighEl.style.display==='block'){
+      const si=document.getElementById('slidein');
+      if(!si)return;
+      const sr=si.getBoundingClientRect(),t=el.getBoundingClientRect();
+      const pad=4,r=12,K=0.5523;
+      const x=t.left-sr.left-pad,y=t.top-sr.top-pad,w=t.width+pad*2;
+      const h=Math.min(t.height+pad*2,sr.bottom-t.top+pad*2);
+      const outerPath=`M0,0 H${Math.ceil(sr.width)} V${Math.ceil(sr.height)} H0 Z`;
+      const hole=`M${x+r},${y} H${x+w-r} C${x+w-r+K*r},${y} ${x+w},${y+r-K*r} ${x+w},${y+r} V${y+h-r} C${x+w},${y+h-r+K*r} ${x+w-r+K*r},${y+h} ${x+w-r},${y+h} H${x+r} C${x+r-K*r},${y+h} ${x},${y+h-r+K*r} ${x},${y+h-r} V${y+r} C${x},${y+r-K*r} ${x+r-K*r},${y} ${x+r},${y} Z`;
+      tutSlotHighEl.style.clipPath=`path(evenodd,'${outerPath} ${hole}')`;
+    }
+  };
   // Show ring2 on an element (e.g. a dropdown that opens during a step)
   window.tutRing2Show=function(el){
     if(!tutActive||!el)return;
