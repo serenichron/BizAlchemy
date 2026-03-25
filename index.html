@@ -3026,7 +3026,13 @@ if('serviceWorker' in navigator){
     // 8
     {type:'info',title:'Full description',
      text:'Here you can read the complete, in-depth description for any concept — written in plain, practical language.',
-     targetFn:()=>document.getElementById('slidein-body')},
+     targetFn:()=>document.getElementById('slidein-body'),
+     onEnter:()=>{
+       setTimeout(()=>{
+         const t=document.getElementById('slidein-body');
+         if(t&&tutActive){spotlight(t,null);positionBox(t);}
+       },400);
+     }},
     // 9
     {type:'info',title:'Listen to narration 🔊',
      text:'Click this button to have the description read aloud — great for learning on the go.',
@@ -3136,8 +3142,10 @@ if('serviceWorker' in navigator){
       tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:transparent;z-index:9000;pointer-events:all;display:block';
       const trayEl=document.getElementById('tray');
       const tooltipEl=document.getElementById('tooltip');
+      const slideinEl=document.getElementById('slidein');
       if(trayEl.contains(target))_elevate(trayEl,'9001');
       if(tooltipEl&&tooltipEl.contains(target))_elevate(tooltipEl,'9001');
+      if(slideinEl&&slideinEl.contains(target))_elevate(slideinEl,'9001');
       _elevate(target,'9001');
       tutRingEl.classList.remove('no-overlay');
       posRing(tutRingEl,target);
