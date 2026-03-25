@@ -3018,16 +3018,27 @@ if('serviceWorker' in navigator){
        grid.scrollTop=0; // reset scroll so Niche (top section) is near top and tooltip positions correctly
        const card=domCards.get('Niche');
        if(card){const ico=card.querySelector('.ec-info');showTooltip('Niche',ico||card);cancelHide();}
+       // Disable Read/listen more — that action belongs to step 7 only
+       requestAnimationFrame(()=>{
+         const cta=document.querySelector('.tt-cta');
+         if(cta){cta.style.pointerEvents='none';cta.style.opacity='0.4';}
+       });
      }},
     // 7
     {type:'action',title:'Open the full description',
      text:'Click <strong>Read/listen more →</strong> to open the detailed view for this concept.',
-     targetFn:()=>document.querySelector('.tt-cta'),hook:'openSlideIn'},
+     targetFn:()=>document.querySelector('.tt-cta'),hook:'openSlideIn',
+     onEnter:()=>{
+       const cta=document.querySelector('.tt-cta');
+       if(cta){cta.style.pointerEvents='';cta.style.opacity='';}
+     }},
     // 8
     {type:'info',title:'Full description',
      text:'Here you can read the complete, in-depth description for any concept — written in plain, practical language.',
      targetFn:()=>document.getElementById('slidein-body'),
+     delayBox:true, // slide-in animates in over 350ms; wait for it to finish before positioning
      onEnter:()=>{
+       tutBoxEl.style.display='none'; // hide until re-spotlighted after animation
        setTimeout(()=>{
          const t=document.getElementById('slidein-body');
          if(t&&tutActive){spotlight(t,null);positionBox(t);}
@@ -3208,7 +3219,7 @@ if('serviceWorker' in navigator){
       const t=step.targetFn?step.targetFn():null;
       const t2=step.targetFn2?step.targetFn2():null;
       spotlight(t,t2);
-      positionBox(t);
+      if(!step.delayBox)positionBox(t);
     });
   }
 
