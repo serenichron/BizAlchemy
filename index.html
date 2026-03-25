@@ -2586,32 +2586,20 @@ function buildLangDropdown(){
   tp(langDropdown);
 }
 
-function _tutLangDropdownClose(){
-  // Restore stacking order elevated for dropdown visibility
-  const slideinEl=document.getElementById('slidein');
-  const boxEl=document.getElementById('tut-box');
-  if(slideinEl)slideinEl.style.zIndex='9001';
-  if(boxEl)boxEl.style.zIndex='9002';
-  if(typeof tutRing2Hide!=='undefined')tutRing2Hide();
-}
 function toggleLangDropdown(){
   const isOpen=langDropdown.classList.contains('open');
   if(isOpen){
     langDropdown.classList.remove('open');langDropdown.style.zIndex='';
-    _tutLangDropdownClose();
+    if(typeof tutRing2Hide!=='undefined')tutRing2Hide();
     return;
   }
   buildLangDropdown();
   langDropdown.classList.add('open');
   if(typeof tutActive!=='undefined'&&tutActive){
-    langDropdown.style.zIndex='9003';
-    // Elevate #slidein above ring1's 9999px spread shadow (z-9001) so the
-    // dropdown inside #slidein's stacking context is not darkened.
-    // Push tut-box above that so it remains on top.
-    const slideinEl=document.getElementById('slidein');
-    const boxEl=document.getElementById('tut-box');
-    if(slideinEl)slideinEl.style.zIndex='9003';
-    if(boxEl)boxEl.style.zIndex='9004';
+    // Dropdown is inside #slidein (z-9001 stacking context).  The spotlight for
+    // slidein steps now uses opaque overlay + no-shadow ring, so #slidein is fully
+    // above the dark overlay — no extra z manipulation needed here.
+    langDropdown.style.zIndex='9002'; // above tut-box z-index within #slidein context
     requestAnimationFrame(()=>{if(typeof tutRing2Show!=='undefined')tutRing2Show(langDropdown);});
   }
 }
@@ -2630,7 +2618,7 @@ langDropdown.addEventListener('click',function(e){
   const lang=btn.dataset.lang;
   langDropdown.classList.remove('open');
   langDropdown.style.zIndex='';
-  _tutLangDropdownClose();
+  if(typeof tutRing2Hide!=='undefined')tutRing2Hide();
   if(lang==='en'){
     activeLang=null;
     translateBtn.textContent='English';
@@ -2649,7 +2637,7 @@ langDropdown.addEventListener('click',function(e){
 });
 
 // Close dropdown when clicking outside
-document.addEventListener('click',function(){langDropdown.classList.remove('open');langDropdown.style.zIndex='';_tutLangDropdownClose();});
+document.addEventListener('click',function(){langDropdown.classList.remove('open');langDropdown.style.zIndex='';if(typeof tutRing2Hide!=='undefined')tutRing2Hide();});
 
 // Split text into chunks under maxLen at sentence boundaries
 function splitForTranslation(text,maxLen){
@@ -3193,23 +3181,28 @@ if('serviceWorker' in navigator){
       posRing(tutRing2El,target2);
       tutRing2El.style.zIndex='9004'; // above tutSlotHighEl (z-9003); set AFTER posRing
     } else {
-      // Single-target: transparent blocking overlay + elevate target above it.
-      // Also elevate any ancestor that creates its own stacking context below z-9000.
-      tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:transparent;z-index:9000;pointer-events:all;display:block';
+      // Single-target: elevate target (and any stacking-context ancestor) above overlay.
       const trayEl=document.getElementById('tray');
       const tooltipEl=document.getElementById('tooltip');
       const slideinEl=document.getElementById('slidein');
-      if(trayEl.contains(target))_elevate(trayEl,'9001');
-      if(tooltipEl&&tooltipEl.contains(target))_elevate(tooltipEl,'9001');
-      if(slideinEl&&slideinEl.contains(target)){
+      const insideSlidein=slideinEl&&slideinEl.contains(target);
+      if(insideSlidein){
+        // Use opaque overlay + no-shadow ring (same as dual-target approach) so that
+        // #slidein at z-9001 sits cleanly above the overlay.  If we used the transparent
+        // overlay + 9999px-shadow ring approach, ring1's shadow (also z-9001 but later
+        // in DOM) would darken everything inside #slidein including the lang dropdown.
+        tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.62);z-index:9000;pointer-events:all;display:block';
         _elevate(slideinEl,'9001');
-        // Block pointer events on slidein-body so the user can't accidentally
-        // interact with tracker buttons, recipe links, etc. during tutorial
         const bodyEl=document.getElementById('slidein-body');
         if(bodyEl){_elevated.push({el:bodyEl,pos:bodyEl.style.position,z:bodyEl.style.zIndex,pe:bodyEl.style.pointerEvents});bodyEl.style.pointerEvents='none';}
+        tutRingEl.classList.add('no-overlay');
+      } else {
+        tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:transparent;z-index:9000;pointer-events:all;display:block';
+        if(trayEl.contains(target))_elevate(trayEl,'9001');
+        if(tooltipEl&&tooltipEl.contains(target))_elevate(tooltipEl,'9001');
+        tutRingEl.classList.remove('no-overlay');
       }
       _elevate(target,'9001');
-      tutRingEl.classList.remove('no-overlay');
       posRing(tutRingEl,target);
     }
   }
