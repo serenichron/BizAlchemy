@@ -3244,9 +3244,13 @@ if('serviceWorker' in navigator){
   window.resetTutorial=function(){
     tutActive=false;
     try{localStorage.removeItem('ba_tutorial_done');}catch(e){}
+    // Remove tutorial-discovered card so step 4 shows as NEW, not FOUND
+    discovered.delete('Niche');saveProgress();
+    // Reset tray/slots so the game is in a clean state
+    cancelCombo();
     hidePanels();tutBoxEl.classList.remove('active');tutBoxEl.style.display='none';
     tutActive=true;showStep(0);
-    console.log('[BizAlchemy] Tutorial restarted from step 0.');
+    console.log('[BizAlchemy] Tutorial restarted from step 0. (Niche removed from discovered)');
   };
 })();
 // #endregion
