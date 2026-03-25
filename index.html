@@ -2586,20 +2586,26 @@ function buildLangDropdown(){
   tp(langDropdown);
 }
 
+let _tutSlotHighSaved=''; // saved cssText when hidden for dropdown
+function _tutRestoreSlotHigh(){
+  const el=document.getElementById('tut-slot-high');
+  if(el&&_tutSlotHighSaved){el.style.cssText=_tutSlotHighSaved;_tutSlotHighSaved='';}
+}
 function toggleLangDropdown(){
   const isOpen=langDropdown.classList.contains('open');
   if(isOpen){
     langDropdown.classList.remove('open');langDropdown.style.zIndex='';
+    _tutRestoreSlotHigh();
     if(typeof tutRing2Hide!=='undefined')tutRing2Hide();
     return;
   }
   buildLangDropdown();
   langDropdown.classList.add('open');
   if(typeof tutActive!=='undefined'&&tutActive){
-    // Dropdown is inside #slidein (z-9001 stacking context).  The spotlight for
-    // slidein steps now uses opaque overlay + no-shadow ring, so #slidein is fully
-    // above the dark overlay — no extra z manipulation needed here.
-    langDropdown.style.zIndex='9002'; // above tut-box z-index within #slidein context
+    // Hide the #slidein dark overlay so the dropdown is fully visible and clickable
+    const tsh=document.getElementById('tut-slot-high');
+    if(tsh&&tsh.style.display!=='none'){_tutSlotHighSaved=tsh.style.cssText;tsh.style.display='none';}
+    langDropdown.style.zIndex='9002';
     requestAnimationFrame(()=>{if(typeof tutRing2Show!=='undefined')tutRing2Show(langDropdown);});
   }
 }
@@ -2618,6 +2624,7 @@ langDropdown.addEventListener('click',function(e){
   const lang=btn.dataset.lang;
   langDropdown.classList.remove('open');
   langDropdown.style.zIndex='';
+  _tutRestoreSlotHigh();
   if(typeof tutRing2Hide!=='undefined')tutRing2Hide();
   if(lang==='en'){
     activeLang=null;
@@ -2637,7 +2644,7 @@ langDropdown.addEventListener('click',function(e){
 });
 
 // Close dropdown when clicking outside
-document.addEventListener('click',function(){langDropdown.classList.remove('open');langDropdown.style.zIndex='';if(typeof tutRing2Hide!=='undefined')tutRing2Hide();});
+document.addEventListener('click',function(){langDropdown.classList.remove('open');langDropdown.style.zIndex='';_tutRestoreSlotHigh();if(typeof tutRing2Hide!=='undefined')tutRing2Hide();});
 
 // Split text into chunks under maxLen at sentence boundaries
 function splitForTranslation(text,maxLen){
@@ -2988,6 +2995,7 @@ if('serviceWorker' in navigator){
 
   // White rounded "slot reveal" used only in dual-target steps to highlight slot-b with proper radius
   const tutSlotHighEl=document.createElement('div');
+  tutSlotHighEl.id='tut-slot-high';
   tutSlotHighEl.style.cssText='position:fixed;pointer-events:none;display:none;background:#fafaf8;z-index:9003;border-radius:14px';
   document.body.appendChild(tutSlotHighEl);
 
@@ -3193,21 +3201,19 @@ if('serviceWorker' in navigator){
         const bodyEl=document.getElementById('slidein-body');
         if(bodyEl){_elevated.push({el:bodyEl,pos:bodyEl.style.position,z:bodyEl.style.zIndex,pe:bodyEl.style.pointerEvents});bodyEl.style.pointerEvents='none';}
         tutRingEl.classList.add('no-overlay');
-        if(bodyEl&&bodyEl.contains(target)){
-          // Target is inside #slidein-body: re-darken #slidein except the target hole,
-          // so only the highlighted element (e.g. .si-desc) shows brightly.
-          // tutSlotHighEl at z-9001 (appended after #slidein in DOM → wins the tie) covers
-          // #slidein, clip-path reveals target; ring1 (even later in DOM) shows through hole.
+        // Re-darken all of #slidein except the target hole so only the target shows brightly.
+        // tutSlotHighEl at z-9001 (appended after #slidein in DOM → wins the DOM-order tie)
+        // covers #slidein; clip-path reveals the target; ring1 (even later) shows through hole.
+        {
           const si=slideinEl.getBoundingClientRect(),t=target.getBoundingClientRect();
           const pad=4,r=12,K=0.5523;
           const x=t.left-si.left-pad,y=t.top-si.top-pad,w=t.width+pad*2;
-          // Clamp hole height to the visible portion of #slidein so the ring doesn't overshoot
+          // Clamp hole height so it never overshoots the bottom of #slidein
           const h=Math.min(t.height+pad*2,si.bottom-t.top+pad*2);
           const outerPath=`M0,0 H${Math.ceil(si.width)} V${Math.ceil(si.height)} H0 Z`;
           const hole=`M${x+r},${y} H${x+w-r} C${x+w-r+K*r},${y} ${x+w},${y+r-K*r} ${x+w},${y+r} V${y+h-r} C${x+w},${y+h-r+K*r} ${x+w-r+K*r},${y+h} ${x+w-r},${y+h} H${x+r} C${x+r-K*r},${y+h} ${x},${y+h-r+K*r} ${x},${y+h-r} V${y+r} C${x},${y+r-K*r} ${x+r-K*r},${y} ${x+r},${y} Z`;
           tutSlotHighEl.style.cssText=`position:fixed;pointer-events:none;display:block;background:rgba(0,0,0,0.62);z-index:9001;left:${si.left}px;top:${si.top}px;width:${si.width}px;height:${si.height}px;clip-path:path(evenodd,'${outerPath} ${hole}')`;
         }
-        // (if target is in the #slidein header — translate, narrate — leave whole #slidein bright)
       } else {
         tutP.top.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:transparent;z-index:9000;pointer-events:all;display:block';
         if(trayEl.contains(target))_elevate(trayEl,'9001');
