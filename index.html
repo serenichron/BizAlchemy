@@ -3015,6 +3015,7 @@ if('serviceWorker' in navigator){
      targetFn:()=>document.getElementById('tooltip'),
      onEnter:()=>{
        tutPinTooltip=true;
+       grid.scrollTop=0; // reset scroll so Niche (top section) is near top and tooltip positions correctly
        const card=domCards.get('Niche');
        if(card){const ico=card.querySelector('.ec-info');showTooltip('Niche',ico||card);cancelHide();}
      }},
