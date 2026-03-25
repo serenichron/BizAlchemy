@@ -3077,7 +3077,7 @@ if('serviceWorker' in navigator){
   let _elevated=[];
   function _elevate(el,newZ){
     _elevated.push({el,pos:el.style.position,z:el.style.zIndex});
-    if(!el.style.position||el.style.position==='static')el.style.position='relative';
+    if(getComputedStyle(el).position==='static')el.style.position='relative'; // only override static; leave absolute/fixed alone
     el.style.zIndex=newZ;
   }
   function _restoreElevated(){
