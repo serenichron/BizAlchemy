@@ -2588,9 +2588,11 @@ function buildLangDropdown(){
 
 function toggleLangDropdown(){
   const isOpen=langDropdown.classList.contains('open');
-  if(isOpen){langDropdown.classList.remove('open');return;}
+  if(isOpen){langDropdown.classList.remove('open');langDropdown.style.zIndex='';return;}
   buildLangDropdown();
   langDropdown.classList.add('open');
+  // Elevate above tutorial box (z-9002) when tutorial is active
+  if(typeof tutActive!=='undefined'&&tutActive)langDropdown.style.zIndex='9003';
 }
 
 translateBtn.addEventListener('click',function(e){
@@ -2606,9 +2608,10 @@ langDropdown.addEventListener('click',function(e){
   if(!btn)return;
   const lang=btn.dataset.lang;
   langDropdown.classList.remove('open');
+  langDropdown.style.zIndex='';
   if(lang==='en'){
     activeLang=null;
-    translateBtn.innerHTML='🇬🇧 English';
+    translateBtn.textContent='English';
     restoreOriginalDesc();
     updateVoiceForLang();
   }else{
@@ -2620,7 +2623,7 @@ langDropdown.addEventListener('click',function(e){
 });
 
 // Close dropdown when clicking outside
-document.addEventListener('click',function(){langDropdown.classList.remove('open');});
+document.addEventListener('click',function(){langDropdown.classList.remove('open');langDropdown.style.zIndex='';});
 
 // Split text into chunks under maxLen at sentence boundaries
 function splitForTranslation(text,maxLen){
@@ -3051,7 +3054,23 @@ if('serviceWorker' in navigator){
     // 10
     {type:'info',title:'Translate 🌐',
      text:'Click here to read the content in another language. Multiple languages are supported.',
-     targetFn:()=>document.getElementById('slidein-translate')},
+     targetFn:()=>document.getElementById('slidein-translate'),
+     onEnter:()=>{
+       // Reposition tutorial box above the translate button so the dropdown
+       // that opens below it is not obstructed
+       requestAnimationFrame(()=>{requestAnimationFrame(()=>{
+         if(!tutActive)return;
+         const btn=document.getElementById('slidein-translate');
+         if(!btn)return;
+         const bw=280,margin=14,bh=tutBoxEl.offsetHeight||160;
+         const r=btn.getBoundingClientRect();
+         let top=r.top-bh-margin;
+         let left=r.left+(r.width/2)-(bw/2);
+         left=Math.max(12,Math.min(left,window.innerWidth-bw-12));
+         top=Math.max(8,top);
+         tutBoxEl.style.cssText=`position:fixed;top:${top}px;left:${left}px;width:${bw}px;z-index:9002;display:block;box-sizing:border-box`;
+       });});
+     }},
     // 11
     {type:'info',title:'Business ownership tracker',
      text:'Use <strong>0 / 1 / 2</strong> to mark how well you know this concept: <strong>0</strong> = not yet, <strong>1</strong> = partially, <strong>2</strong> = fully in your toolkit.',
@@ -3093,12 +3112,12 @@ if('serviceWorker' in navigator){
   // ── Spotlight helpers ─────────────────────────────────────────────────
   let _elevated=[];
   function _elevate(el,newZ){
-    _elevated.push({el,pos:el.style.position,z:el.style.zIndex});
+    _elevated.push({el,pos:el.style.position,z:el.style.zIndex,pe:el.style.pointerEvents});
     if(getComputedStyle(el).position==='static')el.style.position='relative'; // only override static; leave absolute/fixed alone
     el.style.zIndex=newZ;
   }
   function _restoreElevated(){
-    _elevated.forEach(({el,pos,z})=>{el.style.position=pos;el.style.zIndex=z;});
+    _elevated.forEach(({el,pos,z,pe})=>{el.style.position=pos;el.style.zIndex=z;if(pe!==undefined)el.style.pointerEvents=pe;});
     _elevated=[];
   }
 
@@ -3156,7 +3175,13 @@ if('serviceWorker' in navigator){
       const slideinEl=document.getElementById('slidein');
       if(trayEl.contains(target))_elevate(trayEl,'9001');
       if(tooltipEl&&tooltipEl.contains(target))_elevate(tooltipEl,'9001');
-      if(slideinEl&&slideinEl.contains(target))_elevate(slideinEl,'9001');
+      if(slideinEl&&slideinEl.contains(target)){
+        _elevate(slideinEl,'9001');
+        // Block pointer events on slidein-body so the user can't accidentally
+        // interact with tracker buttons, recipe links, etc. during tutorial
+        const bodyEl=document.getElementById('slidein-body');
+        if(bodyEl){_elevated.push({el:bodyEl,pos:bodyEl.style.position,z:bodyEl.style.zIndex,pe:bodyEl.style.pointerEvents});bodyEl.style.pointerEvents='none';}
+      }
       _elevate(target,'9001');
       tutRingEl.classList.remove('no-overlay');
       posRing(tutRingEl,target);
