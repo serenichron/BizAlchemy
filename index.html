@@ -1823,6 +1823,7 @@ function forceHideTooltip(){clearTimeout(hideTimer);tooltip.classList.remove('vi
 // Mobile: dismiss tooltip when tapping outside of it or the info icon
 document.addEventListener('touchstart',function(e){
   if(!tooltip.classList.contains('visible'))return;
+  if(tutPinTooltip)return;
   if(tooltip.contains(e.target)||e.target.classList.contains('ec-info'))return;
   forceHideTooltip();
 },{passive:true});
