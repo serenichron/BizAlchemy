@@ -751,7 +751,7 @@ let tutHook=()=>{},tutStart=()=>{},tutPinTooltip=false;
 // ║      §CSS-Responsive  §CSS-Tutorial  §CSS-SlotBPicker                ║
 // ║ HTML §HTML-Intro  §HTML-Congrats  §HTML-Stats  §HTML-GameBoard       ║
 // ║      §HTML-Modals                                                    ║
-// ║ JS   §JS-DataConstants   PAL, TIER_NAMES, DEPT_PAL, DEPARTMENTS      ║
+// ║ JS   §JS-DataConstants   PAL, TIER_NAMES                             ║
 // ║      §JS-InfoShort       INFO – short card descriptions              ║
 // ║      §JS-ElementsRegistry ALL – all 103 elements + emoji/tier        ║
 // ║      §JS-Recipes         R, REV, add() + all 117 recipes             ║
@@ -772,7 +772,7 @@ let tutHook=()=>{},tutStart=()=>{},tutPinTooltip=false;
 // ║      §JS-CardInteraction updateCardStates, tapCard, addResult        ║
 // ║      §JS-UIHelpers       Menu, reset, session, toast, hint, confirm  ║
 // ║      §JS-Tooltip         scheduleHide, showTooltip, hideTooltip      ║
-// ║      §JS-GridBuilder     buildDeptTabs, buildGrid                    ║
+// ║      §JS-GridBuilder     buildGrid                                   ║
 // ║      §JS-LongDesc        LONG_DESC – rich slide-in descriptions      ║
 // ║      §JS-CTATexts        CTA_TEXT – glossary links per item          ║
 // ║      §JS-SlideIn         openSlideIn, closeSlideIn, ownership toggle ║
@@ -795,28 +795,6 @@ const PAL=[
   {bg:'#FDF6E3',b:'#C8981E',t:'#5C4508',dot:'#C8981E'},
 ];
 const TIER_NAMES=['Raw Ingredients','Core Assets','Digital Foundations','Marketing Channels','Growth Strategy','Advanced Systems','Endgame'];
-const DEPT_PAL=[
-  {bg:'#E8F0FE',b:'#4A6FA5',t:'#1B3A5C',dot:'#4A6FA5'},
-  {bg:'#FFF3E0',b:'#E67E22',t:'#7D4300',dot:'#E67E22'},
-  {bg:'#F3E5F5',b:'#9B59B6',t:'#5B2C6F',dot:'#9B59B6'},
-  {bg:'#E0F7FA',b:'#00ACC1',t:'#004D5A',dot:'#00ACC1'},
-  {bg:'#E8F5E9',b:'#43A047',t:'#1B5E20',dot:'#43A047'},
-  {bg:'#FDE8E8',b:'#C0392B',t:'#6E1A11',dot:'#C0392B'},
-  {bg:'#FFF8E1',b:'#F59F00',t:'#7A5000',dot:'#F59F00'},
-];
-const DEPARTMENTS=[
-  {name:'Strategy & Foundations',icon:'🧭',items:['Idea','Audience','Niche','Value Proposition','Template','Keyword Research','Persona','Offer','Content Strategy','Analytics','Pitch Deck','Editorial Plan','A/B Test','Dashboard']},
-  {name:'Content & Media',icon:'✍️',items:['Content','Article','Blog','Script','Headline','Copywriting','Content Calendar','Video','Podcast','Webinar','AI Writing','Social Proof','Content Machine','Video Channel','Online Course','AI Content System']},
-  {name:'Brand & Design',icon:'🎨',items:['Website','Web Design','Wireframe','Hosting','Brand Guide','Brand Voice','Design System','Prototype','Brand Identity','Social Brand','Portfolio','Premium Brand','Personal Brand']},
-  {name:'Marketing & Traffic',icon:'📣',items:['Social Media','Landing Page','Lead Magnet','SEO','Rank Tracker','Ad Copy','Organic Traffic','Outreach','Opt-in Page','Lead Generation','Ad Campaign','Retargeting','Referral Program','Performance Marketing','Influence','Viral Growth']},
-  {name:'Email & Automation',icon:'📧',items:['Tool','Newsletter','CRM','Email Capture','Email List','Subscriber','Nurture Sequence','Automation','Workflow','Email Funnel','Marketing Stack','Launch Sequence','Marketing OS','AI Automation','Performance Report','Automated Webinar']},
-  {name:'Sales & Conversion',icon:'💰',items:['Sales Page','Sales Copy','Tripwire','Sales Funnel','Inbound Sales','Webinar Funnel','High-Ticket Offer','Conversion','Checkout Page','Discovery Call','Automated Sales','Sales Machine','Upsell']},
-  {name:'Products & Revenue',icon:'📦',items:['Authority Site','Product Design','Digital Product','Partnership','Thought Leadership','Product Launch','Revenue Engine','SaaS Product','Growth System','Passive Income','Recurring Revenue','Market Leader','Financial Freedom','Digital Empire','AI Marketing OS']},
-];
-// Map each item to its department index
-const ITEM_DEPT={};
-DEPARTMENTS.forEach((dept,i)=>dept.items.forEach(n=>{ITEM_DEPT[n]=i;}));
-let activeDept=0;
 // #endregion
 // #region §JS-InfoShort  // ← new §-section? also add it to TABLE OF CONTENTS above
 const INFO={
@@ -1494,12 +1472,15 @@ if(saved&&discovered.size>STARTS.length){
   const pct=Math.round(discovered.size/TOTAL*100);
   document.getElementById('wb-bar-fill').style.width=pct+'%';
   document.getElementById('wb-pct').textContent=discovered.size+' / '+TOTAL+' — '+pct+'% complete';
-  // Department breakdown
+  // Tier breakdown
   const tiersEl=document.getElementById('wb-tiers');
-  DEPARTMENTS.forEach((dept,i)=>{
-    const disc=dept.items.filter(n=>discovered.has(n)).length;
+  TIER_NAMES.forEach((tname,ti)=>{
+    const items=Object.keys(ALL).filter(n=>ALL[n].tier===ti);
+    if(!items.length)return;
+    const disc=items.filter(n=>discovered.has(n)).length;
+    const c=PAL[ti];
     const row=document.createElement('div');row.className='wb-tier';
-    row.innerHTML=`<span class="wb-tier-dot" style="background:${DEPT_PAL[i].dot}"></span><span class="wb-tier-name">${dept.icon} ${dept.name}</span><span class="wb-tier-bar"><span class="wb-tier-bar-fill" style="width:${dept.items.length?Math.round(disc/dept.items.length*100):0}%;background:${DEPT_PAL[i].dot}"></span></span><span class="wb-tier-count">${disc}/${dept.items.length}</span>`;
+    row.innerHTML=`<span class="wb-tier-dot" style="background:${c.dot}"></span><span class="wb-tier-name">Tier ${ti+1} — ${tname}</span><span class="wb-tier-bar"><span class="wb-tier-bar-fill" style="width:${items.length?Math.round(disc/items.length*100):0}%;background:${c.dot}"></span></span><span class="wb-tier-count">${disc}/${items.length}</span>`;
     tiersEl.appendChild(row);
   });
   // Achievements: show unlocked ones, find next locked
@@ -1598,7 +1579,7 @@ function getComboStats(name){
 function renderSlot(el,name){
   const label=el.id==='slot-a'?'Slot A':'Slot B';
   if(!name){el.innerHTML='<span class="slot-hint">tap a card</span>';el.classList.remove('filled');el.style.removeProperty('--slot-color');el.style.removeProperty('--slot-bg');el.setAttribute('aria-label',label+' — empty, tap a card to fill');return;}
-  const c=DEPT_PAL[ITEM_DEPT[name]!=null?ITEM_DEPT[name]:0];
+  const c=PAL[ALL[name]?ALL[name].tier:0]||PAL[0];
   el.style.setProperty('--slot-color',c.b);el.style.setProperty('--slot-bg',c.bg);el.classList.add('filled');
   el.setAttribute('aria-label',label+': '+name);
   const sid=el.id==='slot-a'?'a':'b';
@@ -1618,12 +1599,12 @@ function renderResult(){
     resultEl.setAttribute('aria-label','No match — tap to cancel');
     resultEl.onclick=cancelCombo;resultName=null;resultState='none';sndFail();announce('No match');
   } else if(discovered.has(res)){
-    const rc=DEPT_PAL[ITEM_DEPT[res]!=null?ITEM_DEPT[res]:0];resultEl.style.setProperty('--res-bg',rc.bg);resultEl.style.setProperty('--res-b',rc.b);resultEl.style.setProperty('--res-t',rc.t);resultEl.style.setProperty('--res-badge',rc.b+'30');
+    const rc=PAL[ALL[res]?ALL[res].tier:0]||PAL[0];resultEl.style.setProperty('--res-bg',rc.bg);resultEl.style.setProperty('--res-b',rc.b);resultEl.style.setProperty('--res-t',rc.t);resultEl.style.setProperty('--res-badge',rc.b+'30');
     resultEl.className='state-found';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to cancel</span>`;
     resultEl.setAttribute('aria-label',res+' — already found, tap to cancel');
     resultEl.onclick=cancelCombo;resultName=res;resultState='found';announce(res+' — already found');
   } else {
-    const rc=DEPT_PAL[ITEM_DEPT[res]!=null?ITEM_DEPT[res]:0];resultEl.style.setProperty('--res-bg',rc.bg);resultEl.style.setProperty('--res-b',rc.b);resultEl.style.setProperty('--res-t',rc.t);resultEl.style.setProperty('--res-badge',rc.b+'30');
+    const rc=PAL[ALL[res]?ALL[res].tier:0]||PAL[0];resultEl.style.setProperty('--res-bg',rc.bg);resultEl.style.setProperty('--res-b',rc.b);resultEl.style.setProperty('--res-t',rc.t);resultEl.style.setProperty('--res-badge',rc.b+'30');
     resultEl.className='state-new';resultEl.innerHTML=`<span class="res-e">${ALL[res].e}</span><span class="res-n">${res}</span><span class="res-sub">tap to add ✦</span>`;
     resultEl.setAttribute('aria-label','New discovery: '+res+' — tap to add');
     resultEl.onclick=addResult;resultName=res;resultState='new';announce('New discovery: '+res+'! Tap result to add.');
@@ -1847,34 +1828,21 @@ document.addEventListener('touchstart',function(e){
 },{passive:true});
 // #endregion
 // #region §JS-GridBuilder  // ← new §-section? also add it to TABLE OF CONTENTS above
-function buildDeptTabs(){
-  const tabs=document.getElementById('dept-tabs');tabs.innerHTML='';
-  DEPARTMENTS.forEach((dept,i)=>{
-    const dp=DEPT_PAL[i];
-    const discCount=dept.items.filter(n=>discovered.has(n)).length;
-    const tab=document.createElement('button');tab.className='dept-tab'+(i===activeDept?' active':'');
-    tab.style.cssText=`--dept-color:${dp.b};--dept-bg:${dp.bg};--dept-text:${dp.t}`;
-    tab.innerHTML=`<span class="dept-tab-icon">${dept.icon}</span><span>${dept.name}</span><span class="dept-tab-count">${discCount}/${dept.items.length}</span>`;
-    tab.setAttribute('aria-label',dept.name+' — '+discCount+' of '+dept.items.length+' discovered');
-    tab.onclick=()=>{activeDept=i;buildGrid();};
-    tabs.appendChild(tab);
-  });
-}
 function buildGrid(){
   grid.innerHTML='';domCards.clear();
-  document.getElementById('dept-tabs').innerHTML='';
-  DEPARTMENTS.forEach((dept,di)=>{
-    const dp=DEPT_PAL[di];
-    const discCount=dept.items.filter(n=>discovered.has(n)).length;
+  const maxTier=TIER_NAMES.length-1;
+  for(let ti=0;ti<=maxTier;ti++){
+    const c=PAL[ti];
+    const tierItems=Object.keys(ALL).filter(n=>ALL[n].tier===ti);
+    if(!tierItems.length)continue;
+    const discCount=tierItems.filter(n=>discovered.has(n)).length;
     const hdr=document.createElement('div');hdr.className='tier-hdr';
-    hdr.innerHTML=`<span class="tier-name"><span class="tier-dot" style="background:${dp.dot}"></span>${dept.icon} ${dept.name}</span><span class="tier-prog">${discCount}/${dept.items.length}</span>`;
+    hdr.innerHTML=`<span class="tier-name"><span class="tier-dot" style="background:${c.dot}"></span>Tier ${ti+1} — ${TIER_NAMES[ti]}</span><span class="tier-prog">${discCount}/${tierItems.length}</span>`;
     grid.appendChild(hdr);
-    const row=document.createElement('div');row.className='cards-row';row.setAttribute('role','group');row.setAttribute('aria-label',dept.name+' cards');
-    dept.items.forEach(name=>{
-      const info=ALL[name];if(!info)return;
-      const tier=info.tier;
+    const row=document.createElement('div');row.className='cards-row';row.setAttribute('role','group');row.setAttribute('aria-label',TIER_NAMES[ti]+' cards');
+    tierItems.forEach(name=>{
+      const info=ALL[name];
       if(discovered.has(name)){
-        const c=dp;
         const d=document.createElement('div');d.className='ec';
         d.setAttribute('role','button');d.setAttribute('aria-label',name+(name===slotA||name===slotB?' (selected)':''));
         d.style.cssText=`--card-bg:linear-gradient(135deg,${c.bg} 0%,${c.bg}dd 60%,${c.bg}88 100%);--sel-color:${c.b};--card-shadow:${c.b}30`;
@@ -1900,7 +1868,7 @@ function buildGrid(){
       }
     });
     grid.appendChild(row);
-  });
+  }
   cntEl.textContent=discovered.size+' / '+TOTAL+' found';
 }
 grid.addEventListener('click',e=>{if(!e.target.closest('.ec'))closeHint();});
@@ -2770,14 +2738,16 @@ function openStats(){
   const ownedCount=owned.size;
   const partialCount=partial.size;
   const discoveredCount=discovered.size;
-  // Build department data
+  // Build tier data
   const depts=[];
-  DEPARTMENTS.forEach((dept,i)=>{
-    const items=dept.items.map(n=>[n,ALL[n]]).filter(([,v])=>v);
+  TIER_NAMES.forEach((tname,ti)=>{
+    const allItems=Object.keys(ALL).filter(n=>ALL[n].tier===ti);
+    if(!allItems.length)return;
+    const items=allItems.map(n=>[n,ALL[n]]);
     const disc=items.filter(([n])=>discovered.has(n));
     const own=items.filter(([n])=>owned.has(n));
     const part=items.filter(([n])=>partial.has(n));
-    depts.push({idx:i,name:dept.name,icon:dept.icon,items,disc,own,part,color:DEPT_PAL[i]});
+    depts.push({idx:ti,name:`Tier ${ti+1} — ${tname}`,icon:'',items,disc,own,part,color:PAL[ti]});
   });
   let html='';
   // Session info
@@ -2814,7 +2784,7 @@ function openStats(){
     const discPct=t.items.length?Math.round((t.disc.length/t.items.length)*100):0;
     const ownPct=t.items.length?Math.round((t.own.length/t.items.length)*100):0;
     html+=`<div class="stats-biz-tier">`;
-    html+=`<div class="stats-biz-tier-hdr"><span class="tier-dot" style="background:${t.color.dot}"></span>${t.icon} ${t.name}<div class="stats-tier-counts"><span>${t.disc.length}/${t.items.length} found</span>${t.part.length?`<span style="color:#c07b2a">${t.part.length} partial</span>`:''}<span style="color:#5a9a3c">${t.own.length} owned</span></div></div>`;
+    html+=`<div class="stats-biz-tier-hdr"><span class="tier-dot" style="background:${t.color.dot}"></span>${t.name}<div class="stats-tier-counts"><span>${t.disc.length}/${t.items.length} found</span>${t.part.length?`<span style="color:#c07b2a">${t.part.length} partial</span>`:''}<span style="color:#5a9a3c">${t.own.length} owned</span></div></div>`;
     html+=`<div class="stats-bar"><div class="stats-bar-fill" style="width:${discPct}%;background:${t.color.dot}"></div><div class="stats-bar-own" style="width:${ownPct}%"></div></div>`;
     html+=`<div class="stats-biz-items">`;
     t.items.forEach(([n])=>{
