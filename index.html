@@ -3117,11 +3117,27 @@ if('serviceWorker' in navigator){
     // 16
     {type:'info',title:'Your business concepts',
      text:'Concepts are organised by department with progress bars showing how far you\'ve explored each area.',
-     targetFn:()=>document.querySelector('.stats-biz-tier')},
+     targetFn:()=>document.querySelector('.stats-biz-tier'),
+     onEnter:()=>{
+       const t=document.querySelector('.stats-biz-tier'),body=document.getElementById('stats-body');
+       if(t&&body){
+         const tRect=t.getBoundingClientRect(),bRect=body.getBoundingClientRect();
+         body.scrollTop+=tRect.top-bRect.top-20;
+         requestAnimationFrame(()=>{const t2=document.querySelector('.stats-biz-tier');if(t2&&tutActive){spotlight(t2,null);positionBox(t2);}});
+       }
+     }},
     // 17
     {type:'info',title:'Track what you know',
      text:'Click any concept pill once for <strong>partially understood</strong>, twice for <strong>fully owned</strong>. Syncs automatically.',
-     targetFn:()=>document.querySelector('.stats-biz-items')},
+     targetFn:()=>document.querySelector('.stats-biz-items'),
+     onEnter:()=>{
+       const t=document.querySelector('.stats-biz-items'),body=document.getElementById('stats-body');
+       if(t&&body){
+         const tRect=t.getBoundingClientRect(),bRect=body.getBoundingClientRect();
+         body.scrollTop+=tRect.top-bRect.top-20;
+         requestAnimationFrame(()=>{const t2=document.querySelector('.stats-biz-items');if(t2&&tutActive){spotlight(t2,null);positionBox(t2);}});
+       }
+     }},
     // 18
     {type:'info',title:"You're all set! 🎉",
      text:'Tour complete. Click ✕ to close Statistics and start exploring — combine concepts, earn achievements, and build your knowledge!',
