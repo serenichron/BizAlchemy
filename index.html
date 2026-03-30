@@ -3032,10 +3032,7 @@ if('serviceWorker' in navigator){
      targetFn:()=>resultEl,hook:'addResult'},
     // 4 — hidden wait for achievement popup to close
     {type:'wait',hook:'achQueueEmpty'},
-    // 5
-    {type:'info',title:'🏆 Achievement unlocked!',
-     text:"You just earned your first achievement — awarded for discovering your first concept beyond the starters. You'll earn more as you explore!"},
-    // 6 — tooltip shown programmatically
+    // 5 — tooltip shown programmatically
     {type:'info',title:'Concept tooltip',
      text:'The ⓘ icon on any card shows a quick summary — recipe, short description, and a link to read more.',
      targetFn:()=>document.getElementById('tooltip'),
@@ -3094,54 +3091,10 @@ if('serviceWorker' in navigator){
          tutBoxEl.style.cssText=`position:fixed;top:${top}px;left:${left}px;width:${bw}px;z-index:9002;display:block;box-sizing:border-box`;
        });});
      }},
-    // 11
+    // 10 (last step)
     {type:'info',title:'Business ownership tracker',
      text:'Use <strong>0 / 1 / 2</strong> to mark how well you know this concept: <strong>0</strong> = not yet, <strong>1</strong> = partially, <strong>2</strong> = fully in your toolkit.',
      targetFn:()=>document.getElementById('si-owned')},
-    // 12 — free: user closes slide-in naturally, hook advances
-    {type:'free',title:'Close the panel',
-     text:'Now close this panel yourself — tap ✕ or tap the dark area outside.',
-     targetFn:()=>document.getElementById('slidein-close'),hook:'closeSlideIn'},
-    // 13
-    {type:'action',title:'Open Statistics 📊',
-     text:'Click the 📊 <strong>Statistics</strong> button in the top bar to see your full progress.',
-     targetFn:()=>document.getElementById('stats-btn'),hook:'openStats'},
-    // 14
-    {type:'info',title:'Your Session ID',
-     text:'This code is your unique Session ID. Save it — you can use it to resume your progress on any device.',
-     targetFn:()=>document.querySelector('.stats-session-id')},
-    // 15
-    {type:'info',title:'Achievements',
-     text:'All your achievements live here — unlocked ones are lit up, locked ones show what\'s coming as you explore more.',
-     targetFn:()=>document.querySelector('.stats-ach-section')},
-    // 16
-    {type:'info',title:'Your business concepts',
-     text:'Concepts are organised by department with progress bars showing how far you\'ve explored each area.',
-     targetFn:()=>document.querySelector('.stats-biz-tier'),
-     onEnter:()=>{
-       const t=document.querySelector('.stats-biz-tier'),body=document.getElementById('stats-body');
-       if(t&&body){
-         const tRect=t.getBoundingClientRect(),bRect=body.getBoundingClientRect();
-         body.scrollTop+=tRect.top-bRect.top-20;
-         requestAnimationFrame(()=>{const t2=document.querySelector('.stats-biz-tier');if(t2&&tutActive){spotlight(t2,null);positionBox(t2);}});
-       }
-     }},
-    // 17
-    {type:'info',title:'Track what you know',
-     text:'Click any concept pill once for <strong>partially understood</strong>, twice for <strong>fully owned</strong>. Syncs automatically.',
-     targetFn:()=>document.querySelector('.stats-biz-items'),
-     onEnter:()=>{
-       const t=document.querySelector('.stats-biz-items'),body=document.getElementById('stats-body');
-       if(t&&body){
-         const tRect=t.getBoundingClientRect(),bRect=body.getBoundingClientRect();
-         body.scrollTop+=tRect.top-bRect.top-20;
-         requestAnimationFrame(()=>{const t2=document.querySelector('.stats-biz-items');if(t2&&tutActive){spotlight(t2,null);positionBox(t2);}});
-       }
-     }},
-    // 18
-    {type:'info',title:"You're all set! 🎉",
-     text:'Tour complete. Click ✕ to close Statistics and start exploring — combine concepts, earn achievements, and build your knowledge!',
-     targetFn:()=>document.getElementById('stats-close')},
   ];
 
   const TOTAL_VIS=S.filter(s=>s.type!=='wait').length;
