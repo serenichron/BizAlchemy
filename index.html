@@ -640,7 +640,7 @@ h1,h2{margin:0;padding:0}
       </div>
       <div id="congrats-cta">
         <p>Want help turning what you learned into a real strategy?</p>
-        <a id="congrats-cta-link" href="https://serenichron.com/discovery-call" target="_blank" rel="noopener">Book a free discovery call →</a>
+        <a id="congrats-cta-link" href="https://calendly.com/alexstratov/30min" target="_blank" rel="noopener">Book a free discovery call →</a>
       </div>
       <div id="confetti-row"></div>
     </div>
@@ -2224,7 +2224,7 @@ function openSlideIn(name){
   const recipeHTML=recipes.length?`<div class="si-recipe">${recipes.map(([a,b])=>`${ALL[a]?ALL[a].e:'?'} ${a} + ${ALL[b]?ALL[b].e:'?'} ${b}`).join('<br>')}</div>`:'';
   // Update the language tag button in the header
   if(activeLang){const lObj=LANGS.find(l=>l.code===activeLang);if(lObj)translateBtn.textContent=lObj.name;}else{translateBtn.textContent='English';}
-  slideinBody.innerHTML=`<div class="si-owned" id="si-owned"><div class="si-owned-label">${ownLabel}</div><div class="si-seg" id="si-seg"><button class="si-seg-btn" data-v="0"></button><button class="si-seg-btn" data-v="1"></button><button class="si-seg-btn" data-v="2"></button></div></div>${recipeHTML}<p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/serenichron/30min/" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
+  slideinBody.innerHTML=`<div class="si-owned" id="si-owned"><div class="si-owned-label">${ownLabel}</div><div class="si-seg" id="si-seg"><button class="si-seg-btn" data-v="0"></button><button class="si-seg-btn" data-v="1"></button><button class="si-seg-btn" data-v="2"></button></div></div>${recipeHTML}<p class="si-desc">${desc}</p><p>${cta} \u2014 <a class="si-cta" href="https://calendly.com/alexstratov/30min" target="_blank" rel="noopener">book a free 30-min call \u2192</a></p>`;
   const seg=document.getElementById('si-seg');
   renderSegBtns(seg,curState);
   currentSlideInName=name;
