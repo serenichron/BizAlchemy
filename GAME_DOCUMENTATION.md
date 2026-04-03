@@ -223,13 +223,11 @@ The game organizes all 103 elements into 7 tiers, each with a unique color palet
 - "Start discovering →" button to begin
 
 ### 2. Card Grid
-- Scrollable area displaying all elements **organized by department** (not tier)
-- Seven departments with distinct color palettes: Strategy & Foundations, Content & Media, Brand & Design, Marketing & Traffic, Email & Automation, Sales & Conversion, Products & Revenue
-- Department tab bar at the top for navigation; all departments visible on one scrollable screen
-- Each department has a header showing department name, icon, and progress (e.g., "5 / 14")
+- Scrollable area displaying all elements **organized by tier** (Tier 1 through Tier 7)
+- Each tier has a distinct color palette and a header showing the tier number, name, and progress (e.g., "Tier 1 — Raw Ingredients 4/4")
 - **Discovered elements** show as colored cards with emoji and name
 - **Undiscovered elements** show as locked placeholders ("?" with dashed border)
-- Cards are arranged in a 3-column grid per department
+- Cards are arranged in a 3-column grid per tier
 
 ### 3. Card Selection & Filtering
 - Tapping a card selects it (highlighted with a colored border and scaled up)
@@ -296,7 +294,7 @@ These indicators only appear when one card is selected, showing the status of th
 - Owned elements show a "✓ Owned" badge in tooltips; partial shows "◐ Partially"
 - Ownership tracked separately from discovery (you can discover without owning)
 - Both owned and partially-owned count toward "Business Coverage" achievements
-- Drives the "Business Coverage" and "Department Badge" achievement categories
+- Drives the "Business Coverage" and "Tier Badge" achievement categories
 
 ### 12. Hint System
 - "💡 Hint" button in the header
@@ -314,8 +312,8 @@ These indicators only appear when one card is selected, showing the status of th
 - Accessed via the 📊 button in the header
 - **Achievements section** — 4-column grid showing all 28 achievement badges (unlocked in color, locked greyed out)
 - **Summary cards** — Elements discovered, recipes tried, items owned, business coverage %
-- **Per-tier breakdown** — Tier name, visual progress bar (discovered vs owned), item list
-- Each item in a tier shows discovered/owned/not-discovered state
+- **Per-tier breakdown** — Tier name, visual progress bar (discovered vs owned), item list with tier color
+- Each item in a tier shows discovered/owned/not-discovered state; tap items to cycle ownership state
 
 ### 15. Achievement System
 28 achievements across 3 categories, checked in real-time:
@@ -392,7 +390,7 @@ These indicators only appear when one card is selected, showing the status of th
 - **Encouragement message** — motivational text about building a real business
 - **Achievement summary** — grid of all 28 achievement chips (unlocked in color, locked greyed out)
 - **Learning message** — reflection on the educational value of the game
-- **CTA** — "Book a free discovery call" link to Serenichron
+- **CTA** — "Book a free discovery call" link to Calendly (`calendly.com/alexstratov/30min`)
 - Confetti-style emoji row with fade-in animation
 - Two buttons: "Back to overview →" (returns to game board) and "↺ Start fresh" (resets)
 - Debug: `showCongrats()` can be called from the browser console to preview
@@ -555,9 +553,6 @@ Progress auto-loads on page refresh. If saved progress is found with at least th
 - `REV` — Object mapping result names to arrays of `[ingredientA, ingredientB]` (reverse lookup)
 - `INFO` — Object mapping element names to `{description}` for all 103 elements (includes "Also known as" synonym terms)
 - `PAL` — Array of 7 tier color palette objects `{bg, b, t, dot}`
-- `DEPT_PAL` — Array of 7 department color palette objects
-- `DEPARTMENTS` — Array of 7 department objects with `{name, icon, items[]}`
-- `ITEM_DEPT` — Object mapping each element name to its department index
 - `TIER_NAMES` — Array of 7 tier name strings
 - `ACHIEVEMENTS` — Array of 28 achievement objects with `{id, name, desc, icon, cat, check()}`
 
@@ -573,7 +568,6 @@ Progress auto-loads on page refresh. If saved progress is found with at least th
 - `slotA`, `slotB` — Currently selected element names (or null)
 - `resultName`, `resultState` — Current result in the tray
 - `domCards` — `Map` from element name to its DOM node
-- `activeDept` — Currently active department index (0–6)
 
 ### Key Functions
 | Function | Purpose |
@@ -641,19 +635,9 @@ This represents the progression from basic AI-assisted copywriting to a fully au
 
 ---
 
-## Business Concept Departments
+## Grid Organization
 
-The game grid organizes all 103 elements into 7 departments (distinct from tiers, which represent discovery difficulty). Each department has its own color palette:
-
-| Department | Icon | Items | Count |
-|-----------|------|-------|-------|
-| Strategy & Foundations | 🧭 | Idea, Audience, Niche, Value Proposition, Template, Keyword Research, Persona, Offer, Content Strategy, Analytics, Pitch Deck, Editorial Plan, A/B Test, Dashboard | 14 |
-| Content & Media | ✍️ | Content, Article, Blog, Script, Headline, Copywriting, Content Calendar, Video, Podcast, Webinar, AI Writing, Social Proof, Content Machine, Video Channel, Online Course, AI Content System | 16 |
-| Brand & Design | 🎨 | Website, Web Design, Wireframe, Hosting, Brand Guide, Brand Voice, Design System, Prototype, Brand Identity, Social Brand, Portfolio, Premium Brand, Personal Brand | 13 |
-| Marketing & Traffic | 📣 | Social Media, Landing Page, Lead Magnet, SEO, Rank Tracker, Ad Copy, Organic Traffic, Outreach, Opt-in Page, Lead Generation, Ad Campaign, Retargeting, Referral Program, Performance Marketing, Influence, Viral Growth | 16 |
-| Email & Automation | 📧 | Tool, Newsletter, CRM, Email Capture, Email List, Subscriber, Nurture Sequence, Automation, Workflow, Email Funnel, Marketing Stack, Launch Sequence, Marketing OS, AI Automation, Performance Report, Automated Webinar | 16 |
-| Sales & Conversion | 💰 | Sales Page, Sales Copy, Tripwire, Sales Funnel, Inbound Sales, Webinar Funnel, High-Ticket Offer, Conversion, Checkout Page, Discovery Call, Automated Sales, Sales Machine, Upsell | 13 |
-| Products & Revenue | 📦 | Authority Site, Product Design, Digital Product, Partnership, Thought Leadership, Product Launch, Revenue Engine, SaaS Product, Growth System, Passive Income, Recurring Revenue, Market Leader, Financial Freedom, Digital Empire, AI Marketing OS | 15 |
+The game grid organizes all 103 elements by **tier** (discovery difficulty). Each tier has its own color palette and header label (e.g., "Tier 1 — Raw Ingredients"). See the [Tier System](#tier-system) section above for the full breakdown.
 
 ---
 
@@ -698,7 +682,7 @@ The game grid organizes all 103 elements into 7 departments (distinct from tiers
 - **Associated brand:** Serenichron
 - **Glossary URL pattern:** `https://serenichron.com/glossary/[element-slug]`
 - **Main glossary:** `https://serenichron.com/glossary`
-- **CTA:** Book a free 30-min call via Calendly link in slide-in panel
+- **Discovery call booking:** `https://calendly.com/alexstratov/30min` — linked in the slide-in detail panel and the congratulations screen
 
 ---
 
@@ -776,3 +760,20 @@ The game grid organizes all 103 elements into 7 departments (distinct from tiers
 - Added Supabase to external dependencies
 - Rewrote Business Concept Departments to match actual DEPARTMENTS array with exact item lists and counts
 - Added Admin Dashboard documentation section
+
+**8. Reverted grid organization from departments back to tiers (April 2026)**
+- Removed `DEPARTMENTS`, `DEPT_PAL`, `ITEM_DEPT`, and `activeDept` from the codebase
+- `buildGrid()` now loops tiers 0–6, grouping items by `ALL[name].tier` using `PAL` and `TIER_NAMES`
+- Welcome-back screen tier breakdown now uses tier names and PAL colors instead of department names
+- Statistics screen per-section breakdown now shows tiers instead of departments
+- Slot and result slot colors now look up `PAL[tier]` instead of `DEPT_PAL[dept]`
+- All 103 items and their recipes are unchanged — only the visual organization changed
+
+**9. Fixed mobile tooltip disappearing during tutorial step 6 (April 2026)**
+- The `touchstart` handler called `forceHideTooltip()` unconditionally, bypassing the `tutPinTooltip` guard
+- Tapping the tutorial "Next" button was dismissing the programmatically-pinned tooltip
+- Added `if(tutPinTooltip)return;` to the touchstart handler
+
+**10. Updated discovery call link (April 2026)**
+- Slide-in detail panel CTA and congratulations screen CTA now link to `https://calendly.com/alexstratov/30min`
+- Previously linked to `https://serenichron.com/discovery-call` and `https://calendly.com/serenichron/30min/`
