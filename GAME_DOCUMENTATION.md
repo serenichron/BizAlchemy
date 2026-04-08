@@ -67,7 +67,7 @@ The game organizes all 103 elements into 7 tiers, each with a unique color palet
 | 5    | Advanced Systems    | Pink    | 13       | Automated and advanced business systems |
 | 6    | Endgame             | Lime    | 8        | Ultimate business outcomes |
 
-**Total: 103 elements, 117 recipes (some elements have multiple recipes)**
+**Total: 103 elements, 118 recipes (some elements have multiple recipes)**
 
 ---
 
@@ -328,7 +328,7 @@ These indicators only appear when one card is selected, showing the status of th
 | 👑 Grand Master | Discover all 103 elements |
 | 🧪 Experimenter | Try 30 recipes |
 | ⚡ Mad Scientist | Try 75 recipes |
-| 🏆 Completionist | Try all 117 recipes |
+| 🏆 Completionist | Try all 118 recipes |
 
 **Business Coverage (4):**
 | Achievement | Condition |
@@ -495,7 +495,7 @@ Seven distinct color palettes, one per tier:
 
 ## Recipe Tree Summary
 
-The game contains **117 recipes** producing 99 non-starting elements (many elements have multiple recipes).
+The game contains **118 recipes** producing 99 non-starting elements (many elements have multiple recipes).
 
 ### Recipe Structure
 - **Tier 0 → Tier 1:** All 6 combinations of the 4 starters (4 choose 2) + 2 cross-tier recipes (8 total)

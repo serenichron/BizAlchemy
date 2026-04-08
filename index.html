@@ -754,7 +754,7 @@ let tutHook=()=>{},tutStart=()=>{},tutPinTooltip=false;
 // ║ JS   §JS-DataConstants   PAL, TIER_NAMES                             ║
 // ║      §JS-InfoShort       INFO – short card descriptions              ║
 // ║      §JS-ElementsRegistry ALL – all 103 elements + emoji/tier        ║
-// ║      §JS-Recipes         R, REV, add() + all 117 recipes             ║
+// ║      §JS-Recipes         R, REV, add() + all 118 recipes             ║
 // ║      §JS-Persistence     loadProgress, saveProgress, session,        ║
 // ║                          Supabase URL/key, supaFetch                 ║
 // ║      §JS-CloudSync       syncToSupabase, loadFromSupabase,           ║
@@ -1301,7 +1301,7 @@ const ACHIEVEMENTS=[
   {id:'grand_master',name:'Grand Master',desc:'Discover all 103 elements',icon:'👑',cat:'game',check:()=>discovered.size>=TOTAL},
   {id:'experimenter',name:'Experimenter',desc:'Try 30 recipes',icon:'🧪',cat:'game',check:()=>tried.size>=30},
   {id:'mad_scientist',name:'Mad Scientist',desc:'Try 75 recipes',icon:'⚡',cat:'game',check:()=>tried.size>=75},
-  {id:'completionist',name:'Completionist',desc:'Try all 117 recipes',icon:'🏆',cat:'game',check:()=>tried.size>=Object.keys(R).length},
+  {id:'completionist',name:'Completionist',desc:'Try all 118 recipes',icon:'🏆',cat:'game',check:()=>tried.size>=Object.keys(R).length},
   // Business coverage
   {id:'getting_started',name:'Getting Started',desc:'Mark 5 items as owned or partially owned',icon:'🚶',cat:'biz',check:()=>ownedTotal()>=5},
   {id:'foundation',name:'Foundation',desc:'Mark 15 items as owned or partially owned',icon:'🧱',cat:'biz',check:()=>ownedTotal()>=15},
